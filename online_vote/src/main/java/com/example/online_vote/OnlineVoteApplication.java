@@ -8,7 +8,6 @@ public class OnlineVoteApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(OnlineVoteApplication.class, args);
-		System.out.println("Hello World");
 	}
 
 }
