@@ -25,10 +25,20 @@ public class FirstController {
     }
 
     @GetMapping("/students/{student-id}")
-    public Student post(@PathVariable("student-id") Integer studentId) {
-        return studentRepository.findById(studentId).orElse(new Student());
+    public Student findStudentById(@PathVariable("student-id") Integer studentId) {
+        return studentRepository.findById(studentId).orElse(new Student()); // Return a default student ("null") if not found
     }
 
+    @GetMapping("/students/search/{student-name}")
+    public List<Student> findStudentByName(@PathVariable("student-name") String studentId) {
+        return studentRepository.findAllByFirsrNameContaining(studentId); // Return a default student ("null") if not found
+    }
+
+    @DeleteMapping("/students/{student-id}")
+    @ResponseStatus(HttpStatus.OK)
+    public void delete(@PathVariable("student-id") Integer studentId) {
+        studentRepository.deleteById(studentId);
+    }
 
 
 
