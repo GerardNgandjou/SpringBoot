@@ -1,7 +1,7 @@
-package com.startspring.startspringboot;
+package com.startspring.startspringboot.school;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.startspring.startspringboot.student.Student;
 import jakarta.persistence.*;
 
 import java.util.List;

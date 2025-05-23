@@ -1,6 +1,11 @@
-package com.startspring.startspringboot;
+package com.startspring.startspringboot.student;
 
+import com.startspring.startspringboot.Order;
+import com.startspring.startspringboot.OrderRecord;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -8,69 +13,50 @@ import java.util.List;
 @RestController
 public class StudentController {
 
-    private final StudentRepository studentRepository;
+    private final StudentService studentService;
 
-    public StudentController(StudentRepository studentRepository) {
-        this.studentRepository = studentRepository;
+    public StudentController(StudentService studentService) {
+        this.studentService = studentService;
     }
 
     @PostMapping("/students")
     public Student post(@RequestBody StudentDto dto) {
-        var student = toStudents(dto);
-        return studentRepository.save(student);
+        return studentService.student(dto);
     }
 
     @PostMapping("/student")
-    public StudentResponseDto posnt(@RequestBody StudentDto dto) {
-        var student = toStudents(dto);
-        var saveStudnet =  studentRepository.save(student);
-        return toStudentResponseDto(saveStudnet);
-    }
-
-    private Student toStudents(StudentDto dto) {
-        var student = new Student();
-        student.setFirsrName(dto.firsrName());
-        student.setLastName(dto.lastName());
-        student.setEmail(dto.email());
-
-        var school = new School();
-        school.setId(dto.schoolID());
-
-        student.setSchool(school);
-
-        return student;
-    }
-
-    private StudentResponseDto toStudentResponseDto(Student student) {
-        return new StudentResponseDto(
-                student.getFirsrName(),
-                student.getLastName(),
-                student.getEmail()
-        );
+    public StudentResponseDto saveStudent(
+            @Valid @RequestBody StudentDto Dto) {
+        return this.studentService.saveStudent(Dto);
     }
 
     @GetMapping("/students")
-    public List<Student> findAllStudent() {
-        return studentRepository.findAll();
+    public List<StudentResponseDto> findAllStudent() {
+        return studentService.getAllStudents();
     }
 
     @GetMapping("/students/{student-id}")
-    public Student findStudentById(@PathVariable("student-id") Integer studentId) {
-        return studentRepository.findById(studentId).orElse(new Student()); // Return a default student ("null") if not found
+    public StudentResponseDto findStudentById(@PathVariable("student-id") Integer studentId) {
+        return studentService.findStudentById(studentId);
     }
 
     @GetMapping("/students/search/{student-name}")
-    public List<Student> findStudentByName(@PathVariable("student-name") String studentId) {
-        return studentRepository.findAllByFirsrNameContaining(studentId); // Return a default student ("null") if not found
+    public List<StudentResponseDto> findStudentByName(@PathVariable("student-name") String studentId) {
+        return studentService.findStudentByName(studentId);
     }
 
     @DeleteMapping("/students/{student-id}")
     @ResponseStatus(HttpStatus.OK)
     public void delete(@PathVariable("student-id") Integer studentId) {
-        studentRepository.deleteById(studentId);
+        studentService.deleteStudentById(studentId);
     }
 
-
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<?> handleMethodArgumentNotValidException(
+            MethodArgumentNotValidException esp
+    ) {
+        
+    }
 
 
 
