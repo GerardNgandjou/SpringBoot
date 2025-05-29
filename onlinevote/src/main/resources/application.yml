@@ -4,7 +4,7 @@ server:
     include-binding-errors: always
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/onlinevote
+    url: jdbc:postgresql://localhost:5432/votebd
     username: postgres
     password: root
     driver-class-name: org.postgresql.Driver

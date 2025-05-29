@@ -1,18 +1,18 @@
 package com.example.online_vote.candidate;
 
-import com.example.online_vote.Login;
+import com.example.online_vote.Registration;
 import jakarta.persistence.Entity;
 
 @Entity
-public class CandidateLogin extends Login {
+public class CandidateRegistration extends Registration {
 
     private String role;
 
-    public CandidateLogin() {
+    public CandidateRegistration() {
         super();
     }
 
-    public CandidateLogin(String role){
+    public CandidateRegistration(String role){
         this.role = role;
     }
 

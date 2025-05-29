@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<!--
+	HTML document for voter registration form
+	Uses Thymeleaf templating engine for server-side processing
+-->
+<head>
+    <!-- Meta tags for responsive design and character encoding -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+
+    <!-- Link to external CSS stylesheet -->
+    <link rel="stylesheet" th:href="@{/css/register.css}">
+    <title>Add Voter</title>
+</head>
+<body>
+<!-- Form header section -->
+<div class="form-header">
+    <h1 class="form-title">Add New Voter</h1>
+    <p class="form-subtitle">Please fill all required fields in both sections</p>
+</div>
+
+<!--
+	SUCCESS/ERROR MESSAGES SECTION
+	Uses Thymeleaf to conditionally show messages based on URL parameters
+-->
+<div th:if="${param.success}" class="success-message">
+    ✅ Voter registered successfully!
+</div>
+
+<div th:if="${param.error}" class="error-message">
+            <span th:if="${param.error[0] == 'email_exists'}">
+                ❌ This email is already registered. Please use another one.
+            </span>
+</div>
+
+<!-- Main voter registration form -->
+<form id="voterForm" method="post" action="#"> <!-- Added method and action attributes -->
+    <div class="form-container">
+        <!--
+			PERSONAL INFORMATION COLUMN
+			Contains fields for voter's personal details
+		-->
+        <div class="form-column">
+            <h2>Personal Information</h2>
+
+            <!-- First Name field -->
+            <div class="form-group">
+                <label for="firstName">First Name *</label>
+                <input id="firstName" type="text" name="firstName" required
+                       minlength="3" maxlength="50" placeholder="Atangana Onana" />
+            </div>
+
+            <!-- Surname field -->
+            <div class="form-group">
+                <label for="surName">Surname *</label>
+                <input id="surName" type="text" name="surName" required
+                       minlength="3" maxlength="50" placeholder="Celestin Herve" />
+            </div>
+
+            <!-- Birth Date field -->
+            <div class="form-group">
+                <label for="birthDate">Birth Date *</label>
+                <input id="birthDate" type="date" name="birthDate" required />
+            </div>
+
+            <!-- Gender selection -->
+            <div class="form-group">
+                <label for="gender">Gender *</label>
+                <select id="gender" name="gender" required class="form-select">
+                    <option value="" disabled selected>Select gender</option>
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                </select>
+            </div>
+
+            <!-- Place of Birth field -->
+            <div class="form-group">
+                <label for="placeOfBirth">Place of Birth *</label>
+                <input id="placeOfBirth" type="text" name="placeOfBirth" required
+                       minlength="3" maxlength="20" placeholder="Douala" />
+            </div>
+
+            <!-- Email field with validation pattern -->
+            <div class="form-group">
+                <label for="email">Email *</label>
+                <input id="email" type="email" name="email" required maxlength="50"
+                       pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
+                       placeholder="atanganaceheve@gmail.com" />
+            </div>
+        </div>
+
+        <!--
+			LOCATION & POLITICAL INFORMATION COLUMN
+			Contains fields for voter's location and political affiliation
+		-->
+        <div class="form-column">
+            <h2>Location & Political Data</h2>
+
+            <!-- Phone Number field with validation pattern -->
+            <div class="form-group">
+                <label for="phoneNumber">Phone Number *</label>
+                <input id="phoneNumber" type="tel" name="phoneNumber" required
+                       pattern="^[6-9][0-9]{8}$" maxlength="9" placeholder="697541210" />
+                <!-- Pattern ensures Cameroonian phone numbers starting with 6-9 -->
+            </div>
+
+            <!-- Region of Birth field -->
+            <div class="form-group">
+                <label for="regionNais">Region of Birth *</label>
+                <input id="regionNais" type="text" name="regionNais" required
+                       minlength="3" maxlength="20" placeholder="Littoral" />
+            </div>
+
+            <!-- Department of Birth field -->
+            <div class="form-group">
+                <label for="departNais">Department of Birth *</label>
+                <input id="departNais" type="text" name="departNais" required
+                       minlength="3" maxlength="20" placeholder="Wouri" />
+            </div>
+
+            <!-- Arrondissement of Birth field -->
+            <div class="form-group">
+                <label for="arrondNais">Arrondissement of Birth *</label>
+                <input id="arrondNais" type="text" name="arrondNais" required
+                       minlength="3" maxlength="20" placeholder="Douala 4e" />
+            </div>
+
+            <!-- Political Party selection -->
+            <div class="form-group">
+                <label for="partiPolitique">Political Party *</label>
+                <select id="partiPolitique" name="partiPolitique" required class="form-select">
+                    <option value="" disabled selected>Select a political party</option>
+                    <option value="RDPC">Rassemblement Démocratique du Peuple Camerounais (RDPC)</option>
+                    <option value="UNDP">Union Nationale pour la Démocratie et le Progrès (UNDP)</option>
+                    <option value="SDF">Front Social Démocrate (SDF)</option>
+                    <option value="PCRN">Parti Camerounais pour la Réconciliation Nationale (PCRN)</option>
+                    <option value="UDC">Union Démocratique du Cameroun (UDC)</option>
+                    <option value="FSNC">Front pour le Salut National du Cameroun (FSNC)</option>
+                    <option value="MDR">Mouvement pour la Défense de la République (MDR)</option>
+                    <option value="UMS">Union des Mouvements Socialistes (UMS)</option>
+                    <option value="UPC">Union des Populations du Cameroun (UPC)</option>
+                    <option value="MRC">Mouvement pour la Renaissance du Cameroun (MRC)</option>
+                    <option value="PRC">Parti Républicain du Cameroun (PRC)</option>
+                    <option value="PDC">Parti des Démocrates Camerounais (PDC)</option>
+                    <option value="ADD">Alliance pour la Démocratie et le Développement (ADD)</option>
+                    <option value="UPA">Union des Populations Africaines (UPA)</option>
+                    <option value="MP">Mouvement Progressiste (MP)</option>
+                    <option value="CAC">Croire au Cameroun (CAC)</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <!-- Form action buttons -->
+    <div class="form-buttons">
+        <button type="submit">Submit Voter</button>
+        <button type="reset">Reset Form</button>
+    </div>
+</form>
+
+<!-- Link to external JavaScript for form handling -->
+<script th:src="@{/js/form-handler.js}"></script>
+</body>
+</html>

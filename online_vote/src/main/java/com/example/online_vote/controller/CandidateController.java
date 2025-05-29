@@ -1,4 +1,4 @@
-package com.example.online_vote.candidate;
+package com.example.online_vote.controller;
 
 import org.springframework.web.bind.annotation.RestController;
 

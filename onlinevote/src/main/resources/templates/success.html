@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Registration Successful</title>
+	<link rel="stylesheet" th:href="@{/css/styke.css}">
+</head>
+<body>
+<div class="success-container">
+	<div class="success-card">
+		<div class="success-icon">✓</div>
+		<h1>Registration Successful!</h1>
+		<p>Thank you for registering as a voter.</p>
+		<p>Your voter information has been successfully recorded.</p>
+
+		<div class="action-buttons">
+			<a href="/voters/register" class="btn">Register Another Voter</a>
+			<a href="/" class="btn btn-secondary">Return to Home</a>
+		</div>
+	</div>
+</div>
+</body>
+</html>

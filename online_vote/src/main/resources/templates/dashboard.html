@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Dashboard</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}" />
+</head>
+<body>
+<header>
+    <h1>Welcome to Your Dashboard</h1>
+    <p>Hello, <span th:text="${#authentication.name}">User</span>!</p>
+    <a th:href="@{/logout}">Logout</a>
+</header>
+
+<main>
+    <section>
+        <h2>Your Info</h2>
+        <p>Email: <span th:text="${#authentication.name}">user@example.com</span></p>
+        <!-- Add more user-specific info here -->
+    </section>
+
+    <section>
+        <h2>Available Actions</h2>
+        <ul>
+            <li><a th:href="@{/voter/profile}">Edit Profile</a></li>
+            <li><a th:href="@{/voter/vote}">Vote Now</a></li>
+            <li><a th:href="@{/voter/results}">View Results</a></li>
+        </ul>
+    </section>
+</main>
+</body>
+</html>
