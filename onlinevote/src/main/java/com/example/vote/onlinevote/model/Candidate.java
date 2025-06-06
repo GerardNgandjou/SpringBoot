@@ -1,4 +1,20 @@
 package com.example.vote.onlinevote.model;
 
-public class Candidate {
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
+@Entity
+@DiscriminatorValue("CANDIDATE")
+public class Candidate extends User {
+
+    private Float deposit;
+    private Integer score;
+
+    public Candidate() {
+        super();
+    }
+
 }

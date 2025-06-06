@@ -1,127 +1,245 @@
-/**
- * Voter Registration Form Handler
- * Handles form submission, validation, and provides real-time feedback
- */
+// Polling stations data for each region
+const pollingStations = {
+    "Adamawa": [
+        { id: "ADA001", name: "Ngaoundéré Main Station" },
+        { id: "ADA002", name: "Tibati Central" },
+        { id: "ADA003", name: "Mayo-Baléo Station" },
+        { id: "ADA004", name: "Mbé Station" },
+        { id: "ADA005", name: "Djohong Station" }
+    ],
+    // ... (keep all your existing polling station data)
+};
 
-// Form submission handler
-document.getElementById("voterForm").addEventListener("submit", async function(e) {
-    e.preventDefault(); // Prevent default form submission
-    const form = e.target;
+document.addEventListener('DOMContentLoaded', function() {
+    initForm();
+});
 
-    // Validate form before submission
-    if (!form.checkValidity()) {
-        alert("Please fill out all required fields correctly.");
+function initForm() {
+    document.getElementById('birthDate').max = new Date().toISOString().split('T')[0];
+    setupEventListeners();
+    updatePollingStations();
+}
+
+function setupEventListeners() {
+    const form = document.getElementById("voterForm");
+
+    form.addEventListener('input', function(event) {
+        if (event.target.matches('input, select')) {
+            validateField(event.target);
+        }
+    });
+
+    form.addEventListener('focusout', function(event) {
+        if (event.target.matches('input, select')) {
+            validateField(event.target);
+        }
+    });
+
+    document.getElementById('birthDate').addEventListener('change', validateBirthDate);
+    document.getElementById('region').addEventListener('change', updatePollingStations);
+    form.addEventListener('submit', handleFormSubmit);
+}
+
+function validateField(element) {
+    const errorElement = element.nextElementSibling?.classList.contains('error-message')
+        ? element.nextElementSibling
+        : null;
+
+    element.classList.remove('error-highlight', 'success-highlight');
+
+    if (element.checkValidity()) {
+        if (element.value && !element.hasAttribute('data-no-success')) {
+            element.classList.add('success-highlight');
+        }
+        element.setAttribute('aria-invalid', 'false');
+        if (errorElement) errorElement.textContent = '';
+    } else {
+        element.classList.add('error-highlight');
+        element.setAttribute('aria-invalid', 'true');
+        if (errorElement) {
+            errorElement.textContent = element.validationMessage || 'Please fill this field correctly';
+        }
+    }
+}
+
+function validateBirthDate() {
+    const birthDateInput = document.getElementById('birthDate');
+    const errorElement = document.getElementById('birthDateError');
+    const birthDate = new Date(birthDateInput.value);
+    const today = new Date();
+
+    birthDateInput.classList.remove('error-highlight', 'success-highlight');
+    birthDateInput.setCustomValidity('');
+    errorElement.textContent = '';
+    birthDateInput.setAttribute('aria-invalid', 'false');
+
+    if (!birthDateInput.value) return;
+
+    if (birthDate > today) {
+        const errorMsg = 'Birth date cannot be in the future';
+        birthDateInput.setCustomValidity(errorMsg);
+        errorElement.textContent = errorMsg;
+        birthDateInput.classList.add('error-highlight');
+        birthDateInput.setAttribute('aria-invalid', 'true');
         return;
     }
 
-    // Convert form data to JSON
-    const formData = new FormData(form);
-    const data = Object.fromEntries(formData.entries());
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const monthDiff = today.getMonth() - birthDate.getMonth();
+
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+        age--;
+    }
+
+    if (age < 21) {
+        const errorMsg = `You must be at least 21 years old (current age: ${age})`;
+        birthDateInput.setCustomValidity(errorMsg);
+        errorElement.textContent = errorMsg;
+        birthDateInput.classList.add('error-highlight');
+        birthDateInput.setAttribute('aria-invalid', 'true');
+    } else {
+        birthDateInput.classList.add('success-highlight');
+        validateField(birthDateInput);
+    }
+}
+
+function updatePollingStations() {
+    const regionSelect = document.getElementById('region');
+    const pollingStationSelect = document.getElementById('pollingStation');
+    const selectedRegion = regionSelect.value;
+
+    pollingStationSelect.innerHTML = '';
+
+    const defaultOption = new Option('Select your polling station', '', true, true);
+    defaultOption.disabled = true;
+    pollingStationSelect.add(defaultOption);
+
+    if (selectedRegion && pollingStations[selectedRegion]) {
+        pollingStations[selectedRegion].forEach(station => {
+            const option = new Option(`${station.name} (${station.id})`, station.id);
+            pollingStationSelect.add(option);
+        });
+    }
+
+    validateField(pollingStationSelect);
+}
+
+async function handleFormSubmit(e) {
+    e.preventDefault();
+    const form = e.target;
+    const submitButton = document.getElementById('submitButton');
+
+    if (!validateAllFields(form)) {
+        showAlert('Please fill out all required fields correctly.', 'error');
+        return;
+    }
 
     try {
-        // API call to register voter
-        const response = await fetch("/voters/register", {
-            method: "POST",
+        submitButton.classList.add('loading');
+        submitButton.disabled = true;
+
+        const formData = new FormData(form);
+        const data = Object.fromEntries(formData.entries());
+
+        if (data.birthDate) {
+            data.birthDate = new Date(data.birthDate).toISOString().split('T')[0];
+        }
+
+        // Get CSRF token from Thymeleaf
+        const csrfToken = document.querySelector('input[name="_csrf"]').value;
+
+        const response = await fetch('/register', {
+            method: 'POST',
             headers: {
-                "Content-Type": "application/json"
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'X-CSRF-TOKEN': csrfToken
             },
             body: JSON.stringify(data)
         });
 
         if (response.ok) {
-            // Success case
-            alert("Voter added successfully!");
+            const result = await response.json();
+            showSuccessMessage(result);
             form.reset();
-
-            // Reset visual validation states
-            document.querySelectorAll('input, select').forEach(el => {
-                el.style.borderColor = '#ddd'; // Reset to default border color
-            });
-
-            // Optional: Redirect or update UI
-            // window.location.href = "/success-page";
-
         } else {
-            // Handle server-side errors
-            const error = await response.json();
-            alert("Error: " + (error.message || response.statusText));
-
-            // Special handling for email exists error
-            if (error.code === 'email_exists') {
-                document.getElementById('email').style.borderColor = '#ff6d6d';
-            }
+            const errorResponse = await response.json();
+            handleServerErrors(errorResponse);
         }
-    } catch (err) {
-        // Network or unexpected errors
-        console.error("Submission error:", err);
-        alert("Network error: " + err.message);
-    }
-});
-
-/**
- * Real-time Form Validation Feedback
- * Provides visual feedback as user fills out the form
- */
-document.querySelectorAll('input, select').forEach(element => {
-    // Validate on input changes
-    element.addEventListener('input', () => {
-        validateField(element);
-    });
-
-    // Add initial validation for required fields on page load
-    if (element.required) {
-        validateField(element);
-    }
-});
-
-/**
- * Validates a single form field and updates its visual state
- * @param {HTMLElement} element - The form element to validate
- */
-function validateField(element) {
-    if (element.checkValidity()) {
-        element.style.borderColor = '#8aff6d'; // Green for valid
-    } else {
-        element.style.borderColor = '#ff6d6d'; // Red for invalid
+    } catch (error) {
+        showAlert('An error occurred while submitting the form. Please try again.', 'error');
+        console.error('Submission error:', error);
+    } finally {
+        submitButton.classList.remove('loading');
+        submitButton.disabled = false;
     }
 }
 
-/**
- * Birth Date Validation
- * Ensures birth date is not in the future
- */
-document.addEventListener('DOMContentLoaded', () => {
-    const birthDateInput = document.getElementById('birthDate');
+function handleServerErrors(errorResponse) {
+    document.querySelectorAll('.error-highlight').forEach(el => {
+        el.classList.remove('error-highlight');
+    });
 
-    // Set max date to today
-    birthDateInput.max = new Date().toISOString().split('T')[0];
+    document.querySelectorAll('.error-message').forEach(el => {
+        el.textContent = '';
+    });
 
-    // Validate on date change
-    birthDateInput.addEventListener('change', function() {
-        const errorElement = document.getElementById('birthDateError') ||
-            createErrorElement(this);
+    if (errorResponse.errors) {
+        for (const [field, message] of Object.entries(errorResponse.errors)) {
+            const inputElement = document.getElementById(field);
+            if (inputElement) {
+                inputElement.classList.add('error-highlight');
+                const errorElement = inputElement.nextElementSibling?.classList.contains('error-message')
+                    ? inputElement.nextElementSibling
+                    : document.getElementById(`${field}Error`);
 
-        if (new Date(this.value) > new Date()) {
-            this.setCustomValidity('Birth date cannot be in the future');
-            errorElement.textContent = 'Birth date cannot be in the future';
-            this.style.borderColor = '#ff6d6d';
-        } else {
-            this.setCustomValidity('');
-            errorElement.textContent = '';
-            validateField(this);
+                if (errorElement) {
+                    errorElement.textContent = message;
+                }
+            }
+        }
+    } else if (errorResponse.message) {
+        showAlert(errorResponse.message, 'error');
+    }
+}
+
+function showSuccessMessage(result) {
+    const existingMessage = document.querySelector('.success-message');
+    if (existingMessage) existingMessage.remove();
+
+    const successMessage = document.createElement('div');
+    successMessage.className = 'success-message';
+    successMessage.innerHTML = `
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+        </svg>
+        <div>
+            <h3>Registration Successful!</h3>
+            <p>Voter ID: ${result.id || 'N/A'}</p>
+            <p>Thank you for registering. A confirmation email has been sent to ${result.email}.</p>
+        </div>
+    `;
+
+    const form = document.getElementById('voterForm');
+    form.parentNode.insertBefore(successMessage, form);
+    successMessage.scrollIntoView({ behavior: 'smooth' });
+}
+
+function validateAllFields(form) {
+    let isValid = true;
+
+    validateBirthDate();
+
+    form.querySelectorAll('input[required], select[required]').forEach(element => {
+        validateField(element);
+        if (!element.checkValidity()) {
+            isValid = false;
         }
     });
-});
 
-/**
- * Creates an error message element if it doesn't exist
- * @param {HTMLElement} inputElement - The input element needing error display
- * @returns {HTMLElement} The created or existing error element
- */
-function createErrorElement(inputElement) {
-    const errorElement = document.createElement('div');
-    errorElement.id = inputElement.id + 'Error';
-    errorElement.className = 'error-message';
-    inputElement.parentNode.appendChild(errorElement);
-    return errorElement;
+    return isValid;
+}
+
+function showAlert(message, type = 'error') {
+    alert(message);
 }

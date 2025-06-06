@@ -1,4 +1,7 @@
 package com.example.vote.onlinevote.repository;
 
-public interface VoteOfficeRepository {
+import com.example.vote.onlinevote.model.VoteOffice;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface VoteOfficeRepository extends JpaRepository<VoteOffice,Long> {
 }
