@@ -4,7 +4,7 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>VoteNow - Secure Online Voting Platform</title>
-	    <link rel="stylesheet" href="../static/css/style.css">
+	<link rel="stylesheet" href="../static/css/style.css">
 	<link rel="stylesheet" th:href="@{/css/style.css}">
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
@@ -24,7 +24,7 @@
 				<li><a href="#how-it-works">How It Works</a></li>
 				<li><a href="#elections">Elections</a></li>
 				<li><a href="#security">Security</a></li>
-				<li><a th:href="@{/register}" class="btn btn-outline">Login / Register</a></li>
+				<li><a th:href="@{/auth}" class="btn btn-outline">Login / Register</a></li>
 			</ul>
 		</nav>
 	</div>
@@ -42,7 +42,7 @@
 			</div>
 		</div>
 		<div class="hero-image">
-			<img src="https://images.unsplash.com/photo-1551524559-8af4e6624178?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80" alt="Online Voting Interface">
+			<img th:src="@{/image/img-online-voting.png}" alt="Online Voting Interface">
 		</div>
 	</div>
 </section>
@@ -143,7 +143,7 @@
 		<div class="elections-grid">
 			<div class="election-card">
 				<div class="election-image">
-					<img src="https://images.unsplash.com/photo-1551524559-8af4e6624178?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80" alt="Student Council Election">
+					<img th:src="@{/image/JFN.jpg}" alt="Student Council Election">
 				</div>
 				<div class="election-info">
 					<div class="election-date">

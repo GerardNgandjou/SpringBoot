@@ -17,7 +17,7 @@ public class VoteOffice {
     private Long idOffice;
     @Column(unique = true)
     private String nameOffice;
-    private String positionOffice;
+    private String locationOffice;
     private String descriptionOffice;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "office")
@@ -26,9 +26,9 @@ public class VoteOffice {
 
     public VoteOffice() {}
 
-    public VoteOffice(String nameOffice, String positionOffice, String descriptionOffice, List<Voter> voters) {
+    public VoteOffice(String nameOffice, String locationOffice, String descriptionOffice, List<Voter> voters) {
         this.nameOffice = nameOffice;
-        this.positionOffice = positionOffice;
+        this.locationOffice = locationOffice;
         this.descriptionOffice = descriptionOffice;
         this.voters = voters;
     }
