@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elections Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --secondary: #3f37c9;
+            --success: #4cc9f0;
+            --danger: #f72585;
+            --warning: #f8961e;
+            --info: #4895ef;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray: #6c757d;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: var(--dark);
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        h1 {
+            font-size: 2.2rem;
+            color: var(--primary);
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: none;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--secondary);
+            transform: translateY(-2px);
+        }
+        
+        .btn i {
+            margin-right: 8px;
+        }
+        
+        .filters {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+        
+        .filter-btn {
+            padding: 8px 16px;
+            border-radius: 20px;
+            background-color: white;
+            border: 1px solid #e0e0e0;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .filter-btn.active {
+            background-color: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        
+        .filter-btn:hover {
+            border-color: var(--primary);
+        }
+        
+        .elections-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
+        }
+        
+        .election-card {
+            background-color: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .election-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .card-header {
+            padding: 20px;
+            background-color: var(--primary);
+            color: white;
+            position: relative;
+        }
+        
+        .status-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .status-active {
+            background-color: var(--success);
+        }
+        
+        .status-upcoming {
+            background-color: var(--warning);
+            color: var(--dark);
+        }
+        
+        .status-ended {
+            background-color: var(--gray);
+        }
+        
+        .card-body {
+            padding: 20px;
+        }
+        
+        .card-title {
+            font-size: 1.4rem;
+            margin-bottom: 10px;
+            color: var(--dark);
+        }
+        
+        .card-description {
+            color: var(--gray);
+            margin-bottom: 15px;
+        }
+        
+        .card-dates {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+        }
+        
+        .date-item {
+            display: flex;
+            align-items: center;
+        }
+        
+        .date-item i {
+            margin-right: 5px;
+            color: var(--primary);
+        }
+        
+        .card-footer {
+            display: flex;
+            justify-content: space-between;
+            padding: 15px 20px;
+            border-top: 1px solid #eee;
+        }
+        
+        .participants {
+            display: flex;
+            align-items: center;
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+        
+        .participants i {
+            margin-right: 5px;
+        }
+        
+        .action-btn {
+            padding: 8px 15px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            text-decoration: none;
+        }
+        
+        .view-btn {
+            background-color: var(--light);
+            color: var(--primary);
+        }
+        
+        .view-btn:hover {
+            background-color: #e9ecef;
+        }
+        
+        .register-btn {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .register-btn:hover {
+            background-color: var(--secondary);
+        }
+        
+        @media (max-width: 768px) {
+            .elections-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Elections Dashboard</h1>
+            <a href="#" class="btn btn-primary" id="createElectionBtn">
+                <i class="fas fa-plus"></i> Create New Election
+            </a>
+        </header>
+        
+        <div class="filters">
+            <button class="filter-btn active" data-status="all">All Elections</button>
+            <button class="filter-btn" data-status="active">Active</button>
+            <button class="filter-btn" data-status="upcoming">Upcoming</button>
+            <button class="filter-btn" data-status="ended">Ended</button>
+        </div>
+        
+        <div class="elections-grid" id="electionsContainer">
+            <!-- Elections will be loaded here dynamically -->
+        </div>
+    </div>
+
+    <script>
+        // Sample data - replace with actual API call to your backend
+        const elections = [
+            {
+                idElection: 1,
+                electionName: "Presidential Election 2023",
+                electionDescription: "Vote for the next president of the country",
+                electionStatus: "active",
+                electionStartDate: "2023-11-01",
+                electionEndDate: "2023-11-30",
+                users: 1254
+            },
+            {
+                idElection: 2,
+                electionName: "Student Union Election",
+                electionDescription: "Annual election for student union representatives",
+                electionStatus: "upcoming",
+                electionStartDate: "2023-12-15",
+                electionEndDate: "2023-12-20",
+                users: 342
+            },
+            {
+                idElection: 3,
+                electionName: "Local Council Election",
+                electionDescription: "Election for local council members in all districts",
+                electionStatus: "ended",
+                electionStartDate: "2023-09-10",
+                electionEndDate: "2023-09-20",
+                users: 876
+            },
+            {
+                idElection: 4,
+                electionName: "Referendum on Education Reform",
+                electionDescription: "National referendum on proposed education system changes",
+                electionStatus: "active",
+                electionStartDate: "2023-11-10",
+                electionEndDate: "2023-11-25",
+                users: 2103
+            }
+        ];
+
+        // DOM elements
+        const electionsContainer = document.getElementById('electionsContainer');
+        const filterButtons = document.querySelectorAll('.filter-btn');
+        
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', () => {
+            renderElections(elections);
+            setupFilterButtons();
+        });
+        
+        // Render elections to the page
+        function renderElections(electionsToRender) {
+            electionsContainer.innerHTML = '';
+            
+            if (electionsToRender.length === 0) {
+                electionsContainer.innerHTML = '<p>No elections found matching your criteria.</p>';
+                return;
+            }
+            
+            electionsToRender.forEach(election => {
+                const electionCard = createElectionCard(election);
+                electionsContainer.appendChild(electionCard);
+            });
+        }
+        
+        // Create an election card element
+        function createElectionCard(election) {
+            const card = document.createElement('div');
+            card.className = 'election-card';
+            
+            // Determine status badge
+            let statusBadgeClass, statusText;
+            switch(election.electionStatus) {
+                case 'active':
+                    statusBadgeClass = 'status-active';
+                    statusText = 'Active';
+                    break;
+                case 'upcoming':
+                    statusBadgeClass = 'status-upcoming';
+                    statusText = 'Upcoming';
+                    break;
+                case 'ended':
+                    statusBadgeClass = 'status-ended';
+                    statusText = 'Ended';
+                    break;
+                default:
+                    statusBadgeClass = 'status-ended';
+                    statusText = 'Unknown';
+            }
+            
+            // Format dates
+            const startDate = new Date(election.electionStartDate).toLocaleDateString();
+            const endDate = new Date(election.electionEndDate).toLocaleDateString();
+            
+            // Determine action button
+            let actionButton;
+            if (election.electionStatus === 'upcoming') {
+                actionButton = `<a href="#" class="action-btn register-btn" data-id="${election.idElection}">
+                    <i class="fas fa-user-plus"></i> Register
+                </a>`;
+            } else {
+                actionButton = `<a href="/elections/${election.idElection}" class="action-btn view-btn" data-id="${election.idElection}">
+                    <i class="fas fa-eye"></i> View
+                </a>`;
+            }
+            
+            card.innerHTML = `
+                <div class="card-header">
+                    <span class="status-badge ${statusBadgeClass}">${statusText}</span>
+                    <h3 class="card-title">${election.electionName}</h3>
+                </div>
+                <div class="card-body">
+                    <p class="card-description">${election.electionDescription}</p>
+                    <div class="card-dates">
+                        <div class="date-item">
+                            <i class="fas fa-calendar-alt"></i>
+                            <span>Starts: ${startDate}</span>
+                        </div>
+                        <div class="date-item">
+                            <i class="fas fa-calendar-check"></i>
+                            <span>Ends: ${endDate}</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <div class="participants">
+                        <i class="fas fa-users"></i>
+                        <span>${election.users} participants</span>
+                    </div>
+                    ${actionButton}
+                </div>
+            `;
+            
+            return card;
+        }
+        
+        // Set up filter buttons
+        function setupFilterButtons() {
+            filterButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    // Update active button
+                    filterButtons.forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+                    
+                    // Filter elections
+                    const status = button.dataset.status;
+                    filterElections(status);
+                });
+            });
+        }
+        
+        // Filter elections by status
+        function filterElections(status) {
+            if (status === 'all') {
+                renderElections(elections);
+                return;
+            }
+            
+            const filteredElections = elections.filter(election => 
+                election.electionStatus === status
+            );
+            
+            renderElections(filteredElections);
+        }
+        
+        // In a real application, you would fetch elections from your API:
+        /*
+        async function fetchElections() {
+            try {
+                const response = await fetch('/api/elections');
+                const data = await response.json();
+                renderElections(data);
+            } catch (error) {
+                console.error('Error fetching elections:', error);
+                electionsContainer.innerHTML = '<p>Error loading elections. Please try again later.</p>';
+            }
+        }
+        
+        // Call this instead of using sample data
+        fetchElections();
+        */
+    </script>
+</body>
+</html>
