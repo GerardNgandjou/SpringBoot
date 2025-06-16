@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Candidates Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --secondary: #3f37c9;
+            --success: #4cc9f0;
+            --danger: #f72585;
+            --warning: #f8961e;
+            --info: #4895ef;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray: #6c757d;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: var(--dark);
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        h1 {
+            font-size: 2.2rem;
+            color: var(--primary);
+        }
+        
+        .search-bar {
+            display: flex;
+            margin-bottom: 25px;
+        }
+        
+        .search-bar input {
+            flex: 1;
+            padding: 12px 20px;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px 0 0 6px;
+            font-size: 1rem;
+            outline: none;
+        }
+        
+        .search-bar button {
+            padding: 0 20px;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 0 6px 6px 0;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .search-bar button:hover {
+            background-color: var(--secondary);
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: none;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--secondary);
+            transform: translateY(-2px);
+        }
+        
+        .btn i {
+            margin-right: 8px;
+        }
+        
+        .candidates-table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+        
+        .candidates-table thead {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .candidates-table th {
+            padding: 15px 20px;
+            text-align: left;
+            font-weight: 600;
+        }
+        
+        .candidates-table td {
+            padding: 15px 20px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .candidates-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .candidates-table tbody tr:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .score-cell {
+            display: flex;
+            align-items: center;
+        }
+        
+        .score-value {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background-color: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+            font-weight: 600;
+        }
+        
+        .deposit-cell {
+            font-weight: 600;
+            color: var(--success);
+        }
+        
+        .status-active {
+            color: var(--success);
+            font-weight: 600;
+        }
+        
+        .status-inactive {
+            color: var(--gray);
+        }
+        
+        .action-btn {
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            text-decoration: none;
+            margin-right: 5px;
+            display: inline-flex;
+            align-items: center;
+        }
+        
+        .view-btn {
+            background-color: var(--light);
+            color: var(--primary);
+        }
+        
+        .view-btn:hover {
+            background-color: #e9ecef;
+        }
+        
+        .edit-btn {
+            background-color: var(--info);
+            color: white;
+        }
+        
+        .edit-btn:hover {
+            background-color: #3a7bd5;
+        }
+        
+        .delete-btn {
+            background-color: var(--danger);
+            color: white;
+        }
+        
+        .delete-btn:hover {
+            background-color: #d1146a;
+        }
+        
+        .action-btn i {
+            margin-right: 5px;
+        }
+        
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 30px;
+            gap: 10px;
+        }
+        
+        .page-btn {
+            padding: 8px 15px;
+            border-radius: 6px;
+            background-color: white;
+            border: 1px solid #e0e0e0;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .page-btn.active {
+            background-color: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        
+        .page-btn:hover:not(.active) {
+            border-color: var(--primary);
+        }
+        
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            
+            .candidates-table {
+                display: block;
+                overflow-x: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Candidates Dashboard</h1>
+            <a href="#" class="btn btn-primary" id="addCandidateBtn">
+                <i class="fas fa-plus"></i> Add New Candidate
+            </a>
+        </header>
+        
+        <div class="search-bar">
+            <input type="text" id="searchInput" placeholder="Search candidates...">
+            <button id="searchBtn"><i class="fas fa-search"></i></button>
+        </div>
+        
+        <table class="candidates-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Deposit</th>
+                    <th>Score</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="candidatesTableBody">
+                <!-- Candidates will be loaded here dynamically -->
+            </tbody>
+        </table>
+        
+        <div class="pagination" id="pagination">
+            <!-- Pagination will be loaded here dynamically -->
+        </div>
+    </div>
+
+    <script>
+        // Sample data - replace with actual API call to your backend
+        const candidates = [
+            {
+                id: 1,
+                username: "john_doe",
+                email: "john.doe@example.com",
+                deposit: 500.00,
+                score: 85,
+                status: "active"
+            },
+            {
+                id: 2,
+                username: "jane_smith",
+                email: "jane.smith@example.com",
+                deposit: 750.50,
+                score: 92,
+                status: "active"
+            },
+            {
+                id: 3,
+                username: "mike_johnson",
+                email: "mike.johnson@example.com",
+                deposit: 300.00,
+                score: 78,
+                status: "inactive"
+            },
+            {
+                id: 4,
+                username: "sarah_williams",
+                email: "sarah.williams@example.com",
+                deposit: 600.00,
+                score: 88,
+                status: "active"
+            },
+            {
+                id: 5,
+                username: "david_brown",
+                email: "david.brown@example.com",
+                deposit: 450.00,
+                score: 65,
+                status: "inactive"
+            }
+        ];
+
+        // DOM elements
+        const candidatesTableBody = document.getElementById('candidatesTableBody');
+        const pagination = document.getElementById('pagination');
+        const searchInput = document.getElementById('searchInput');
+        const searchBtn = document.getElementById('searchBtn');
+        
+        // Pagination variables
+        const itemsPerPage = 5;
+        let currentPage = 1;
+        
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', () => {
+            renderCandidates();
+            setupPagination();
+            
+            // Search functionality
+            searchBtn.addEventListener('click', handleSearch);
+            searchInput.addEventListener('keyup', (e) => {
+                if (e.key === 'Enter') {
+                    handleSearch();
+                }
+            });
+        });
+        
+        // Render candidates to the table
+        function renderCandidates(candidatesToRender = candidates) {
+            candidatesTableBody.innerHTML = '';
+            
+            if (candidatesToRender.length === 0) {
+                candidatesTableBody.innerHTML = `
+                    <tr>
+                        <td colspan="7" style="text-align: center;">No candidates found matching your criteria.</td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            // Calculate pagination
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
+            const paginatedCandidates = candidatesToRender.slice(startIndex, endIndex);
+            
+            paginatedCandidates.forEach(candidate => {
+                const row = document.createElement('tr');
+                
+                row.innerHTML = `
+                    <td>${candidate.id}</td>
+                    <td>${candidate.username}</td>
+                    <td>${candidate.email}</td>
+                    <td class="deposit-cell">$${candidate.deposit.toFixed(2)}</td>
+                    <td>
+                        <div class="score-cell">
+                            <div class="score-value">${candidate.score}</div>
+                            <div class="progress-text">${getScoreRating(candidate.score)}</div>
+                        </div>
+                    </td>
+                    <td class="${candidate.status === 'active' ? 'status-active' : 'status-inactive'}">
+                        ${candidate.status.charAt(0).toUpperCase() + candidate.status.slice(1)}
+                    </td>
+                    <td>
+                        <a href="/candidates/${candidate.id}" class="action-btn view-btn">
+                            <i class="fas fa-eye"></i> View
+                        </a>
+                        <a href="/candidates/${candidate.id}/edit" class="action-btn edit-btn">
+                            <i class="fas fa-edit"></i> Edit
+                        </a>
+                        <a href="/candidates/${candidate.id}/delete" class="action-btn delete-btn">
+                            <i class="fas fa-trash"></i> Delete
+                        </a>
+                    </td>
+                `;
+                
+                candidatesTableBody.appendChild(row);
+            });
+        }
+        
+        // Get score rating text
+        function getScoreRating(score) {
+            if (score >= 90) return 'Excellent';
+            if (score >= 80) return 'Very Good';
+            if (score >= 70) return 'Good';
+            if (score >= 60) return 'Average';
+            return 'Below Average';
+        }
+        
+        // Set up pagination
+        function setupPagination(candidatesToPaginate = candidates) {
+            pagination.innerHTML = '';
+            const pageCount = Math.ceil(candidatesToPaginate.length / itemsPerPage);
+            
+            if (pageCount <= 1) return;
+            
+            for (let i = 1; i <= pageCount; i++) {
+                const pageBtn = document.createElement('button');
+                pageBtn.className = `page-btn ${i === currentPage ? 'active' : ''}`;
+                pageBtn.textContent = i;
+                pageBtn.addEventListener('click', () => {
+                    currentPage = i;
+                    renderCandidates(candidatesToPaginate);
+                    setupPagination(candidatesToPaginate);
+                });
+                pagination.appendChild(pageBtn);
+            }
+        }
+        
+        // Handle search
+        function handleSearch() {
+            const searchTerm = searchInput.value.toLowerCase();
+            
+            if (searchTerm === '') {
+                currentPage = 1;
+                renderCandidates();
+                setupPagination();
+                return;
+            }
+            
+            const filteredCandidates = candidates.filter(candidate => 
+                candidate.username.toLowerCase().includes(searchTerm) ||
+                candidate.email.toLowerCase().includes(searchTerm) ||
+                candidate.id.toString().includes(searchTerm)
+            );
+            
+            currentPage = 1;
+            renderCandidates(filteredCandidates);
+            setupPagination(filteredCandidates);
+        }
+        
+        // In a real application, you would fetch candidates from your API:
+        /*
+        async function fetchCandidates() {
+            try {
+                const response = await fetch('/api/candidates');
+                const data = await response.json();
+                candidates = data;
+                renderCandidates();
+                setupPagination();
+            } catch (error) {
+                console.error('Error fetching candidates:', error);
+                candidatesTableBody.innerHTML = '<tr><td colspan="7">Error loading candidates. Please try again later.</td></tr>';
+            }
+        }
+        
+        // Call this instead of using sample data
+        fetchCandidates();
+        */
+    </script>
+</body>
+</html>

@@ -1,4 +1,38 @@
 package com.example.vote.onlinevote.sevirce;
 
+import com.example.vote.onlinevote.dto.VoteOfficeDto;
+import com.example.vote.onlinevote.mapper.VoteOfficeMapper;
+import com.example.vote.onlinevote.repository.VoteOfficeRepository;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+@Service
 public class VoteOfficeService {
+
+    private final VoteOfficeRepository voteOfficeRepository;
+    private final VoteOfficeMapper voteOfficeMapper;
+
+    public VoteOfficeService(VoteOfficeRepository voteOfficeRepository, VoteOfficeMapper voteOfficeMapper) {
+        this.voteOfficeRepository = voteOfficeRepository;
+        this.voteOfficeMapper = voteOfficeMapper;
+    }
+
+    public VoteOfficeDto addVoteOffice(
+            VoteOfficeDto voteOfficeDto
+    ) {
+        var voteOffice = voteOfficeMapper.toVoteOffice(voteOfficeDto);
+        voteOfficeRepository.save(voteOffice);
+        return voteOfficeDto;
+    }
+
+    public List<VoteOfficeDto> showVoteOffices() {
+        return voteOfficeRepository.findAll()
+                .stream()
+                .map(voteOfficeMapper::toVoteOfficeDto)
+                .collect(Collectors.toList())
+                ;
+    }
+
 }

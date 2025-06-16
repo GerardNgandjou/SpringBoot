@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 @Service
 public class VoteOfficeMapper {
 
-
     public VoteOfficeDto toVoteOfficeDto(VoteOffice voteOffice) {
         return new VoteOfficeDto(
                 voteOffice.getNameOffice(),

@@ -13,7 +13,7 @@ import java.util.List;
 public class VoteOffice {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idOffice;
     @Column(unique = true)
     private String nameOffice;
@@ -26,10 +26,11 @@ public class VoteOffice {
 
     public VoteOffice() {}
 
-    public VoteOffice(String nameOffice, String locationOffice, String descriptionOffice, List<Voter> voters) {
+    public VoteOffice(String nameOffice, String locationOffice, String descriptionOffice) {
         this.nameOffice = nameOffice;
         this.locationOffice = locationOffice;
         this.descriptionOffice = descriptionOffice;
-        this.voters = voters;
     }
+
 }
+

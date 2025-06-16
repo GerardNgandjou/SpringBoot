@@ -1,7 +1,7 @@
 package com.example.vote.onlinevote.controller;
 
-import com.example.vote.onlinevote.model.VoteOffice;
-import com.example.vote.onlinevote.repository.VoteOfficeRepository;
+import com.example.vote.onlinevote.dto.VoteOfficeDto;
+import com.example.vote.onlinevote.sevirce.VoteOfficeService;
 import lombok.Getter;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,21 +14,21 @@ import java.util.List;
 @RestController
 public class VoteOfficeController {
     
-    private final VoteOfficeRepository voteOfficeRepository;
+    private final VoteOfficeService  voteOfficeService;
 
-    public VoteOfficeController(VoteOfficeRepository voteOfficeRepository) {
-        this.voteOfficeRepository = voteOfficeRepository;
+    public VoteOfficeController(VoteOfficeService voteOfficeService) {
+        this.voteOfficeService = voteOfficeService;
     }
 
     @PostMapping("/vote_office/set")
-    public VoteOffice addVoteOffice(
-            @RequestBody VoteOffice VoteOffice
+    public VoteOfficeDto addVoteOffice(
+            @RequestBody VoteOfficeDto voteOfficeDto
     ) {
-        return voteOfficeRepository.save(VoteOffice);
+        return voteOfficeService.addVoteOffice(voteOfficeDto);
     }
 
     @GetMapping("/vote_office/get")
-    public List<VoteOffice> showVoteOffices() {
-        return voteOfficeRepository.findAll();
+    public List<VoteOfficeDto> showVoteOffices() {
+        return voteOfficeService.showVoteOffices();
     }
 }
