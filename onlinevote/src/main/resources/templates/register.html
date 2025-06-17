@@ -14,7 +14,7 @@
         <p class="form-subtitle">Please fill all required fields in both sections</p>
     </div>
 
-    <form id="voterForm" th:action="@{/register}" th:object="${voter}" method="post" novalidate>
+    <form id="voterForm" th:action="@{/voter/register}" th:object="${voter}" method="post" novalidate>
         <div class="form-container">
             <!-- Personal Information Column -->
             <div class="form-column">
@@ -28,7 +28,7 @@
                     </label>
                     <input id="firstName" type="text" th:field="*{firstname}" required minlength="3" maxlength="50"
                            placeholder="Atangana Onana" pattern="[A-Za-z\s\-']+">
-                    <span class="error-message" th:if="${#fields.hasErrors('firstName')}"
+                    <span class="error-message" th:if="${#fields.hasErrors('firstname')}"
                           th:errors="*{firstname}">Please enter a valid first name</span>
                 </div>
 

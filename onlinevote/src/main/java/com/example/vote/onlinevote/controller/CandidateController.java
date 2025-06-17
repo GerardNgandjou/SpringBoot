@@ -1,7 +1,8 @@
 package com.example.vote.onlinevote.controller;
 
-import com.example.vote.onlinevote.model.Candidate;
-import com.example.vote.onlinevote.repository.CandidateRepository;
+import com.example.vote.onlinevote.dto.CandidateDto;
+import com.example.vote.onlinevote.dto.CandidateResponseDto;
+import com.example.vote.onlinevote.sevirce.CandidateService;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -12,35 +13,36 @@ import java.util.List;
 @Getter
 public class CandidateController {
 
-    private final CandidateRepository candidateRepository;
+    private  final CandidateService candidateService;
 
-    public CandidateController(CandidateRepository candidateRepository) {
-        this.candidateRepository = candidateRepository;
+    public CandidateController(CandidateService candidateService) {
+        this.candidateService = candidateService;
     }
 
     @PostMapping("/candidate/add")
-    public Candidate add(@RequestBody Candidate candidate) {
-        return candidateRepository.save(candidate);
+    public CandidateResponseDto add(
+            @RequestBody CandidateDto candidateDto
+    ) {
+        return candidateService.savedCandidate(candidateDto);
     }
 
     @GetMapping("/candidate/display")
-    public List<Candidate> display() {
-        return candidateRepository.findAll();
+    public List<CandidateResponseDto> display() {
+        return candidateService.findAllCandidates();
     }
 
     @GetMapping("/candidate/find/{id}")  // Get User with her id
-    public Candidate getcandidateById(
+    public CandidateResponseDto getCandidateById(
             @PathVariable Long id
     ){
-        return candidateRepository.findById(id)
-                .orElse(new Candidate());
+        return candidateService.findCandidateById(id);
     }
 
     @GetMapping("/candidate/search/{candidate_name}")  // et User with her name
-    public List<Candidate> findRegistrationsByFirstName(
+    public List<CandidateResponseDto> findRegistrationsByFirstName(
             @PathVariable("candidate_name") String firstName
     ){
-        return candidateRepository.findAllByFirstnameContaining(firstName);
+        return candidateService.findCandidateByFirstname(firstName);
     }
 
     @DeleteMapping("/candidate/delete/{vote-id}")
@@ -48,6 +50,6 @@ public class CandidateController {
     public void deleteRegistrationById(
             @PathVariable("vote-id") Long id
     ) {
-        candidateRepository.deleteById(id);
+        candidateService.deleteCandidateById(id);
     }
 }

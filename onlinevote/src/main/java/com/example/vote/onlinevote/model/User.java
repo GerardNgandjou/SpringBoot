@@ -1,6 +1,7 @@
 package com.example.vote.onlinevote.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Past;
 import lombok.Getter;
 import lombok.Setter;
 

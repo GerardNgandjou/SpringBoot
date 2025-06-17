@@ -19,12 +19,10 @@ public class VoteOfficeService {
         this.voteOfficeMapper = voteOfficeMapper;
     }
 
-    public VoteOfficeDto addVoteOffice(
-            VoteOfficeDto voteOfficeDto
-    ) {
+    public VoteOfficeDto addVoteOffice(VoteOfficeDto voteOfficeDto) {
         var voteOffice = voteOfficeMapper.toVoteOffice(voteOfficeDto);
-        voteOfficeRepository.save(voteOffice);
-        return voteOfficeDto;
+        var savedVoteOffice = voteOfficeRepository.save(voteOffice);
+        return voteOfficeMapper.toVoteOfficeDto(savedVoteOffice);
     }
 
     public List<VoteOfficeDto> showVoteOffices() {

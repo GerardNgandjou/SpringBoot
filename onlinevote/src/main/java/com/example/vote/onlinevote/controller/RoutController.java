@@ -20,9 +20,4 @@ public class RoutController {
         return "auth"; // combined login/register page
     }
 
-    @GetMapping("/register")
-    public String showRegistrationForm(Model model) {
-        model.addAttribute("voter", new Voter());
-        return "register";
-    }
 }

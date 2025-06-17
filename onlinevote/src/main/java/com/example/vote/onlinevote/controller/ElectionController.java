@@ -1,8 +1,8 @@
 package com.example.vote.onlinevote.controller;
 
 
-import com.example.vote.onlinevote.model.Election;
-import com.example.vote.onlinevote.repository.ElectionRepository;
+import com.example.vote.onlinevote.dto.ElectionDto;
+import com.example.vote.onlinevote.sevirce.ElectionService;
 import lombok.Getter;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,21 +15,21 @@ import java.util.List;
 @Getter
 public class ElectionController {
 
-    private final ElectionRepository electionRepository;
+    private final ElectionService electionService;
 
-    public ElectionController(ElectionRepository electionRepository) {
-        this.electionRepository = electionRepository;
+    public ElectionController(ElectionService electionService) {
+        this.electionService = electionService;
     }
 
     @PostMapping("/election/add")
-    public Election addElection(
-            @RequestBody Election election
+    public ElectionDto addElection(
+            @RequestBody ElectionDto election
     ) {
-        return electionRepository.save(election);
+        return electionService.addElection(election);
     }
 
     @GetMapping("/election/show")
-    public List<Election> showElections() {
-        return electionRepository.findAll();
+    public List<ElectionDto> showElections() {
+        return electionService.getAllElections();
     }
 }

@@ -25,3 +25,8 @@ spring:
     suffix: .html
     mode: HTML
     cache: false
+  devtools:
+    restart:
+      enabled: true
+    livereload:
+      enabled: true

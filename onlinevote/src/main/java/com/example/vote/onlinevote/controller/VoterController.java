@@ -3,11 +3,16 @@ package com.example.vote.onlinevote.controller;
 import com.example.vote.onlinevote.dto.VoterDto;
 import com.example.vote.onlinevote.dto.VoterResponseDto;
 import com.example.vote.onlinevote.sevirce.VoterService;
+import jakarta.validation.Valid;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
 
 @Getter
@@ -24,7 +29,7 @@ public class VoterController {
 
     @PostMapping("/voter/register")
     public VoterResponseDto register(
-            @RequestBody VoterDto voterDto
+            @Valid @RequestBody VoterDto voterDto
     ) {
         return voterService.saveVoter(voterDto);
     }
@@ -69,5 +74,19 @@ public class VoterController {
             @PathVariable("vote-id") Long id
     ) {
         voterService.deleteRegistrationById(id);
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<?> handleMethodArgumentNotValidationException(
+            MethodArgumentNotValidException exp
+    ) {
+        var errors = new HashMap<String, String>();
+        exp.getBindingResult().getAllErrors()
+                .forEach(error -> {
+                    var fieldName = ((FieldError) error).getField();
+                    var message = error.getDefaultMessage();
+                    errors.put(fieldName, message);
+                });
+        return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
     }
 }

@@ -1,4 +1,12 @@
 package com.example.vote.onlinevote.dto;
 
-public record ElectionDto() {
+import java.time.LocalDate;
+
+public record ElectionDto(
+        String electionName,
+        String electionDescription,
+        String electionStatus,
+        LocalDate electionStartDate,
+        LocalDate electionEndDate
+) {
 }

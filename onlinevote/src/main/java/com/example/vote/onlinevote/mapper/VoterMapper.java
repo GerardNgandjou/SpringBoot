@@ -37,12 +37,6 @@ public class VoterMapper {
             election.setIdElection(id);
             elections.add(election);
         }
-//        List<Election> elections = voterDto.registeredElectionIds().stream()
-//                .map(id -> {
-//                    Election e = new Election();
-//                    e.setIdElection(id);
-//                    return e;
-//                }).collect(Collectors.toList());
         voter.setRegister(elections);
 
 
