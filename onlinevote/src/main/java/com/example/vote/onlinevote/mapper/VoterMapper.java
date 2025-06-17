@@ -39,7 +39,6 @@ public class VoterMapper {
         }
         voter.setRegister(elections);
 
-
         voter.setRole(voterDto.role());
 
         var voteOffice = new VoteOffice();

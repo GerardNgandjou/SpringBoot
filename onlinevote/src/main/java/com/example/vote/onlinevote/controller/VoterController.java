@@ -27,7 +27,7 @@ public class VoterController {
         this.voterService = voterService;
     }
 
-    @PostMapping("/voter/register")
+    @PostMapping("/voter/add")
     public VoterResponseDto register(
             @Valid @RequestBody VoterDto voterDto
     ) {
@@ -49,7 +49,7 @@ public class VoterController {
 //        return "redirect:/success";
 //    }
 
-    @GetMapping("/voter/register")
+    @GetMapping("/voter/display")
     public List<VoterResponseDto> show() {
         return voterService.showAllVoters();
     }

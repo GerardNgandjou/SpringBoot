@@ -1,8 +1,6 @@
 package com.example.vote.onlinevote.controller;
 
-import com.example.vote.onlinevote.model.Voter;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
@@ -20,4 +18,16 @@ public class RoutController {
         return "auth"; // combined login/register page
     }
 
+    @GetMapping("/display_election")
+    public String displayElections() {
+        // You can add any model attributes if needed
+        return "display_election"; // This should match your Thymeleaf template name
+    }
+
+//
+//    @GetMapping("/register")
+//    public String showRegistrationForm(Model model) {
+//        model.addAttribute("voter", new Voter());
+//        return "register";
+//    }
 }

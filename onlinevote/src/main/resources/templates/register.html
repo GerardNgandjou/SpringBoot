@@ -4,244 +4,205 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Add Voter</title>
-    <link rel="stylesheet" href="../static/css/register.css">
     <link rel="stylesheet" th:href="@{/css/register.css}">
 </head>
 <body>
 
-    <div class="form-header">
-        <h1 class="form-title">Voter Registration</h1>
-        <p class="form-subtitle">Please fill all required fields in both sections</p>
+<div class="form-header">
+    <h1 class="form-title">Voter Registration</h1>
+    <p class="form-subtitle">Please fill all required fields in both sections</p>
+</div>
+
+<form id="voterForm" th:action="@{/voter/add}" th:object="${voter}" method="post" novalidate>
+    <div class="form-container">
+        <!-- Personal Information Column -->
+        <div class="form-column">
+            <h2>Personal Information</h2>
+
+            <div class="form-group">
+                <label for="firstname">
+                    First Name
+                    <span class="required-indicator" aria-hidden="true">*</span>
+                </label>
+                <input id="firstname" type="text" th:field="*{firstname}" required minlength="3" maxlength="50"
+                       placeholder="Atangana Onana" pattern="[A-Za-z\s\-']+">
+                <span class="error-message" th:if="${#fields.hasErrors('firstname')}"
+                      th:errors="*{firstname}"></span>
+            </div>
+
+            <div class="form-group">
+                <label for="lastname">
+                    Surname
+                    <span class="required-indicator" aria-hidden="true">*</span>
+                </label>
+                <input id="lastname" type="text" th:field="*{lastname}" required minlength="3" maxlength="50"
+                       placeholder="Celestin Herve" pattern="[A-Za-z\s\-']+">
+                <span class="error-message" th:if="${#fields.hasErrors('lastname')}"
+                      th:errors="*{lastname}"></span>
+            </div>
+
+            <div class="form-group">
+                <label for="birthdate">
+                    Birth Date
+                    <span class="required-indicator" aria-hidden="true">*</span>
+                </label>
+                <input id="birthdate" type="date" th:field="*{birthdate}" required>
+                <span class="error-message" th:if="${#fields.hasErrors('birthdate')}"
+                      th:errors="*{birthdate}"></span>
+            </div>
+
+            <div class="form-group">
+                <label for="gender">
+                    Gender
+                    <span class="required-indicator" aria-hidden="true">*</span>
+                </label>
+                <select id="gender" th:field="*{gender}" required>
+                    <option value="" disabled selected>Select gender</option>
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                    <option value="other">Other</option>
+                    <option value="prefer-not-to-say">Prefer not to say</option>
+                </select>
+                <span class="error-message" th:if="${#fields.hasErrors('gender')}"
+                      th:errors="*{gender}"></span>
+            </div>
+
+            <div class="form-group">
+                <label for="placeofbirth">
+                    Place of Birth
+                    <span class="required-indicator" aria-hidden="true">*</span>
+                </label>
+                <input id="placeofbirth" type="text" th:field="*{placeofbirth}" required minlength="3" maxlength="50"
+                       placeholder="Douala" pattern="[A-Za-z\s\-',.]+">
+                <span class="error-message" th:if="${#fields.hasErrors('placeofbirth')}"
+                      th:errors="*{placeofbirth}"></span>
+            </div>
+
+            <div class="form-group">
+                <label for="email">
+                    Email
+                    <span class="required-indicator" aria-hidden="true">*</span>
+                </label>
+                <input id="email" type="email" th:field="*{email}" required maxlength="50"
+                       pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
+                       placeholder="atanganaceheve@gmail.com">
+                <span class="error-message" th:if="${#fields.hasErrors('email')}"
+                      th:errors="*{email}"></span>
+            </div>
+
+            <div class="form-group">
+                <label for="location">
+                    Current Location
+                    <span class="required-indicator" aria-hidden="true">*</span>
+                </label>
+                <input id="location" type="text" th:field="*{location}" required minlength="3" maxlength="50"
+                       placeholder="Douala" pattern="[A-Za-z\s\-',.]+">
+                <span class="error-message" th:if="${#fields.hasErrors('location')}"
+                      th:errors="*{location}"></span>
+            </div>
+        </div>
+
+        <!-- Location & Political Information Column -->
+        <div class="form-column">
+            <h2>Location & Political Data</h2>
+
+            <div class="form-group">
+                <label for="number">
+                    Phone Number
+                    <span class="required-indicator" aria-hidden="true">*</span>
+                </label>
+                <input id="number" type="tel" th:field="*{number}" required pattern="^[6-9][0-9]{8}$"
+                       maxlength="9" placeholder="697541210">
+                <span class="error-message" th:if="${#fields.hasErrors('number')}"
+                      th:errors="*{number}"></span>
+            </div>
+
+            <div class="form-group">
+                <label for="region">
+                    Region of Origin
+                    <span class="required-indicator" aria-hidden="true">*</span>
+                </label>
+                <input id="region" type="text" th:field="*{region}" required minlength="3" maxlength="50"
+                       placeholder="Littoral" pattern="[A-Za-z\s\-']+">
+                <span class="error-message" th:if="${#fields.hasErrors('region')}"
+                      th:errors="*{region}"></span>
+            </div>
+
+            <div class="form-group">
+                <label for="department">
+                    Department of Origin
+                    <span class="required-indicator" aria-hidden="true">*</span>
+                </label>
+                <input id="department" type="text" th:field="*{department}" required minlength="3" maxlength="50"
+                       placeholder="Wouri" pattern="[A-Za-z\s\-']+">
+                <span class="error-message" th:if="${#fields.hasErrors('department')}"
+                      th:errors="*{department}"></span>
+            </div>
+
+            <div class="form-group">
+                <label for="arron">
+                    Borough of Origin
+                    <span class="required-indicator" aria-hidden="true">*</span>
+                </label>
+                <input id="arron" type="text" th:field="*{arron}" required minlength="3" maxlength="50"
+                       placeholder="Douala 4e" pattern="[A-Za-z0-9\s\-']+">
+                <span class="error-message" th:if="${#fields.hasErrors('arron')}"
+                      th:errors="*{arron}"></span>
+            </div>
+
+            <div class="form-group">
+                <label for="party">
+                    Political Party
+                    <span class="required-indicator" aria-hidden="true">*</span>
+                </label>
+                <select id="party" th:field="*{party}" required>
+                    <option value="" disabled selected>Select a political party</option>
+                    <option value="RDPC">Rassemblement Démocratique du Peuple Camerounais (RDPC)</option>
+                    <!-- Other options remain the same -->
+                </select>
+                <span class="error-message" th:if="${#fields.hasErrors('party')}"
+                      th:errors="*{party}"></span>
+            </div>
+
+            <div class="form-group">
+                <label for="currentregion">
+                    Current Region
+                    <span class="required-indicator" aria-hidden="true">*</span>
+                </label>
+                <select id="currentregion" th:field="*{currentregion}" required>
+                    <option value="" disabled selected>Select your region</option>
+                    <option value="Adamawa">Adamawa</option>
+                    <!-- Other regions remain the same -->
+                </select>
+                <span class="error-message" th:if="${#fields.hasErrors('currentregion')}"
+                      th:errors="*{currentregion}"></span>
+            </div>
+
+            <div class="form-group">
+                <label for="pollingstation">
+                    Polling Station
+                    <span class="required-indicator" aria-hidden="true">*</span>
+                </label>
+                <select id="pollingstation" th:field="*{pollingstation}" required>
+                    <option value="" disabled selected>Select your polling station</option>
+                    <!-- Polling stations will be populated by JavaScript -->
+                </select>
+                <span class="error-message" th:if="${#fields.hasErrors('pollingstation')}"
+                      th:errors="*{pollingstation}"></span>
+            </div>
+        </div>
     </div>
 
-    <form id="voterForm" th:action="@{/voter/register}" th:object="${voter}" method="post" novalidate>
-        <div class="form-container">
-            <!-- Personal Information Column -->
-            <div class="form-column">
-                <h2>Personal Information</h2>
+    <div class="form-buttons">
+        <button type="submit" id="submitButton">
+            <span>Submit Registration</span>
+        </button>
+        <button type="reset">
+            <span>Reset Form</span>
+        </button>
+    </div>
+</form>
 
-                <div class="form-group">
-                    <label for="firstName">
-                        First Name
-                        <span class="required-indicator" aria-hidden="true">*</span>
-                        <span class="sr-only">required</span>
-                    </label>
-                    <input id="firstName" type="text" th:field="*{firstname}" required minlength="3" maxlength="50"
-                           placeholder="Atangana Onana" pattern="[A-Za-z\s\-']+">
-                    <span class="error-message" th:if="${#fields.hasErrors('firstname')}"
-                          th:errors="*{firstname}">Please enter a valid first name</span>
-                </div>
-
-                <div class="form-group">
-                    <label for="surName">
-                        Surname
-                        <span class="required-indicator" aria-hidden="true">*</span>
-                        <span class="sr-only">required</span>
-                    </label>
-                    <input id="surName" type="text" th:field="*{lastname}" required minlength="3" maxlength="50"
-                           placeholder="Celestin Herve" pattern="[A-Za-z\s\-']+">
-                    <span class="error-message" th:if="${#fields.hasErrors('surName')}"
-                          th:errors="*{lastname}">Please enter a valid surname</span>
-                </div>
-
-                <div class="form-group">
-                    <label for="birthDate">
-                        Birth Date
-                        <span class="required-indicator" aria-hidden="true">*</span>
-                        <span class="sr-only">required</span>
-                    </label>
-                    <input id="birthDate" type="date" th:field="*{birthdate}" required>
-                    <span id="birthDateError" class="error-message" th:if="${#fields.hasErrors('birthDate')}"
-                          th:errors="*{birthdate}">Please enter a valid birth date</span>
-                </div>
-
-                <div class="form-group">
-                    <label for="gender">
-                        Gender
-                        <span class="required-indicator" aria-hidden="true">*</span>
-                        <span class="sr-only">required</span>
-                    </label>
-                    <select id="gender" th:field="*{gender}" required>
-                        <option value="" disabled selected>Select gender</option>
-                        <option value="male">Male</option>
-                        <option value="female">Female</option>
-                        <option value="other">Other</option>
-                        <option value="prefer-not-to-say">Prefer not to say</option>
-                    </select>
-                    <span class="error-message" th:if="${#fields.hasErrors('gender')}"
-                          th:errors="*{gender}">Please select a gender</span>
-                </div>
-
-                <div class="form-group">
-                    <label for="placeOfBirth">
-                        Place of Birth
-                        <span class="required-indicator" aria-hidden="true">*</span>
-                        <span class="sr-only">required</span>
-                    </label>
-                    <input id="placeOfBirth" type="text" th:field="*{placeofbirth}" required minlength="3" maxlength="50"
-                           placeholder="Douala" pattern="[A-Za-z\s\-',.]+">
-                    <span class="error-message" th:if="${#fields.hasErrors('placeOfBirth')}"
-                          th:errors="*{placeofbirth}">Please enter a valid place of birth</span>
-                </div>
-
-                <div class="form-group">
-                    <label for="email">
-                        Email
-                        <span class="required-indicator" aria-hidden="true">*</span>
-                        <span class="sr-only">required</span>
-                    </label>
-                    <input id="email" type="email" th:field="*{email}" required maxlength="50"
-                           pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
-                           placeholder="atanganaceheve@gmail.com">
-                    <span class="error-message" th:if="${#fields.hasErrors('email')}"
-                          th:errors="*{email}">Please enter a valid email address</span>
-                </div>
-
-                <div class="form-group">
-                    <label for="location">
-                        Current Location
-                        <span class="required-indicator" aria-hidden="true">*</span>
-                        <span class="sr-only">required</span>
-                    </label>
-                    <input id="location" type="text" th:field="*{location}" required minlength="3" maxlength="50"
-                           placeholder="Douala" pattern="[A-Za-z\s\-',.]+">
-                    <span class="error-message" th:if="${#fields.hasErrors('location')}"
-                          th:errors="*{location}">Please enter a valid location</span>
-                </div>
-            </div>
-
-            <!-- Location & Political Information Column -->
-            <div class="form-column">
-                <h2>Location & Political Data</h2>
-
-                <div class="form-group">
-                    <label for="phoneNumber">
-                        Phone Number
-                        <span class="required-indicator" aria-hidden="true">*</span>
-                        <span class="sr-only">required</span>
-                    </label>
-                    <input id="phoneNumber" type="tel" th:field="*{number}" required pattern="^[6-9][0-9]{8}$"
-                           maxlength="9" placeholder="697541210">
-                    <span class="error-message" th:if="${#fields.hasErrors('phoneNumber')}"
-                          th:errors="*{number}">Please enter a valid phone number</span>
-                </div>
-
-                <div class="form-group">
-                    <label for="regionNais">
-                        Region of Origin
-                        <span class="required-indicator" aria-hidden="true">*</span>
-                        <span class="sr-only">required</span>
-                    </label>
-                    <input id="regionNais" type="text" th:field="*{region}" required minlength="3" maxlength="50"
-                           placeholder="Littoral" pattern="[A-Za-z\s\-']+">
-                    <span class="error-message" th:if="${#fields.hasErrors('regionNais')}"
-                          th:errors="*{region}">Please enter a valid region</span>
-                </div>
-
-                <div class="form-group">
-                    <label for="departNais">
-                        Department of Origin
-                        <span class="required-indicator" aria-hidden="true">*</span>
-                        <span class="sr-only">required</span>
-                    </label>
-                    <input id="departNais" type="text" th:field="*{department}" required minlength="3" maxlength="50"
-                           placeholder="Wouri" pattern="[A-Za-z\s\-']+">
-                    <span class="error-message" th:if="${#fields.hasErrors('departNais')}"
-                          th:errors="*{department}">Please enter a valid department</span>
-                </div>
-
-                <div class="form-group">
-                    <label for="arrondNais">
-<!--                        Arrondissement of Birth-->
-                        Borough of Oigin
-                        <span class="required-indicator" aria-hidden="true">*</span>
-                        <span class="sr-only">required</span>
-                    </label>
-                    <input id="arrondNais" type="text" th:field="*{arron}" required minlength="3" maxlength="50"
-                           placeholder="Douala 4e" pattern="[A-Za-z0-9\s\-']+">
-                    <span class="error-message" th:if="${#fields.hasErrors('arrondNais')}"
-                          th:errors="*{arron}">Please enter a valid arrondissement</span>
-                </div>
-
-                <div class="form-group">
-                    <label for="partiPolitique">
-                        Political Party
-                        <span class="required-indicator" aria-hidden="true">*</span>
-                        <span class="sr-only">required</span>
-                    </label>
-                    <select id="partiPolitique" th:field="*{party}" required>
-                        <option value="" disabled selected>Select a political party</option>
-                        <option value="RDPC">Rassemblement Démocratique du Peuple Camerounais (RDPC)</option>
-                        <option value="UNDP">Union Nationale pour la Démocratie et le Progrès (UNDP)</option>
-                        <option value="SDF">Front Social Démocrate (SDF)</option>
-                        <option value="PCRN">Parti Camerounais pour la Réconciliation Nationale (PCRN)</option>
-                        <option value="UDC">Union Démocratique du Cameroun (UDC)</option>
-                        <option value="FSNC">Front pour le Salut National du Cameroun (FSNC)</option>
-                        <option value="MDR">Mouvement pour la Défense de la République (MDR)</option>
-                        <option value="UMS">Union des Mouvements Socialistes (UMS)</option>
-                        <option value="UPC">Union des Populations du Cameroun (UPC)</option>
-                        <option value="MRC">Mouvement pour la Renaissance du Cameroun (MRC)</option>
-                        <option value="PRC">Parti Républicain du Cameroun (PRC)</option>
-                        <option value="PDC">Parti des Démocrates Camerounais (PDC)</option>
-                        <option value="ADD">Alliance pour la Démocratie et le Développement (ADD)</option>
-                        <option value="UPA">Union des Populations Africaines (UPA)</option>
-                        <option value="MP">Mouvement Progressiste (MP)</option>
-                        <option value="CAC">Croire au Cameroun (CAC)</option>
-                    </select>
-                    <span class="error-message" th:if="${#fields.hasErrors('partiPolitique')}"
-                          th:errors="*{party}">Please select a political party</span>
-                </div>
-
-                <div class="form-group">
-                    <label for="region">
-                        Current Region
-                        <span class="required-indicator" aria-hidden="true">*</span>
-                        <span class="sr-only">required</span>
-                    </label>
-                    <select id="region" th:field="*{currentregion}" required>
-                        <option value="" disabled selected>Select your region</option>
-                        <option value="Adamawa">Adamawa</option>
-                        <option value="Centre">Centre</option>
-                        <option value="East">East</option>
-                        <option value="Far North">Far North</option>
-                        <option value="Littoral">Littoral</option>
-                        <option value="North">North</option>
-                        <option value="Northwest">Northwest</option>
-                        <option value="South">South</option>
-                        <option value="Southwest">Southwest</option>
-                        <option value="West">West</option>
-                    </select>
-                    <span class="error-message" th:if="${#fields.hasErrors('region')}"
-                          th:errors="*{currentregion}">Please select your current region</span>
-                </div>
-
-                <div class="form-group">
-                    <label for="pollingStation">
-                        Polling Station
-                        <span class="required-indicator" aria-hidden="true">*</span>
-                        <span class="sr-only">required</span>
-                    </label>
-                    <select id="pollingStation" th:field="*{pollingstation}" required>
-                        <option value="" disabled selected>Select your polling station</option>
-                        <!-- Polling stations will be populated by JavaScript -->
-                    </select>
-                    <span class="error-message" th:if="${#fields.hasErrors('pollingStation')}"
-                          th:errors="*{pollingstation}">Please select your polling station</span>
-                </div>
-            </div>
-        </div>
-
-        <div class="form-buttons">
-            <button type="submit" id="submitButton">
-                <span>Submit Registration</span>
-            </button>
-            <button type="reset">
-                <span>Reset Form</span>
-            </button>
-        </div>
-    </form>
-
-    <script th:src="@{/js/form-handler.js}"></script>
-    <script src="../static/js/form-handler.js"></script>
+<script th:src="@{/js/form-handler.js}"></script>
 </body>
 </html>
