@@ -10,6 +10,9 @@ import java.util.List;
  * Contains all user fields plus voter-specific relationships
  */
 public record VoterDto(
+        @NotEmpty
+        @Size(min = 3, max = 50, message = "First name must be between 3 and 50 characters")
+        @Pattern(regexp = "[A-Za-z\\s\\-']+", message = "First name can only contain letters, spaces, hyphens, and apostrophes")
         String firstname,
         String lastname,
         LocalDate birthdate,
