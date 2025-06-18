@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${voter.firstname + ' ' + voter.lastname + ' | Voter Profile'}">Voter Profile</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        .voter-card {
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        .voter-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+        }
+        .voter-header {
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+        }
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        .badge-primary {
+            background-color: #6366f1;
+            color: white;
+        }
+        .badge-secondary {
+            background-color: #f59e0b;
+            color: white;
+        }
+        .election-chip {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            background-color: #e0e7ff;
+            color: #4f46e5;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div class="container mx-auto px-4 py-8">
+        <div class="max-w-5xl mx-auto">
+            <!-- Back button -->
+            <a href="#" onclick="history.back()" class="flex items-center text-indigo-600 hover:text-indigo-800 mb-6">
+                <i class="fas fa-arrow-left mr-2"></i> Back to voters list
+            </a>
+            
+            <!-- Main Voter Card -->
+            <div class="bg-white rounded-xl voter-card overflow-hidden">
+                <!-- Voter Header -->
+                <div class="voter-header p-6 text-white">
+                    <div class="flex flex-col md:flex-row items-center">
+                        <div class="w-32 h-32 rounded-full bg-white flex items-center justify-center shadow-lg mb-4 md:mb-0 md:mr-6">
+                            <i class="fas fa-user-check text-indigo-500 text-5xl"></i>
+                        </div>
+                        <div class="text-center md:text-left">
+                            <h1 class="text-3xl font-bold" th:text="${voter.firstname + ' ' + voter.lastname}">Voter Name</h1>
+                            <div class="mt-2 flex flex-wrap justify-center md:justify-start gap-2">
+                                <span class="badge badge-primary" th:text="${voter.role}">Role</span>
+                                <span th:if="${voter.party}" class="badge badge-secondary" th:text="${voter.party}">Party</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Voter Details -->
+                <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <!-- Personal Information -->
+                    <div class="space-y-6">
+                        <h2 class="text-xl font-semibold text-gray-800 border-b pb-2 flex items-center">
+                            <i class="fas fa-id-card mr-2 text-indigo-500"></i> Personal Information
+                        </h2>
+                        
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <p class="text-gray-500 text-sm">Birthdate</p>
+                                <p class="font-medium" th:text="${voter.birthdate} ? ${#temporals.format(voter.birthdate, 'MMMM d, yyyy')} : 'Not specified'">Not specified</p>
+                            </div>
+                            <div>
+                                <p class="text-gray-500 text-sm">Age</p>
+                                <p class="font-medium" th:text="${voter.birthdate} ? (${#temporals.createToday().getYear()} - ${#temporals.year(voter.birthdate)}) + ' years' : 'Not specified'">Not specified</p>
+                            </div>
+                            <div>
+                                <p class="text-gray-500 text-sm">Gender</p>
+                                <p class="font-medium" th:text="${voter.gender} ?: 'Not specified'">Not specified</p>
+                            </div>
+                            <div>
+                                <p class="text-gray-500 text-sm">Place of Birth</p>
+                                <p class="font-medium" th:text="${voter.placeofbirth} ?: 'Not specified'">Not specified</p>
+                            </div>
+                            <div>
+                                <p class="text-gray-500 text-sm">Email</p>
+                                <p class="font-medium" th:text="${voter.email} ?: 'Not specified'">Not specified</p>
+                            </div>
+                            <div>
+                                <p class="text-gray-500 text-sm">Voter Number</p>
+                                <p class="font-medium" th:text="${voter.number} ?: 'Not specified'">Not specified</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Location Information -->
+                    <div class="space-y-6">
+                        <h2 class="text-xl font-semibold text-gray-800 border-b pb-2 flex items-center">
+                            <i class="fas fa-map-marker-alt mr-2 text-indigo-500"></i> Location Information
+                        </h2>
+                        
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <p class="text-gray-500 text-sm">Current Location</p>
+                                <p class="font-medium" th:text="${voter.location} ?: 'Not specified'">Not specified</p>
+                            </div>
+                            <div>
+                                <p class="text-gray-500 text-sm">Region</p>
+                                <p class="font-medium" th:text="${voter.region} ?: 'Not specified'">Not specified</p>
+                            </div>
+                            <div>
+                                <p class="text-gray-500 text-sm">Department</p>
+                                <p class="font-medium" th:text="${voter.department} ?: 'Not specified'">Not specified</p>
+                            </div>
+                            <div>
+                                <p class="text-gray-500 text-sm">Arron</p>
+                                <p class="font-medium" th:text="${voter.arron} ?: 'Not specified'">Not specified</p>
+                            </div>
+                            <div>
+                                <p class="text-gray-500 text-sm">Current Region</p>
+                                <p class="font-medium" th:text="${voter.currentregion} ?: 'Not specified'">Not specified</p>
+                            </div>
+                            <div>
+                                <p class="text-gray-500 text-sm">Polling Station</p>
+                                <p class="font-medium" th:text="${voter.pollingstation} ?: 'Not specified'">Not specified</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Vote Office Information -->
+                    <div th:if="${voter.office}" class="md:col-span-2">
+                        <h2 class="text-xl font-semibold text-gray-800 border-b pb-2 flex items-center">
+                            <i class="fas fa-building mr-2 text-indigo-500"></i> Assigned Vote Office
+                        </h2>
+                        <div class="mt-4 p-4 bg-indigo-50 rounded-lg">
+                            <h3 class="font-semibold text-indigo-700" th:text="${voter.office.name}">Office Name</h3>
+                            <p class="text-gray-600" th:text="${voter.office.location}">Office Location</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Registered Elections -->
+                    <div th:if="${not voter.register.empty}" class="md:col-span-2">
+                        <h2 class="text-xl font-semibold text-gray-800 border-b pb-2 flex items-center">
+                            <i class="fas fa-vote-yea mr-2 text-indigo-500"></i> Registered Elections
+                        </h2>
+                        <div class="mt-4 flex flex-wrap">
+                            <div th:each="election : ${voter.register}" class="election-chip">
+                                <span th:text="${election.name}">Election Name</span>
+                                <span class="text-xs ml-1" th:text="'(' + ${#temporals.format(election.date, 'yyyy')} + ')'"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Action Buttons -->
+            <div class="mt-8 flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4">
+                <button class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-lg flex items-center justify-center transition flex-1">
+                    <i class="fas fa-edit mr-2"></i> Edit Voter Information
+                </button>
+                <button class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg flex items-center justify-center transition flex-1">
+                    <i class="fas fa-envelope mr-2"></i> Send Verification Email
+                </button>
+                <button class="bg-gray-200 hover:bg-gray-300 text-gray-800 px-6 py-3 rounded-lg flex items-center justify-center transition flex-1">
+                    <i class="fas fa-print mr-2"></i> Print Voter Card
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize tooltips
+            const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+            
+            // Print functionality
+            document.querySelector('.print-btn').addEventListener('click', function() {
+                window.print();
+            });
+            
+            // You could add voter-specific analytics or other interactive elements here
+            console.log('Voter profile page loaded');
+        });
+    </script>
+</body>
+</html>

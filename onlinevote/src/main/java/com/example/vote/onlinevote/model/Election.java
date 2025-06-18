@@ -18,7 +18,9 @@ public class Election {
     private Long idElection;
     private String electionName;
     private String electionDescription;
-    private String electionStatus;
+
+    @Enumerated(EnumType.STRING)
+    private StatusElec electionStatus;
     private LocalDate electionStartDate;
     private LocalDate electionEndDate;
 
@@ -26,9 +28,13 @@ public class Election {
 //    @JsonManagedReference(value = "user-election")
     private List<User> users = new ArrayList<>();
 
+    public enum  StatusElec {
+        ACTIVE, Upcoming, Ended
+    }
+
     public Election() {}
 
-    public Election(String electionName, String electionDescription, String electionStatus, LocalDate electionStartDate, LocalDate electionEndDate) {
+    public Election(String electionName, String electionDescription, StatusElec electionStatus, LocalDate electionStartDate, LocalDate electionEndDate) {
         this.electionName = electionName;
         this.electionDescription = electionDescription;
         this.electionStatus = electionStatus;

@@ -8,25 +8,22 @@
     <link rel="stylesheet" th:href="@{/css/display_election.css}">
 </head>
 <body>
-<div class="container">
-    <header>
-        <h1>Elections Dashboard</h1>
-        <a href="#" class="btn btn-primary" id="createElectionBtn">
-            <i class="fas fa-plus"></i> Create New Election
-        </a>
-    </header>
+    <div class="container">
+        <header>
+            <h1>Posting elections</h1>
+        </header>
 
-    <div class="filters">
-        <button class="filter-btn active" data-status="all">All Elections</button>
-        <button class="filter-btn" data-status="active">Active</button>
-        <button class="filter-btn" data-status="upcoming">Upcoming</button>
-        <button class="filter-btn" data-status="ended">Ended</button>
-    </div>
+        <div class="filters">
+            <button class="filter-btn active" data-status="all">All Elections</button>
+            <button class="filter-btn" data-status="active">Active</button>
+            <button class="filter-btn" data-status="upcoming">Upcoming</button>
+            <button class="filter-btn" data-status="ended">Ended</button>
+        </div>
 
-    <div class="elections-grid" id="electionsContainer">
-        <!-- Elections will be loaded here dynamically -->
+        <div class="elections-grid" id="electionsContainer">
+            <!-- Elections will be loaded here dynamically -->
+        </div>
     </div>
-</div>
 
 <script th:src="@{/js/display_election.js}"></script>
 </body>

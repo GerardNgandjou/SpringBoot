@@ -1,0 +1,961 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VoteNow - Online Voting Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../static/css/dash.css">
+    <meta name="description" content="VoteX - Secure online voting platform dashboard">
+    <meta name="theme-color" content="#4f46e5">
+</head>
+<body>
+<div class="dashboard">
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="logo">
+            <i class="fas fa-vote-yea"></i>
+            <h2>VoteNow</h2>
+            <button class="sidebar-toggle" aria-label="Toggle sidebar">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+        <ul class="nav-menu">
+            <li class="nav-item">
+                <a href="#dashboard" class="nav-link active" data-section="dashboard">
+                    <i class="fas fa-home"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="#elections" class="nav-link" data-section="elections">
+                    <i class="fas fa-vote-yea"></i>
+                    <span>Elections</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="#candidates" class="nav-link" data-section="candidates">
+                    <i class="fas fa-users"></i>
+                    <span>Candidates</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="#voters" class="nav-link" data-section="voters">
+                    <i class="fas fa-user-friends"></i>
+                    <span>Voters</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="#results" class="nav-link" data-section="results">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>Results</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="#settings" class="nav-link" data-section="settings">
+                    <i class="fas fa-cog"></i>
+                    <span>Settings</span>
+                </a>
+            </li>
+        </ul>
+        <ul class="nav-menu logout">
+            <li class="nav-item">
+                <a href="#" class="nav-link" id="logout-btn">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="header">
+            <div class="search-bar">
+                <i class="fas fa-search"></i>
+                <input type="search" placeholder="Search elections, candidates..." aria-label="Search">
+            </div>
+            <div class="user-profile">
+                <div class="notification-bell">
+                    <i class="fas fa-bell"></i>
+                    <span class="notification-count">3</span>
+                    <div class="notification-dropdown">
+                        <div class="notification-header">
+                            <h4>Notifications</h4>
+                            <button class="mark-all-read">Mark all as read</button>
+                        </div>
+                        <div class="notification-item unread">
+                            <div class="notification-icon">
+                                <i class="fas fa-vote-yea"></i>
+                            </div>
+                            <div class="notification-content">
+                                <p>New vote submitted for Student Council Election</p>
+                                <small>2 minutes ago</small>
+                            </div>
+                        </div>
+                        <div class="notification-item">
+                            <div class="notification-icon">
+                                <i class="fas fa-user-plus"></i>
+                            </div>
+                            <div class="notification-content">
+                                <p>5 new voters registered today</p>
+                                <small>1 hour ago</small>
+                            </div>
+                        </div>
+                        <div class="notification-item">
+                            <div class="notification-icon">
+                                <i class="fas fa-exclamation-circle"></i>
+                            </div>
+                            <div class="notification-content">
+                                <p>System maintenance scheduled for tonight</p>
+                                <small>3 hours ago</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="profile-dropdown">
+                    <img th:src="#" alt="User profile" class="profile-img">
+                    <div class="user-info">
+                        <h4>Super Admin</h4>
+                        <p>Admin</p>
+                    </div>
+                    <div class="dropdown-menu">
+                        <a href="#profile"><i class="fas fa-user"></i> My Profile</a>
+                        <a href="#settings"><i class="fas fa-cog"></i> Settings</a>
+                        <div class="divider"></div>
+                        <a href="#" id="logout-dropdown-btn"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dashboard Content (shown by default) -->
+        <div id="dashboard-content" class="content-section active">
+            <!-- Dashboard Cards -->
+            <div class="dashboard-cards">
+                <div class="card">
+                    <div class="card-header">
+                        <div>
+                            <h3 class="card-title">Total Voters</h3>
+                            <div class="card-value">2,451</div>
+                            <div class="card-change positive">
+                                <i class="fas fa-arrow-up"></i> 12% from last month
+                            </div>
+                        </div>
+                        <div class="card-icon voters">
+                            <i class="fas fa-user-friends"></i>
+                        </div>
+                    </div>
+                    <a href="#voters" class="card-link">View all voters</a>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <div>
+                            <h3 class="card-title">Active Elections</h3>
+                            <div class="card-value">8</div>
+                            <div class="card-change positive">
+                                <i class="fas fa-arrow-up"></i> 2 new this week
+                            </div>
+                        </div>
+                        <div class="card-icon elections">
+                            <i class="fas fa-vote-yea"></i>
+                        </div>
+                    </div>
+                    <a href="#elections" class="card-link">Manage elections</a>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <div>
+                            <h3 class="card-title">Candidates</h3>
+                            <div class="card-value">127</div>
+                            <div class="card-change negative">
+                                <i class="fas fa-arrow-down"></i> 3 withdrawn
+                            </div>
+                        </div>
+                        <div class="card-icon candidates">
+                            <i class="fas fa-users"></i>
+                        </div>
+                    </div>
+                    <a href="#candidates" class="card-link">View candidates</a>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <div>
+                            <h3 class="card-title">Completed</h3>
+                            <div class="card-value">24</div>
+                            <div class="card-change positive">
+                                <i class="fas fa-arrow-up"></i> 5 this quarter
+                            </div>
+                        </div>
+                        <div class="card-icon completed">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                    </div>
+                    <a href="#results" class="card-link">View results</a>
+                </div>
+            </div>
+
+            <!-- Active Elections Section -->
+            <div class="section-header">
+                <h3 class="section-title">
+                    <i class="fas fa-vote-yea"></i> Active Elections
+                </h3>
+                <div class="section-actions">
+                    <button class="btn btn-outline">
+                        <i class="fas fa-calendar-plus"></i> Schedule New
+                    </button>
+                </div>
+            </div>
+            <div class="elections-grid">
+                <div class="election-card">
+                    <div class="election-banner">
+                        <i class="fas fa-landmark"></i>
+                        <span class="election-status active">Active • 3 days left</span>
+                    </div>
+                    <div class="election-details">
+                        <h3 class="election-title">Student Council Election 2024</h3>
+                        <div class="election-meta">
+                            <div class="election-date">
+                                <i class="far fa-calendar-alt"></i> May 15 - May 30
+                            </div>
+                            <div><i class="fas fa-users"></i> 4 candidates</div>
+                        </div>
+                        <div class="progress-container">
+                            <div class="progress-label">
+                                <span>Participation (1,245 voters)</span>
+                                <span>62%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 62%"></div>
+                            </div>
+                        </div>
+                        <div class="election-stats">
+                            <div class="stat-item">
+                                <i class="fas fa-check-circle"></i>
+                                <span>782 Verified</span>
+                            </div>
+                            <div class="stat-item">
+                                <i class="fas fa-user-clock"></i>
+                                <span>463 Pending</span>
+                            </div>
+                        </div>
+                        <div class="election-actions">
+                            <button class="btn btn-outline">
+                                <i class="fas fa-chart-bar"></i> Results
+                            </button>
+                            <button class="btn btn-primary">
+                                <i class="fas fa-cog"></i> Manage
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="election-card">
+                    <div class="election-banner" style="background: linear-gradient(135deg, #f72585, #b5179e);">
+                        <i class="fas fa-building"></i>
+                        <span class="election-status active">Active • 1 day left</span>
+                    </div>
+                    <div class="election-details">
+                        <h3 class="election-title">HOA Board Election</h3>
+                        <div class="election-meta">
+                            <div class="election-date">
+                                <i class="far fa-calendar-alt"></i> May 25 - May 31
+                            </div>
+                            <div><i class="fas fa-users"></i> 5 candidates</div>
+                        </div>
+                        <div class="progress-container">
+                            <div class="progress-label">
+                                <span>Participation (892 voters)</span>
+                                <span>45%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 45%"></div>
+                            </div>
+                        </div>
+                        <div class="election-stats">
+                            <div class="stat-item">
+                                <i class="fas fa-check-circle"></i>
+                                <span>512 Verified</span>
+                            </div>
+                            <div class="stat-item">
+                                <i class="fas fa-user-clock"></i>
+                                <span>380 Pending</span>
+                            </div>
+                        </div>
+                        <div class="election-actions">
+                            <button class="btn btn-outline">
+                                <i class="fas fa-chart-bar"></i> Results
+                            </button>
+                            <button class="btn btn-primary">
+                                <i class="fas fa-cog"></i> Manage
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Activity Section -->
+            <div class="section-header">
+                <h3 class="section-title">
+                    <i class="fas fa-history"></i> Recent Activity
+                </h3>
+            </div>
+            <div class="activity-timeline">
+                <div class="timeline-item">
+                    <div class="timeline-icon success">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="timeline-content">
+                        <p>New vote recorded for <strong>Student Council Election</strong></p>
+                        <small>2 minutes ago</small>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-icon info">
+                        <i class="fas fa-info-circle"></i>
+                    </div>
+                    <div class="timeline-content">
+                        <p>Candidate <strong>Alex Morgan</strong> updated their profile</p>
+                        <small>1 hour ago</small>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-icon warning">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <div class="timeline-content">
+                        <p>Voter verification required for <strong>5 pending registrations</strong></p>
+                        <small>3 hours ago</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Elections Management Section -->
+        <div id="elections-content" class="content-section">
+            <div class="container">
+                <header>
+                    <h1>Elections Dashboard</h1>
+                    <a th:href="@{election}" class="btn btn-primary" id="createElectionBtn">
+                        <i class="fas fa-plus"></i> Create New Election
+                    </a>
+                </header>
+
+                <div class="filters">
+                    <button class="filter-btn active" data-status="all">All Elections</button>
+                    <button class="filter-btn" data-status="active">Active</button>
+                    <button class="filter-btn" data-status="upcoming">Upcoming</button>
+                    <button class="filter-btn" data-status="ended">Ended</button>
+                </div>
+
+                <div class="elections-grid" id="electionsContainer">
+                    <!-- Elections will be loaded here dynamically -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Candidates Management Section -->
+        <div id="candidates-content" class="content-section">
+            <div class="container">
+                <div class="section-header">
+                    <h1>Candidates Management</h1>
+                    <button class="btn btn-primary" id="addCandidateBtn">
+                        <i class="fas fa-user-plus"></i> Add Candidate
+                    </button>
+                </div>
+
+                <div class="search-filter">
+                    <div class="search-bar">
+                        <i class="fas fa-search"></i>
+                        <input type="search" placeholder="Search candidates..." aria-label="Search candidates">
+                    </div>
+                    <select class="election-filter">
+                        <option value="all">All Elections</option>
+                        <option value="1">Student Council Election 2024</option>
+                        <option value="2">HOA Board Election</option>
+                        <option value="3">Faculty Senate Election</option>
+                    </select>
+                </div>
+
+                <div class="candidates-grid">
+                    <div class="candidate-card">
+                        <div class="candidate-photo">
+                            <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Candidate photo">
+                            <span class="status-badge approved">Approved</span>
+                        </div>
+                        <div class="candidate-info">
+                            <h3>Michael Chen</h3>
+                            <p class="position">President</p>
+                            <p class="election">Student Council Election 2024</p>
+                            <div class="candidate-stats">
+                                <div class="stat">
+                                    <i class="fas fa-vote-yea"></i>
+                                    <span>342 votes</span>
+                                </div>
+                                <div class="stat">
+                                    <i class="fas fa-percentage"></i>
+                                    <span>43.7%</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="candidate-actions">
+                            <button class="btn btn-outline btn-sm">
+                                <i class="fas fa-eye"></i> View
+                            </button>
+                            <button class="btn btn-primary btn-sm">
+                                <i class="fas fa-edit"></i> Edit
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="candidate-card">
+                        <div class="candidate-photo">
+                            <img src="https://randomuser.me/api/portraits/women/28.jpg" alt="Candidate photo">
+                            <span class="status-badge approved">Approved</span>
+                        </div>
+                        <div class="candidate-info">
+                            <h3>Sarah Williams</h3>
+                            <p class="position">Vice President</p>
+                            <p class="election">Student Council Election 2024</p>
+                            <div class="candidate-stats">
+                                <div class="stat">
+                                    <i class="fas fa-vote-yea"></i>
+                                    <span>289 votes</span>
+                                </div>
+                                <div class="stat">
+                                    <i class="fas fa-percentage"></i>
+                                    <span>36.9%</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="candidate-actions">
+                            <button class="btn btn-outline btn-sm">
+                                <i class="fas fa-eye"></i> View
+                            </button>
+                            <button class="btn btn-primary btn-sm">
+                                <i class="fas fa-edit"></i> Edit
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="candidate-card">
+                        <div class="candidate-photo">
+                            <img src="https://randomuser.me/api/portraits/men/45.jpg" alt="Candidate photo">
+                            <span class="status-badge pending">Pending</span>
+                        </div>
+                        <div class="candidate-info">
+                            <h3>David Rodriguez</h3>
+                            <p class="position">Treasurer</p>
+                            <p class="election">HOA Board Election</p>
+                            <div class="candidate-stats">
+                                <div class="stat">
+                                    <i class="fas fa-vote-yea"></i>
+                                    <span>0 votes</span>
+                                </div>
+                                <div class="stat">
+                                    <i class="fas fa-percentage"></i>
+                                    <span>0%</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="candidate-actions">
+                            <button class="btn btn-outline btn-sm">
+                                <i class="fas fa-eye"></i> View
+                            </button>
+                            <button class="btn btn-primary btn-sm">
+                                <i class="fas fa-edit"></i> Edit
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Voters Management Section -->
+        <div id="voters-content" class="content-section">
+            <div class="container">
+                <div class="section-header">
+                    <h1>Voters Management</h1>
+                    <button class="btn btn-primary" id="importVotersBtn">
+                        <i class="fas fa-file-import"></i> Import Voters
+                    </button>
+                </div>
+
+                <div class="voters-tabs">
+                    <button class="tab-btn active" data-tab="all">All Voters</button>
+                    <button class="tab-btn" data-tab="verified">Verified</button>
+                    <button class="tab-btn" data-tab="pending">Pending</button>
+                    <button class="tab-btn" data-tab="rejected">Rejected</button>
+                </div>
+
+                <div class="voters-table-container">
+                    <table class="voters-table">
+                        <thead>
+                        <tr>
+                            <th>Voter ID</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Status</th>
+                            <th>Eligible Elections</th>
+                            <th>Last Vote</th>
+                            <th>Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td>V100245</td>
+                            <td>
+                                <div class="voter-info">
+                                    <img src="https://randomuser.me/api/portraits/women/65.jpg" alt="Voter photo">
+                                    <span>Emily Johnson</span>
+                                </div>
+                            </td>
+                            <td>emily.j@example.com</td>
+                            <td><span class="status-badge verified">Verified</span></td>
+                            <td>3</td>
+                            <td>Today</td>
+                            <td>
+                                <div class="table-actions">
+                                    <button class="action-btn view" title="View">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button class="action-btn edit" title="Edit">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>V100189</td>
+                            <td>
+                                <div class="voter-info">
+                                    <img src="https://randomuser.me/api/portraits/men/22.jpg" alt="Voter photo">
+                                    <span>Robert Smith</span>
+                                </div>
+                            </td>
+                            <td>robert.s@example.com</td>
+                            <td><span class="status-badge verified">Verified</span></td>
+                            <td>2</td>
+                            <td>2 days ago</td>
+                            <td>
+                                <div class="table-actions">
+                                    <button class="action-btn view" title="View">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button class="action-btn edit" title="Edit">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>V100332</td>
+                            <td>
+                                <div class="voter-info">
+                                    <img src="https://randomuser.me/api/portraits/women/33.jpg" alt="Voter photo">
+                                    <span>Maria Garcia</span>
+                                </div>
+                            </td>
+                            <td>maria.g@example.com</td>
+                            <td><span class="status-badge pending">Pending</span></td>
+                            <td>1</td>
+                            <td>Never</td>
+                            <td>
+                                <div class="table-actions">
+                                    <button class="action-btn approve" title="Approve">
+                                        <i class="fas fa-check"></i>
+                                    </button>
+                                    <button class="action-btn reject" title="Reject">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="pagination">
+                    <button class="page-btn" disabled>
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <button class="page-btn active">1</button>
+                    <button class="page-btn">2</button>
+                    <button class="page-btn">3</button>
+                    <button class="page-btn">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Section -->
+        <div id="results-content" class="content-section">
+            <div class="container">
+                <div class="section-header">
+                    <h1>Election Results</h1>
+                    <div class="export-actions">
+                        <button class="btn btn-outline">
+                            <i class="fas fa-file-pdf"></i> Export PDF
+                        </button>
+                        <button class="btn btn-outline">
+                            <i class="fas fa-file-excel"></i> Export CSV
+                        </button>
+                    </div>
+                </div>
+
+                <div class="results-filter">
+                    <select class="election-select">
+                        <option value="">Select an election</option>
+                        <option value="1" selected>Student Council Election 2024</option>
+                        <option value="2">HOA Board Election</option>
+                        <option value="3">Faculty Senate Election (2023)</option>
+                    </select>
+                </div>
+
+                <div class="results-container">
+                    <div class="results-summary">
+                        <div class="summary-card">
+                            <h3>Total Votes</h3>
+                            <div class="summary-value">782</div>
+                            <div class="summary-meta">62% participation</div>
+                        </div>
+                        <div class="summary-card">
+                            <h3>Valid Votes</h3>
+                            <div class="summary-value">765</div>
+                            <div class="summary-meta">97.8% of total</div>
+                        </div>
+                        <div class="summary-card">
+                            <h3>Invalid Votes</h3>
+                            <div class="summary-value">17</div>
+                            <div class="summary-meta">2.2% of total</div>
+                        </div>
+                    </div>
+
+                    <div class="results-chart">
+                        <div class="chart-header">
+                            <h3>President - Vote Distribution</h3>
+                            <div class="chart-legend">
+                                <div class="legend-item">
+                                    <span class="legend-color" style="background-color: #4f46e5;"></span>
+                                    <span>Michael Chen (43.7%)</span>
+                                </div>
+                                <div class="legend-item">
+                                    <span class="legend-color" style="background-color: #f59e0b;"></span>
+                                    <span>Sarah Williams (36.9%)</span>
+                                </div>
+                                <div class="legend-item">
+                                    <span class="legend-color" style="background-color: #10b981;"></span>
+                                    <span>James Wilson (19.4%)</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="chart-container">
+                            <!-- Chart would be rendered here with JavaScript -->
+                            <div class="chart-placeholder">
+                                <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIyMDAiIHZpZXdCb3g9IjAgMCA4MDAgNDAwIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHByZXNlcnZlQXNwZWN0UmF0aW89Im5vbmUiPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9IiNmNWY1ZjUiLz48dGV4dCB4PSI1MCUiIHk9IjUwJSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE2IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBhbGlnbm1lbnQtYmFzZWxpbmU9Im1pZGRsZSIgZmlsbD0iIzY2NiI+Q2hhcnQgd2lsbCBiZSByZW5kZXJlZCB3aXRoIEpTIChDaGFydC5qcyBvciBEMy5qcyk8L3RleHQ+PC9zdmc+" alt="Chart placeholder">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="results-table">
+                        <table>
+                            <thead>
+                            <tr>
+                                <th>Position</th>
+                                <th>Winner</th>
+                                <th>Votes</th>
+                                <th>Percentage</th>
+                                <th>Margin</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td>President</td>
+                                <td>
+                                    <div class="candidate-info">
+                                        <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Candidate photo">
+                                        <span>Michael Chen</span>
+                                    </div>
+                                </td>
+                                <td>342</td>
+                                <td>43.7%</td>
+                                <td>+53 votes</td>
+                            </tr>
+                            <tr>
+                                <td>Vice President</td>
+                                <td>
+                                    <div class="candidate-info">
+                                        <img src="https://randomuser.me/api/portraits/women/28.jpg" alt="Candidate photo">
+                                        <span>Sarah Williams</span>
+                                    </div>
+                                </td>
+                                <td>289</td>
+                                <td>36.9%</td>
+                                <td>+134 votes</td>
+                            </tr>
+                            <tr>
+                                <td>Treasurer</td>
+                                <td>
+                                    <div class="candidate-info">
+                                        <img src="https://randomuser.me/api/portraits/women/42.jpg" alt="Candidate photo">
+                                        <span>Lisa Thompson</span>
+                                    </div>
+                                </td>
+                                <td>412</td>
+                                <td>52.6%</td>
+                                <td>+287 votes</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings Section -->
+        <div id="settings-content" class="content-section">
+            <div class="section-header">
+                <h3 class="section-title">
+                    <i class="fas fa-cog"></i> Settings
+                </h3>
+            </div>
+            <div class="settings-content">
+                <div class="settings-tabs">
+                    <button class="settings-tab active" data-tab="account">Account</button>
+                    <button class="settings-tab" data-tab="security">Security</button>
+                    <button class="settings-tab" data-tab="notifications">Notifications</button>
+                    <button class="settings-tab" data-tab="system">System</button>
+                </div>
+
+                <div class="settings-tab-content active" data-tab="account">
+                    <div class="settings-card">
+                        <h4><i class="fas fa-user-shield"></i> Account Settings</h4>
+                        <div class="settings-form">
+                            <div class="form-group">
+                                <label>Username</label>
+                                <input type="text" value="admin123" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label>Full Name</label>
+                                <input type="text" value="Sarah Johnson">
+                            </div>
+                            <div class="form-group">
+                                <label>Email</label>
+                                <input type="email" value="admin@votex.com">
+                            </div>
+                            <div class="form-group">
+                                <label>Profile Photo</label>
+                                <div class="file-upload">
+                                    <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Current profile" class="profile-preview">
+                                    <div class="upload-actions">
+                                        <button class="btn btn-outline btn-sm">
+                                            <i class="fas fa-camera"></i> Change
+                                        </button>
+                                        <button class="btn btn-outline btn-sm">
+                                            <i class="fas fa-trash"></i> Remove
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <button class="btn btn-primary">Update Account</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="settings-tab-content" data-tab="security">
+                    <div class="settings-card">
+                        <h4><i class="fas fa-lock"></i> Security</h4>
+                        <div class="settings-form">
+                            <div class="form-group">
+                                <label>Current Password</label>
+                                <input type="password" placeholder="Enter current password">
+                            </div>
+                            <div class="form-group">
+                                <label>New Password</label>
+                                <input type="password" placeholder="Enter new password">
+                                <small class="form-text">Password must be at least 8 characters long</small>
+                            </div>
+                            <div class="form-group">
+                                <label>Confirm New Password</label>
+                                <input type="password" placeholder="Confirm new password">
+                            </div>
+                            <div class="form-group">
+                                <label>Two-Factor Authentication</label>
+                                <div class="toggle-switch">
+                                    <input type="checkbox" id="2fa-toggle" checked>
+                                    <label for="2fa-toggle"></label>
+                                    <span>Enabled</span>
+                                </div>
+                                <small class="form-text">Add an extra layer of security to your account</small>
+                            </div>
+                            <button class="btn btn-primary">Update Security Settings</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="settings-tab-content" data-tab="notifications">
+                    <div class="settings-card">
+                        <h4><i class="fas fa-bell"></i> Notification Preferences</h4>
+                        <div class="settings-options">
+                            <div class="option-group">
+                                <h5>Email Notifications</h5>
+                                <div class="option-item">
+                                    <input type="checkbox" id="email-election" checked>
+                                    <label for="email-election">Election updates</label>
+                                </div>
+                                <div class="option-item">
+                                    <input type="checkbox" id="email-results" checked>
+                                    <label for="email-results">Election results</label>
+                                </div>
+                                <div class="option-item">
+                                    <input type="checkbox" id="email-system">
+                                    <label for="email-system">System notifications</label>
+                                </div>
+                            </div>
+                            <div class="option-group">
+                                <h5>In-App Notifications</h5>
+                                <div class="option-item">
+                                    <input type="checkbox" id="app-new-voter" checked>
+                                    <label for="app-new-voter">New voter registrations</label>
+                                </div>
+                                <div class="option-item">
+                                    <input type="checkbox" id="app-new-candidate" checked>
+                                    <label for="app-new-candidate">New candidate applications</label>
+                                </div>
+                                <div class="option-item">
+                                    <input type="checkbox" id="app-vote-activity" checked>
+                                    <label for="app-vote-activity">Vote activity</label>
+                                </div>
+                            </div>
+                            <button class="btn btn-primary">Save Preferences</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="settings-tab-content" data-tab="system">
+                    <div class="settings-card">
+                        <h4><i class="fas fa-server"></i> System Settings</h4>
+                        <div class="settings-form">
+                            <div class="form-group">
+                                <label>Timezone</label>
+                                <select>
+                                    <option>(UTC-05:00) Eastern Time (US & Canada)</option>
+                                    <option>(UTC-08:00) Pacific Time (US & Canada)</option>
+                                    <option>(UTC+00:00) London</option>
+                                    <option>(UTC+01:00) Berlin</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Date Format</label>
+                                <select>
+                                    <option>MM/DD/YYYY</option>
+                                    <option>DD/MM/YYYY</option>
+                                    <option>YYYY-MM-DD</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Results Visibility</label>
+                                <select>
+                                    <option>Show after election ends</option>
+                                    <option>Show real-time (public)</option>
+                                    <option>Show real-time (admin only)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Default Election Duration</label>
+                                <input type="number" value="14" min="1" max="30">
+                                <small class="form-text">Days</small>
+                            </div>
+                            <button class="btn btn-primary">Save System Settings</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Create Election Modal -->
+<div class="modal" id="createElectionModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Create New Election</h3>
+            <button class="modal-close">&times;</button>
+        </div>
+        <div class="modal-body">
+            <form id="electionForm">
+                <div class="form-group">
+                    <label>Election Title</label>
+                    <input type="text" placeholder="Enter election title" required>
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea placeholder="Enter election description" rows="3"></textarea>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Start Date</label>
+                        <input type="datetime-local" required>
+                    </div>
+                    <div class="form-group">
+                        <label>End Date</label>
+                        <input type="datetime-local" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Election Type</label>
+                    <select>
+                        <option>Single Choice</option>
+                        <option>Multiple Choice</option>
+                        <option>Ranked Choice</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Eligible Voters</label>
+                    <select multiple>
+                        <option>All registered voters</option>
+                        <option>Students</option>
+                        <option>Faculty</option>
+                        <option>HOA Members</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Election Banner</label>
+                    <div class="file-upload">
+                        <div class="upload-prompt">
+                            <i class="fas fa-image"></i>
+                            <p>Click to upload banner image</p>
+                        </div>
+                        <input type="file" accept="image/*">
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-outline modal-cancel">Cancel</button>
+            <button class="btn btn-primary">Create Election</button>
+        </div>
+    </div>
+</div>
+
+<!-- Logout Confirmation Modal -->
+<div class="modal" id="logoutModal">
+    <div class="modal-content small">
+        <div class="modal-header">
+            <h3>Confirm Logout</h3>
+            <button class="modal-close">&times;</button>
+        </div>
+        <div class="modal-body">
+            <p>Are you sure you want to logout from your account?</p>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-outline modal-cancel">Cancel</button>
+            <button class="btn btn-primary" id="confirmLogout">Logout</button>
+        </div>
+    </div>
+</div>
+
+<script src="../static/js/dash.js"></script>
+</body>
+</html>

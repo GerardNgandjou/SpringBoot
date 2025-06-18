@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${candidate.firstname + ' ' + candidate.lastname}">Candidate Profile</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        .profile-card {
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        .profile-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+        }
+        .party-badge {
+            position: absolute;
+            top: -12px;
+            right: 20px;
+        }
+        .age-calculator {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div class="container mx-auto px-4 py-8">
+        <div class="max-w-4xl mx-auto">
+            <!-- Back button -->
+            <a href="#" onclick="history.back()" class="flex items-center text-blue-600 hover:text-blue-800 mb-6">
+                <i class="fas fa-arrow-left mr-2"></i> Back to candidates
+            </a>
+            
+            <!-- Main Profile Card -->
+            <div class="bg-white rounded-xl profile-card overflow-hidden relative">
+                <!-- Party Badge -->
+                <div th:if="${candidate.party}" class="party-badge bg-blue-600 text-white px-4 py-1 rounded-full text-sm font-semibold shadow-lg">
+                    <span th:text="${candidate.party}">Party</span>
+                </div>
+                
+                <!-- Profile Header -->
+                <div class="bg-gradient-to-r from-blue-500 to-blue-700 p-6 text-white">
+                    <div class="flex flex-col md:flex-row items-center">
+                        <div class="w-32 h-32 rounded-full bg-white flex items-center justify-center shadow-lg mb-4 md:mb-0 md:mr-6">
+                            <i class="fas fa-user text-blue-500 text-5xl"></i>
+                        </div>
+                        <div>
+                            <h1 class="text-3xl font-bold" th:text="${candidate.firstname + ' ' + candidate.lastname}">Candidate Name</h1>
+                            <p class="text-blue-100" th:text="${candidate.role}">Role</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Profile Details -->
+                <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Personal Info -->
+                    <div class="space-y-4">
+                        <h2 class="text-xl font-semibold text-gray-800 border-b pb-2">Personal Information</h2>
+                        
+                        <div class="flex items-start">
+                            <i class="fas fa-birthday-cake text-blue-500 mt-1 mr-3"></i>
+                            <div>
+                                <p class="text-gray-600">Birthdate</p>
+                                <p class="font-medium" th:text="${candidate.birthdate} ? ${#temporals.format(candidate.birthdate, 'MMMM d, yyyy')} : 'Not specified'">Not specified</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start">
+                            <i class="fas fa-venus-mars text-blue-500 mt-1 mr-3"></i>
+                            <div>
+                                <p class="text-gray-600">Gender</p>
+                                <p class="font-medium" th:text="${candidate.gender} ?: 'Not specified'">Not specified</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start">
+                            <i class="fas fa-map-marker-alt text-blue-500 mt-1 mr-3"></i>
+                            <div>
+                                <p class="text-gray-600">Place of Birth</p>
+                                <p class="font-medium" th:text="${candidate.placeofbirth} ?: 'Not specified'">Not specified</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Location Info -->
+                    <div class="space-y-4">
+                        <h2 class="text-xl font-semibold text-gray-800 border-b pb-2">Location Information</h2>
+                        
+                        <div class="flex items-start">
+                            <i class="fas fa-home text-blue-500 mt-1 mr-3"></i>
+                            <div>
+                                <p class="text-gray-600">Location</p>
+                                <p class="font-medium" th:text="${candidate.location} ?: 'Not specified'">Not specified</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start">
+                            <i class="fas fa-globe-americas text-blue-500 mt-1 mr-3"></i>
+                            <div>
+                                <p class="text-gray-600">Region</p>
+                                <p class="font-medium" th:text="${candidate.region} ?: 'Not specified'">Not specified</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start">
+                            <i class="fas fa-building text-blue-500 mt-1 mr-3"></i>
+                            <div>
+                                <p class="text-gray-600">Department</p>
+                                <p class="font-medium" th:text="${candidate.department} ?: 'Not specified'">Not specified</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start">
+                            <i class="fas fa-flag text-blue-500 mt-1 mr-3"></i>
+                            <div>
+                                <p class="text-gray-600">Arron</p>
+                                <p class="font-medium" th:text="${candidate.arron} ?: 'Not specified'">Not specified</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Age Calculator -->
+                <div th:if="${candidate.birthdate}" class="age-calculator p-4 text-white text-center">
+                    <p class="text-lg">
+                        <span th:text="${#temporals.createToday().getYear() - #temporals.year(candidate.birthdate)}">0</span> years old
+                    </p>
+                </div>
+            </div>
+            
+            <!-- Action Buttons -->
+            <div class="mt-6 flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4">
+                <button class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg flex items-center justify-center transition">
+                    <i class="fas fa-envelope mr-2"></i> Contact Candidate
+                </button>
+                <button class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg flex items-center justify-center transition">
+                    <i class="fas fa-poll mr-2"></i> View Campaign
+                </button>
+                <button class="bg-gray-200 hover:bg-gray-300 text-gray-800 px-6 py-2 rounded-lg flex items-center justify-center transition">
+                    <i class="fas fa-share-alt mr-2"></i> Share Profile
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Add any interactive functionality here
+        document.addEventListener('DOMContentLoaded', function() {
+            // Example: Smooth scroll for anchor links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    document.querySelector(this.getAttribute('href')).scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                });
+            });
+            
+            // You could add more interactive elements here
+            console.log('Candidate profile page loaded');
+        });
+    </script>
+</body>
+</html>
