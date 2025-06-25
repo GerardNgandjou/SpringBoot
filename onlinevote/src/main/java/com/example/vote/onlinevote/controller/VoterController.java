@@ -2,12 +2,13 @@ package com.example.vote.onlinevote.controller;
 
 import com.example.vote.onlinevote.dto.VoterDto;
 import com.example.vote.onlinevote.dto.VoterResponseDto;
+import com.example.vote.onlinevote.model.Voter;
 import com.example.vote.onlinevote.sevirce.VoterService;
-import jakarta.validation.Valid;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
@@ -18,7 +19,6 @@ import java.util.List;
 @Getter
 @Controller
 @RestController
-@RequestMapping
 public class VoterController {
 
     private final VoterService voterService;
@@ -28,11 +28,25 @@ public class VoterController {
     }
 
     @PostMapping("/voter/add")
-    public VoterResponseDto register(
-            @Valid @RequestBody VoterDto voterDto
-    ) {
-        return voterService.saveVoter(voterDto);
+    public String register(@ModelAttribute VoterDto voterDto, Model model) {
+        VoterResponseDto savedVoter = voterService.saveVoter(voterDto);
+        model.addAttribute("voter", savedVoter);
+        return "success"; // or another Thymeleaf template name
     }
+
+    @GetMapping("/voter/add")
+    public String showRegisterPage(Model model) {
+        model.addAttribute("voter", new Voter()); // or VoterResponseDto depending on what your form expects
+        return "registration";
+    }
+
+
+    // @PostMapping("/voter/add")
+    // public VoterResponseDto register(
+    //         @Valid @RequestBody VoterDto voterDto
+    // ) {
+    //     return voterService.saveVoter(voterDto);
+    // }
 
 
 //    @PostMapping("/voter/register")

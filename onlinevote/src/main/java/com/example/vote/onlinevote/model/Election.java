@@ -21,6 +21,7 @@ public class Election {
 
     @Enumerated(EnumType.STRING)
     private StatusElec electionStatus;
+
     private LocalDate electionStartDate;
     private LocalDate electionEndDate;
 
@@ -34,11 +35,19 @@ public class Election {
 
     public Election() {}
 
-    public Election(String electionName, String electionDescription, StatusElec electionStatus, LocalDate electionStartDate, LocalDate electionEndDate) {
+    public Election(
+                String electionName,
+                String electionDescription,
+                StatusElec electionStatus,
+                LocalDate electionStartDate,
+                LocalDate electionEndDate,
+                List<User> users
+    ) {
         this.electionName = electionName;
         this.electionDescription = electionDescription;
         this.electionStatus = electionStatus;
         this.electionStartDate = electionStartDate;
         this.electionEndDate = electionEndDate;
+        this.users = users;
     }
 }

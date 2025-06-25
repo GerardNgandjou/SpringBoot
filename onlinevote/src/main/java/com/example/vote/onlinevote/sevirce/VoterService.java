@@ -3,6 +3,8 @@ package com.example.vote.onlinevote.sevirce;
 import com.example.vote.onlinevote.dto.VoterDto;
 import com.example.vote.onlinevote.dto.VoterResponseDto;
 import com.example.vote.onlinevote.mapper.VoterMapper;
+import com.example.vote.onlinevote.model.ResourceNotFoundException;
+import com.example.vote.onlinevote.model.Voter;
 import com.example.vote.onlinevote.repository.VoterRepository;
 import org.springframework.stereotype.Service;
 
@@ -55,4 +57,10 @@ public class VoterService {
     ) {
         voterRepository.deleteById(id);
     }
+
+    public Voter getVoterById(Long id) {
+        return voterRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Voter not found with ID: " + id));
+    }
+
 }
