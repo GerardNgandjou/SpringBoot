@@ -1,42 +1,3 @@
-// Sample data - replace with actual API call to your backend
-const offices = [
-    {
-        idOffice: 1,
-        nameOffice: "Downtown Voting Center",
-        locationOffice: "123 Main Street, City Center",
-        descriptionOffice: "Main voting center serving downtown area with 20 voting booths",
-        voters: 1245
-    },
-    {
-        idOffice: 2,
-        nameOffice: "Northside Voting Station",
-        locationOffice: "456 Oak Avenue, North District",
-        descriptionOffice: "Voting station for northern residential areas",
-        voters: 876
-    },
-    {
-        idOffice: 3,
-        nameOffice: "Westside Voting Hub",
-        locationOffice: "789 Pine Road, West Suburb",
-        descriptionOffice: "Modern voting facility with accessibility features",
-        voters: 654
-    },
-    {
-        idOffice: 4,
-        nameOffice: "East End Voting Office",
-        locationOffice: "321 Elm Street, East Quarter",
-        descriptionOffice: "Smaller office serving the eastern industrial district",
-        voters: 432
-    },
-    {
-        idOffice: 5,
-        nameOffice: "Central Admin Office",
-        locationOffice: "654 Maple Drive, Government Complex",
-        descriptionOffice: "Administrative center for election operations",
-        voters: 56
-    }
-];
-
 // DOM elements
 const officesContainer = document.getElementById('officesContainer');
 const pagination = document.getElementById('pagination');
@@ -45,15 +6,41 @@ const searchInput = document.getElementById('searchInput');
 // Pagination variables
 const itemsPerPage = 6;
 let currentPage = 1;
+let offices = []; // This will be populated from the database
 
 // Initialize the page
 document.addEventListener('DOMContentLoaded', () => {
-    renderOffices();
-    setupPagination();
-
+    fetchOffices(); // Fetch data from database instead of using sample data
+    
     // Search functionality
     searchInput.addEventListener('input', handleSearch);
 });
+
+// Fetch offices from database
+async function fetchOffices() {
+    try {
+        // Show loading state
+        officesContainer.innerHTML = '<div class="loading">Loading offices...</div>';
+        
+        const response = await fetch('/vote_office/get'); // Replace with your actual API endpoint
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        offices = await response.json();
+        
+        if (offices.length === 0) {
+            officesContainer.innerHTML = '<p class="no-results">No offices found in the database.</p>';
+            return;
+        }
+        
+        renderOffices();
+        setupPagination();
+    } catch (error) {
+        console.error('Error fetching offices:', error);
+        officesContainer.innerHTML = '<p class="error-message">Error loading offices. Please try again later.</p>';
+    }
+}
 
 // Render offices to the grid
 function renderOffices(officesToRender = offices) {
@@ -74,38 +61,38 @@ function renderOffices(officesToRender = offices) {
         officeCard.className = 'office-card';
 
         officeCard.innerHTML = `
-                    <div class="card-header">
-                        <h3 class="card-title">${office.nameOffice}</h3>
-                        <div class="card-location">
-                            <i class="fas fa-map-marker-alt"></i>
-                            <span>${office.locationOffice}</span>
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        <p class="card-description">${office.descriptionOffice}</p>
-                        <div class="voters-count">
-                            <i class="fas fa-users"></i>
-                            <span>${office.voters} registered voters</span>
-                        </div>
-                    </div>
-                    <div class="card-footer">
-                        <div class="office-id">
-                            <i class="fas fa-hashtag"></i>
-                            <span>ID: ${office.idOffice}</span>
-                        </div>
-                        <div class="action-btns">
-                            <a href="/offices/${office.idOffice}" class="action-btn view-btn">
-                                <i class="fas fa-eye"></i> View
-                            </a>
-                            <a href="/offices/${office.idOffice}/edit" class="action-btn edit-btn">
-                                <i class="fas fa-edit"></i> Edit
-                            </a>
-                            <a href="/offices/${office.idOffice}/delete" class="action-btn delete-btn">
-                                <i class="fas fa-trash"></i> Delete
-                            </a>
-                        </div>
-                    </div>
-                `;
+            <div class="card-header">
+                <h3 class="card-title">${office.nameOffice}</h3>
+                <div class="card-location">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <span>${office.locationOffice}</span>
+                </div>
+            </div>
+            <div class="card-body">
+                <p class="card-description">${office.descriptionOffice}</p>
+                <div class="voters-count">
+                    <i class="fas fa-users"></i>
+                    <span>${office.voters} registered voters</span>
+                </div>
+            </div>
+            <div class="card-footer">
+                <div class="office-id">
+                    <i class="fas fa-hashtag"></i>
+                    <span>ID: ${office.idOffice}</span>
+                </div>
+                <div class="action-btns">
+                    <a href="/offices/${office.idOffice}" class="action-btn view-btn">
+                        <i class="fas fa-eye"></i> View
+                    </a>
+                    <a href="/offices/${office.idOffice}/edit" class="action-btn edit-btn">
+                        <i class="fas fa-edit"></i> Edit
+                    </a>
+                    <a href="/offices/${office.idOffice}/delete" class="action-btn delete-btn">
+                        <i class="fas fa-trash"></i> Delete
+                    </a>
+                </div>
+            </div>
+        `;
 
         officesContainer.appendChild(officeCard);
     });
@@ -172,29 +159,12 @@ function handleSearch() {
     const filteredOffices = offices.filter(office =>
         office.nameOffice.toLowerCase().includes(searchTerm) ||
         office.locationOffice.toLowerCase().includes(searchTerm) ||
-        office.idOffice.toString().includes(searchTerm)
+        office.descriptionOffice.toLowerCase().includes(searchTerm) ||
+        office.idOffice.toString().includes(searchTerm) ||
+        office.voters.toString().includes(searchTerm)
     );
 
     currentPage = 1;
     renderOffices(filteredOffices);
     setupPagination(filteredOffices);
 }
-
-// In a real application, you would fetch offices from your API:
-/*
-async function fetchOffices() {
-    try {
-        const response = await fetch('/api/offices');
-        const data = await response.json();
-        offices = data;
-        renderOffices();
-        setupPagination();
-    } catch (error) {
-        console.error('Error fetching offices:', error);
-        officesContainer.innerHTML = '<p class="error-message">Error loading offices. Please try again later.</p>';
-    }
-}
-
-// Call this instead of using sample data
-fetchOffices();
-*/

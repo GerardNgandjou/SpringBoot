@@ -1,6 +1,5 @@
 package com.example.vote.onlinevote.repository;
 
-import com.example.vote.onlinevote.dto.CandidateResponseDto;
 import com.example.vote.onlinevote.model.Candidate;
 import org.springframework.data.jpa.repository.JpaRepository;
 
