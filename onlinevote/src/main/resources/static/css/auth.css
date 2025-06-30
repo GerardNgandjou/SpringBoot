@@ -107,6 +107,117 @@ body {
     color: var(--gray-color);
 }
 
+/* Password Strength Meter */
+#password-strength-meter {
+    margin-top: 8px;
+    display: flex;
+    align-items: center;
+}
+
+.strength-bar {
+    height: 5px;
+    flex-grow: 1;
+    margin-right: 3px;
+    background-color: #ddd;
+    border-radius: 2px;
+    transition: background-color 0.3s ease;
+}
+
+#password-strength-text {
+    margin-left: 10px;
+    font-size: 12px;
+    color: #666;
+}
+
+/* 2FA Section */
+.two-factor-auth {
+    margin-top: 20px;
+    padding: 15px;
+    background-color: #f8f9fa;
+    border-radius: 5px;
+    text-align: center;
+}
+
+.two-factor-auth h3 {
+    margin-top: 0;
+    color: #333;
+}
+
+.two-factor-auth input {
+    width: 150px;
+    padding: 10px;
+    margin: 10px 0;
+    text-align: center;
+    font-size: 18px;
+    letter-spacing: 2px;
+}
+
+.verify-button, .resend-button {
+    padding: 8px 15px;
+    margin: 5px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.verify-button {
+    background-color: #28a745;
+    color: white;
+}
+
+.resend-button {
+    background-color: #6c757d;
+    color: white;
+}
+
+/* Social Login */
+.social-icons {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 10px;
+}
+
+.social-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    text-decoration: none;
+    transition: transform 0.3s ease;
+}
+
+.social-icon:hover {
+    transform: scale(1.1);
+}
+
+.social-icon.google {
+    background-color: #DB4437;
+}
+
+.social-icon.facebook {
+    background-color: #4267B2;
+}
+
+.social-icon.github {
+    background-color: #333;
+}
+
+/* CAPTCHA */
+.g-recaptcha {
+    margin: 15px 0;
+    display: flex;
+    justify-content: center;
+}
+
+/* Loading State */
+.fa-spinner.fa-spin {
+    margin-right: 8px;
+}
+
 .form-options {
     display: flex;
     justify-content: space-between;

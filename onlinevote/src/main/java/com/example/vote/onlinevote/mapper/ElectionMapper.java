@@ -32,6 +32,7 @@ public class ElectionMapper {
     }
 
 public Election toElection(ElectionDto electionDto) {
+    
     List<User> users = userRepository.findAllById(electionDto.registeredVoterIds());
     return new Election(
             electionDto.electionName(),

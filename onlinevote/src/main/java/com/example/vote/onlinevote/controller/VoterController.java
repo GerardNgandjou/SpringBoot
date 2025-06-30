@@ -2,7 +2,6 @@ package com.example.vote.onlinevote.controller;
 
 import com.example.vote.onlinevote.dto.VoterDto;
 import com.example.vote.onlinevote.dto.VoterResponseDto;
-import com.example.vote.onlinevote.model.Voter;
 import com.example.vote.onlinevote.sevirce.VoterService;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
@@ -35,8 +34,7 @@ public class VoterController {
     }
 
     @GetMapping("/voter/add")
-    public String showRegisterPage(Model model) {
-        model.addAttribute("voter", new Voter()); // or VoterResponseDto depending on what your form expects
+    public String showRegisterPage() {
         return "registration";
     }
 

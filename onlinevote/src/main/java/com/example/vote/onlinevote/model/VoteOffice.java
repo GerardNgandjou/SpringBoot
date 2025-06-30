@@ -26,10 +26,11 @@ public class VoteOffice {
 
     public VoteOffice() {}
 
-    public VoteOffice(String nameOffice, String locationOffice, String descriptionOffice) {
+    public VoteOffice(String nameOffice, String locationOffice, String descriptionOffice, List<Voter> voters) {
         this.nameOffice = nameOffice;
         this.locationOffice = locationOffice;
         this.descriptionOffice = descriptionOffice;
+        this.voters = voters;
     }
 
 }
