@@ -1,738 +1,813 @@
-/**
- * VoteNow Dashboard - Main Application Controller
- * 
- * Features:
- * - Modular architecture with ES6 classes
- * - Comprehensive state management
- * - Responsive sidebar navigation
- * - Dynamic content loading
- * - Notification system
- * - Election management
- * - Candidate management
- * - Voter management
- * - Vote office management
- * - Results visualization
- * - Settings management
- */
+document.addEventListener('DOMContentLoaded', function() {
+    // ======================
+    // Global Variables
+    // ======================
+    const sidebar = document.querySelector('.sidebar');
+    const sidebarToggle = document.querySelector('.sidebar-toggle');
+    const navLinks = document.querySelectorAll('.nav-link');
+    const contentSections = document.querySelectorAll('.content-section');
+    const notificationBell = document.querySelector('.notification-bell');
+    const notificationDropdown = document.querySelector('.notification-dropdown');
+    const profileDropdownBtn = document.querySelector('.profile-dropdown');
+    const profileDropdownMenu = document.querySelector('.dropdown-menu');
+    const logoutBtn = document.getElementById('logout-btn');
+    const logoutDropdownBtn = document.getElementById('logout-dropdown-btn');
+    const logoutModal = document.getElementById('logoutModal');
+    const confirmLogoutBtn = document.getElementById('confirmLogout');
+    const cancelLogoutBtn = document.querySelector('.modal-cancel');
+    const createElectionBtn = document.getElementById('createElectionBtn');
+    const createElectionModal = document.getElementById('createElectionModal');
+    const closeModalBtns = document.querySelectorAll('.modal-close, .modal-cancel');
+    const filterBtns = document.querySelectorAll('.filter-btn');
+    const addCandidateBtn = document.querySelector('[data-bs-target="#addCandidateModal"]');
+    const addOfficeBtn = document.getElementById('addOfficeBtn');
+    const applyFiltersBtn = document.getElementById('applyFilters');
+    const searchInputs = document.querySelectorAll('input[type="search"], #searchInput');
+    const electionSelect = document.querySelector('.election-select');
+    const settingsTabs = document.querySelectorAll('.settings-tab');
+    const settingsTabContents = document.querySelectorAll('.settings-tab-content');
+    const toggleSwitch = document.getElementById('2fa-toggle');
 
-class VoteNowDashboard {
-  constructor() {
-    this.state = {
-      currentSection: 'dashboard',
-      elections: [],
-      candidates: [],
-      voters: [],
-      offices: [],
-      notifications: [],
-      currentUser: {
-        name: 'Super Admin',
-        role: 'Admin',
-        avatar: '#'
-      },
-      filters: {
-        elections: 'all',
-        candidates: {},
-        voters: {},
-        offices: {}
-      },
-      pagination: {
-        currentPage: 1,
-        itemsPerPage: 10
-      }
-    };
-
-    this.init();
-  }
-
-  async init() {
-    try {
-      // Check authentication
-    //   if (!this.checkAuth()) {
-    //     window.location.href = '/login';
-    //     return;
-    //   }
-
-      // Initialize UI components
-      this.initUI();
-      
-      // Load initial data
-      await this.loadInitialData();
-      
-      // Set up event listeners
-      this.setupEventListeners();
-      
-      // Initial render
-      this.renderDashboard();
-
-    } catch (error) {
-      console.error('Initialization failed:', error);
-      this.showError('Failed to initialize dashboard. Please refresh the page.');
+    // ======================
+    // Helper Functions
+    // ======================
+    function debounce(func, wait) {
+        let timeout;
+        return function() {
+            const context = this, args = arguments;
+            clearTimeout(timeout);
+            timeout = setTimeout(() => func.apply(context, args), wait);
+        };
     }
-  }
 
-  // Authentication check
-  checkAuth() {
-    // In a real app, this would check for valid auth tokens
-    return document.cookie.includes('session_token');
-  }
-
-  // UI Initialization
-  initUI() {
-    // Initialize sidebar toggle
-    this.sidebarToggle = document.querySelector('.sidebar-toggle');
-    this.sidebar = document.querySelector('.sidebar');
-    
-    // Initialize notification system
-    this.notificationSystem = new NotificationSystem(this);
-    
-    // Initialize modals
-    this.modalManager = new ModalManager();
-    
-    // Initialize data tables
-    this.dataTableManager = new DataTableManager();
-    
-    // Set active user
-    this.updateUserProfile();
-  }
-
-  // Data Loading
-  async loadInitialData() {
-    try {
-      const [elections, candidates, voters, offices, notifications] = await Promise.all([
-        this.fetchData('/api/elections'),
-        this.fetchData('/api/candidates'),
-        this.fetchData('/api/voters'),
-        this.fetchData('/api/offices'),
-        this.fetchData('/api/notifications')
-      ]);
-
-      this.state = {
-        ...this.state,
-        elections,
-        candidates,
-        voters,
-        offices,
-        notifications
-      };
-
-    } catch (error) {
-      console.error('Error loading initial data:', error);
-      throw error;
+    function showSection(sectionId) {
+        contentSections.forEach(section => {
+            section.classList.remove('active');
+        });
+        document.getElementById(`${sectionId}-content`).classList.add('active');
+        
+        // Update URL hash
+        window.location.hash = sectionId;
+        
+        // Update active nav link
+        navLinks.forEach(link => {
+            link.classList.remove('active');
+            if (link.getAttribute('data-section') === sectionId) {
+                link.classList.add('active');
+            }
+        });
+        
+        // Initialize charts when results section is shown
+        if (sectionId === 'results') {
+            initResultsChart();
+        }
     }
-  }
 
-  async fetchData(endpoint) {
-    try {
-      const response = await fetch(endpoint);
-      if (!response.ok) throw new Error(`Failed to fetch ${endpoint}`);
-      return await response.json();
-    } catch (error) {
-      console.error(`Error fetching ${endpoint}:`, error);
-      return [];
+    function closeAllModals() {
+        document.querySelectorAll('.modal').forEach(modal => {
+            modal.classList.remove('active');
+        });
     }
-  }
 
-  // Event Handling
-  setupEventListeners() {
-    // Sidebar navigation
-    document.querySelectorAll('.nav-link').forEach(link => {
-      link.addEventListener('click', (e) => this.handleNavigation(e));
+    function toggleDropdown(dropdown) {
+        const isOpen = dropdown.style.display === 'block';
+        document.querySelectorAll('.dropdown-menu, .notification-dropdown').forEach(d => {
+            d.style.display = 'none';
+        });
+        dropdown.style.display = isOpen ? 'none' : 'block';
+    }
+
+    // ======================
+    // Event Listeners
+    // ======================
+    // Sidebar toggle for mobile
+    sidebarToggle.addEventListener('click', function() {
+        sidebar.classList.toggle('active');
+        this.setAttribute('aria-expanded', sidebar.classList.contains('active'));
     });
 
-    // Sidebar toggle
-    this.sidebarToggle.addEventListener('click', () => {
-      this.sidebar.classList.toggle('collapsed');
+    // Navigation between sections
+    navLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            const section = this.getAttribute('data-section');
+            showSection(section);
+            
+            // Close sidebar on mobile after navigation
+            if (window.innerWidth < 768) {
+                sidebar.classList.remove('active');
+                sidebarToggle.setAttribute('aria-expanded', 'false');
+            }
+        });
+    });
+
+    // Notification dropdown
+    notificationBell.addEventListener('click', function(e) {
+        e.stopPropagation();
+        toggleDropdown(notificationDropdown);
+    });
+
+    // Profile dropdown
+    profileDropdownBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        toggleDropdown(profileDropdownMenu);
     });
 
     // Logout buttons
-    document.getElementById('logout-btn').addEventListener('click', (e) => {
-      e.preventDefault();
-      this.modalManager.showModal('logoutModal');
-    });
-
-    document.getElementById('logout-dropdown-btn').addEventListener('click', (e) => {
-      e.preventDefault();
-      this.modalManager.showModal('logoutModal');
+    [logoutBtn, logoutDropdownBtn].forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            logoutModal.classList.add('active');
+        });
     });
 
     // Confirm logout
-    document.getElementById('confirmLogout').addEventListener('click', () => {
-      this.logout();
+    confirmLogoutBtn.addEventListener('click', function() {
+        // In a real app, you would handle logout logic here
+        console.log('User logged out');
+        window.location.href = 'login.html'; // Redirect to login page
     });
 
-    // Create election button
-    document.getElementById('createElectionBtn').addEventListener('click', (e) => {
-      e.preventDefault();
-      this.modalManager.showModal('createElectionModal');
+    // Cancel logout
+    cancelLogoutBtn.addEventListener('click', function() {
+        logoutModal.classList.remove('active');
     });
 
-    // Election filter buttons
-    document.querySelectorAll('.filter-btn').forEach(btn => {
-      btn.addEventListener('click', () => this.filterElections(btn.dataset.status));
+    // Close modals when clicking outside or on close button
+    closeModalBtns.forEach(btn => {
+        btn.addEventListener('click', closeAllModals);
     });
 
-    // Search functionality
-    document.getElementById('searchInput').addEventListener('input', (e) => {
-      this.handleSearch(e.target.value);
-    });
-
-    // Add more event listeners as needed...
-  }
-
-  // Navigation
-  handleNavigation(event) {
-    event.preventDefault();
-    const section = event.currentTarget.dataset.section;
-    this.showSection(section);
-  }
-
-  showSection(section) {
-    // Update active nav item
-    document.querySelectorAll('.nav-link').forEach(link => {
-      link.classList.remove('active');
-      if (link.dataset.section === section) {
-        link.classList.add('active');
-      }
-    });
-
-    // Hide all content sections
-    document.querySelectorAll('.content-section').forEach(section => {
-      section.classList.remove('active');
-    });
-
-    // Show selected section
-    const sectionElement = document.getElementById(`${section}-content`);
-    if (sectionElement) {
-      sectionElement.classList.add('active');
-      this.state.currentSection = section;
-
-      // Load section-specific content
-      switch(section) {
-        case 'dashboard':
-          this.renderDashboard();
-          break;
-        case 'elections':
-          this.renderElections();
-          break;
-        case 'candidates':
-          this.renderCandidates();
-          break;
-        case 'voters':
-          this.renderVoters();
-          break;
-        case 'voteoffice':
-          this.renderOffices();
-          break;
-        case 'results':
-          this.renderResults();
-          break;
-        case 'settings':
-          this.renderSettings();
-          break;
-      }
-    }
-  }
-
-  // Rendering Methods
-  renderDashboard() {
-    this.renderSummaryCards();
-    this.renderActiveElections();
-    this.renderRecentActivity();
-  }
-
-  renderSummaryCards() {
-    // Update card values from state
-    document.querySelector('.card.voters .card-value').textContent = 
-      this.state.voters.length.toLocaleString();
-    
-    document.querySelector('.card.elections .card-value').textContent = 
-      this.state.elections.filter(e => e.status === 'active').length;
-    
-    document.querySelector('.card.candidates .card-value').textContent = 
-      this.state.candidates.length;
-    
-    document.querySelector('.card.completed .card-value').textContent = 
-      this.state.elections.filter(e => e.status === 'ended').length;
-  }
-
-  renderActiveElections() {
-    const activeElections = this.state.elections.filter(e => e.status === 'active');
-    const container = document.querySelector('.elections-grid');
-    
-    if (activeElections.length === 0) {
-      container.innerHTML = '<p class="no-results">No active elections</p>';
-      return;
-    }
-
-    container.innerHTML = activeElections.map(election => `
-      <div class="election-card">
-        <div class="election-banner" style="background: ${this.getRandomGradient()}">
-          <i class="fas ${this.getElectionIcon(election.type)}"></i>
-          <span class="election-status active">Active • ${this.getTimeRemaining(election.endDate)}</span>
-        </div>
-        <div class="election-details">
-          <h3 class="election-title">${election.name}</h3>
-          <div class="election-meta">
-            <div class="election-date">
-              <i class="far fa-calendar-alt"></i> ${this.formatDateRange(election.startDate, election.endDate)}
-            </div>
-            <div><i class="fas fa-users"></i> ${election.candidates.length} candidates</div>
-          </div>
-          <div class="progress-container">
-            <div class="progress-label">
-              <span>Participation (${election.voters.length} voters)</span>
-              <span>${election.participationRate}%</span>
-            </div>
-            <div class="progress-bar">
-              <div class="progress-fill" style="width: ${election.participationRate}%"></div>
-            </div>
-          </div>
-          <div class="election-stats">
-            <div class="stat-item">
-              <i class="fas fa-check-circle"></i>
-              <span>${election.verifiedVoters} Verified</span>
-            </div>
-            <div class="stat-item">
-              <i class="fas fa-user-clock"></i>
-              <span>${election.pendingVoters} Pending</span>
-            </div>
-          </div>
-          <div class="election-actions">
-            <button class="btn btn-outline">
-              <i class="fas fa-chart-bar"></i> Results
-            </button>
-            <button class="btn btn-primary">
-              <i class="fas fa-cog"></i> Manage
-            </button>
-          </div>
-        </div>
-      </div>
-    `).join('');
-  }
-
-  renderRecentActivity() {
-    const recentActivity = this.state.notifications.slice(0, 3);
-    const container = document.querySelector('.activity-timeline');
-    
-    container.innerHTML = recentActivity.map(activity => `
-      <div class="timeline-item">
-        <div class="timeline-icon ${activity.type}">
-          <i class="fas ${this.getActivityIcon(activity.type)}"></i>
-        </div>
-        <div class="timeline-content">
-          <p>${activity.message}</p>
-          <small>${this.formatTimeAgo(activity.timestamp)}</small>
-        </div>
-      </div>
-    `).join('');
-  }
-
-  renderElections(filteredElections = this.state.elections) {
-    const container = document.getElementById('electionsContainer');
-    
-    if (filteredElections.length === 0) {
-      container.innerHTML = '<div class="no-results">No elections found matching your criteria.</div>';
-      return;
-    }
-
-    container.innerHTML = filteredElections.map(election => this.createElectionCard(election)).join('');
-  }
-
-  createElectionCard(election) {
-    const statusClass = `status-${election.status}`;
-    const statusText = election.status.charAt(0).toUpperCase() + election.status.slice(1);
-    const startDate = new Date(election.startDate).toLocaleDateString();
-    const endDate = new Date(election.endDate).toLocaleDateString();
-
-    return `
-      <div class="election-card" aria-labelledby="election-${election.id}-title">
-        <div class="card-header">
-          <span class="status-badge ${statusClass}">${statusText}</span>
-          <h3 id="election-${election.id}-title" class="card-title">${election.name}</h3>
-        </div>
-        <div class="card-body">
-          <p class="card-description">${election.description}</p>
-          <div class="card-dates">
-            <div class="date-item">
-              <i class="fas fa-calendar-alt" aria-hidden="true"></i>
-              <span>Starts: ${startDate}</span>
-            </div>
-            <div class="date-item">
-              <i class="fas fa-calendar-check" aria-hidden="true"></i>
-              <span>Ends: ${endDate}</span>
-            </div>
-          </div>
-        </div>
-        <div class="card-footer">
-          <div class="participants">
-            <i class="fas fa-users" aria-hidden="true"></i>
-            <span>${election.participants} participants</span>
-          </div>
-          ${this.createElectionActionButton(election)}
-        </div>
-      </div>
-    `;
-  }
-
-  // ... Similar render methods for candidates, voters, offices, results, and settings ...
-
-  // Filtering and Searching
-  filterElections(status) {
-    // Update active filter button
-    document.querySelectorAll('.filter-btn').forEach(btn => {
-      btn.classList.remove('active');
-      if (btn.dataset.status === status) {
-        btn.classList.add('active');
-      }
-    });
-
-    // Filter elections
-    let filteredElections;
-    if (status === 'all') {
-      filteredElections = this.state.elections;
-    } else {
-      filteredElections = this.state.elections.filter(election => election.status === status);
-    }
-
-    this.renderElections(filteredElections);
-  }
-
-  handleSearch(query) {
-    const normalizedQuery = query.toLowerCase().trim();
-    
-    switch(this.state.currentSection) {
-      case 'elections':
-        const filtered = this.state.elections.filter(election => 
-          election.name.toLowerCase().includes(normalizedQuery) ||
-          election.description.toLowerCase().includes(normalizedQuery)
-        );
-        this.renderElections(filtered);
-        break;
+    window.addEventListener('click', function(e) {
+        // Close dropdowns when clicking outside
+        if (!e.target.closest('.notification-bell') && notificationDropdown.style.display === 'block') {
+            notificationDropdown.style.display = 'none';
+        }
         
-      case 'candidates':
-        // Filter candidates
-        break;
+        if (!e.target.closest('.profile-dropdown') && profileDropdownMenu.style.display === 'block') {
+            profileDropdownMenu.style.display = 'none';
+        }
         
-      case 'voters':
-        // Filter voters
-        break;
+        // Close modals when clicking on backdrop
+        if (e.target.classList.contains('modal')) {
+            closeAllModals();
+        }
+    });
+
+    // Filter buttons in elections section
+    filterBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            filterBtns.forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            const status = this.getAttribute('data-status');
+            filterElections(status);
+        });
+    });
+
+    // Search functionality with debounce
+    searchInputs.forEach(input => {
+        input.addEventListener('input', debounce(function() {
+            const searchTerm = this.value.toLowerCase();
+            const containerId = this.closest('.container') ? 'electionsContainer' : 
+                              this.closest('.app-main') ? 'candidatesTable' : 
+                              this.closest('.controls') ? 'officesContainer' : 
+                              'votersTableBody';
+            
+            const items = document.querySelectorAll(`#${containerId} .election-card, #${containerId} tr`);
+            
+            items.forEach(item => {
+                const text = item.textContent.toLowerCase();
+                item.style.display = text.includes(searchTerm) ? '' : 'none';
+            });
+        }, 300));
+    });
+
+    // Election select change
+    if (electionSelect) {
+        electionSelect.addEventListener('change', function() {
+            // In a real app, you would fetch results for the selected election
+            console.log('Selected election:', this.value);
+            updateResults(this.value);
+        });
+    }
+
+    // Settings tabs
+    settingsTabs.forEach(tab => {
+        tab.addEventListener('click', function() {
+            const tabName = this.getAttribute('data-tab');
+            
+            settingsTabs.forEach(t => t.classList.remove('active'));
+            settingsTabContents.forEach(c => c.classList.remove('active'));
+            
+            this.classList.add('active');
+            document.querySelector(`.settings-tab-content[data-tab="${tabName}"]`).classList.add('active');
+        });
+    });
+
+    // 2FA toggle switch
+    if (toggleSwitch) {
+        toggleSwitch.addEventListener('change', function() {
+            console.log('2FA status:', this.checked ? 'Enabled' : 'Disabled');
+            // In a real app, you would update the user's 2FA setting via API
+        });
+    }
+
+    // Apply filters in voters section
+    if (applyFiltersBtn) {
+        applyFiltersBtn.addEventListener('click', function() {
+            const region = document.getElementById('regionFilter').value;
+            const party = document.getElementById('partyFilter').value;
+            const gender = document.getElementById('genderFilter').value;
+            
+            // In a real app, you would filter voters based on these criteria
+            console.log('Applying filters:', { region, party, gender });
+            filterVoters(region, party, gender);
+        });
+    }
+
+    // ======================
+    // Initialization Functions
+    // ======================
+    function initDashboard() {
+        // Show section based on URL hash or default to dashboard
+        const hash = window.location.hash.substring(1);
+        const validSections = ['dashboard', 'elections', 'candidates', 'voters', 'voteoffice', 'results', 'settings'];
         
-      case 'voteoffice':
-        // Filter offices
-        break;
+        if (hash && validSections.includes(hash)) {
+            showSection(hash);
+        } else {
+            showSection('dashboard');
+        }
+        
+        // Load initial data
+        loadElections();
+        loadCandidates();
+        loadVoters();
+        loadVoteOffices();
     }
-  }
 
-  // User Management
-  updateUserProfile() {
-    const user = this.state.currentUser;
-    const profileImg = document.querySelector('.profile-img');
-    const userName = document.querySelector('.user-info h4');
-    const userRole = document.querySelector('.user-info p');
-    
-    if (profileImg) profileImg.src = user.avatar;
-    if (userName) userName.textContent = user.name;
-    if (userRole) userRole.textContent = user.role;
-  }
+    function loadElections() {
+        // In a real app, you would fetch this data from an API
+        const elections = [
+            {
+                id: 1,
+                title: "Student Council Election 2024",
+                description: "Annual election for student council positions",
+                startDate: "2024-05-15",
+                endDate: "2024-05-30",
+                status: "active",
+                candidates: 4,
+                voters: 1245,
+                verified: 782,
+                pending: 463,
+                participation: 62,
+                bannerColor: "linear-gradient(135deg, #4361ee, #4895ef)"
+            },
+            {
+                id: 2,
+                title: "HOA Board Election",
+                description: "Homeowners association board member election",
+                startDate: "2024-05-25",
+                endDate: "2024-05-31",
+                status: "active",
+                candidates: 5,
+                voters: 892,
+                verified: 512,
+                pending: 380,
+                participation: 45,
+                bannerColor: "linear-gradient(135deg, #f72585, #b5179e)"
+            },
+            {
+                id: 3,
+                title: "Faculty Senate Election (2023)",
+                description: "Election for faculty senate representatives",
+                startDate: "2023-11-01",
+                endDate: "2023-11-15",
+                status: "ended",
+                candidates: 8,
+                voters: 1560,
+                verified: 1450,
+                pending: 110,
+                participation: 93,
+                bannerColor: "linear-gradient(135deg, #3f37c9, #560bad)"
+            }
+        ];
 
-//   logout() {
-//     // In a real app, this would make an API call to invalidate the session
-//     document.cookie = 'session_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
-//     window.location.href = '/login';
-//   }
+        const container = document.getElementById('electionsContainer');
+        container.innerHTML = '';
 
-  // Utility Methods
-  formatDate(dateString) {
-    const options = { year: 'numeric', month: 'short', day: 'numeric' };
-    return new Date(dateString).toLocaleDateString(undefined, options);
-  }
+        elections.forEach(election => {
+            const daysLeft = election.status === 'active' ? 
+                Math.ceil((new Date(election.endDate) - new Date()) / (1000 * 60 * 60 * 24)) : 
+                null;
 
-  formatTimeAgo(timestamp) {
-    const seconds = Math.floor((new Date() - new Date(timestamp)) / 1000);
-    
-    const intervals = {
-      year: 31536000,
-      month: 2592000,
-      week: 604800,
-      day: 86400,
-      hour: 3600,
-      minute: 60
-    };
-    
-    for (const [unit, secondsInUnit] of Object.entries(intervals)) {
-      const interval = Math.floor(seconds / secondsInUnit);
-      if (interval >= 1) {
-        return interval === 1 ? `${interval} ${unit} ago` : `${interval} ${unit}s ago`;
-      }
+            const electionCard = document.createElement('div');
+            electionCard.className = 'election-card';
+            electionCard.innerHTML = `
+                <div class="election-banner" style="background: ${election.bannerColor}">
+                    <i class="fas fa-vote-yea"></i>
+                    <span class="election-status ${election.status}">
+                        ${election.status === 'active' ? `Active • ${daysLeft} days left` : 
+                          election.status === 'coming' ? 'Coming Soon' : 'Ended'}
+                    </span>
+                </div>
+                <div class="election-details">
+                    <h3 class="election-title">${election.title}</h3>
+                    <div class="election-meta">
+                        <div class="election-date">
+                            <i class="far fa-calendar-alt"></i> 
+                            ${formatDate(election.startDate)} - ${formatDate(election.endDate)}
+                        </div>
+                        <div><i class="fas fa-users"></i> ${election.candidates} candidates</div>
+                    </div>
+                    <div class="progress-container">
+                        <div class="progress-label">
+                            <span>Participation (${election.voters} voters)</span>
+                            <span>${election.participation}%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: ${election.participation}%"></div>
+                        </div>
+                    </div>
+                    <div class="election-stats">
+                        <div class="stat-item">
+                            <i class="fas fa-check-circle"></i>
+                            <span>${election.verified} Verified</span>
+                        </div>
+                        <div class="stat-item">
+                            <i class="fas fa-user-clock"></i>
+                            <span>${election.pending} Pending</span>
+                        </div>
+                    </div>
+                    <div class="election-actions">
+                        <button class="btn btn-outline">
+                            <i class="fas fa-chart-bar"></i> Results
+                        </button>
+                        <button class="btn btn-primary">
+                            <i class="fas fa-cog"></i> Manage
+                        </button>
+                    </div>
+                </div>
+            `;
+            container.appendChild(electionCard);
+        });
     }
-    
-    return 'Just now';
-  }
 
-  getRandomGradient() {
-    const gradients = [
-      'linear-gradient(135deg, #4f46e5, #7c3aed)',
-      'linear-gradient(135deg, #f72585, #b5179e)',
-      'linear-gradient(135deg, #3f37c9, #4361ee)',
-      'linear-gradient(135deg, #4895ef, #4cc9f0)'
-    ];
-    return gradients[Math.floor(Math.random() * gradients.length)];
-  }
+    function loadCandidates() {
+        // In a real app, you would fetch this data from an API
+        const candidates = [
+            {
+                id: 1,
+                firstname: "Michael",
+                lastname: "Chen",
+                birthdate: "1990-05-15",
+                gender: "Male",
+                party: "Progressive",
+                role: "President",
+                region: "North",
+                location: "Capital City"
+            },
+            {
+                id: 2,
+                firstname: "Sarah",
+                lastname: "Williams",
+                birthdate: "1985-08-22",
+                gender: "Female",
+                party: "Unity",
+                role: "Vice President",
+                region: "East",
+                location: "Coastal Town"
+            },
+            {
+                id: 3,
+                firstname: "James",
+                lastname: "Wilson",
+                birthdate: "1978-11-30",
+                gender: "Male",
+                party: "Progressive",
+                role: "Secretary",
+                region: "West",
+                location: "Mountain View"
+            }
+        ];
 
-  getElectionIcon(type) {
-    const icons = {
-      student: 'fa-graduation-cap',
-      hoa: 'fa-home',
-      corporate: 'fa-building',
-      default: 'fa-vote-yea'
-    };
-    return icons[type] || icons.default;
-  }
+        const tbody = document.querySelector('#candidatesTable tbody');
+        tbody.innerHTML = '';
 
-  getActivityIcon(type) {
-    const icons = {
-      success: 'fa-check-circle',
-      info: 'fa-info-circle',
-      warning: 'fa-exclamation-triangle',
-      error: 'fa-times-circle'
-    };
-    return icons[type] || 'fa-info-circle';
-  }
-
-  showError(message) {
-    const errorContainer = document.getElementById('error-container') || document.createElement('div');
-    errorContainer.id = 'error-container';
-    errorContainer.style.position = 'fixed';
-    errorContainer.style.top = '20px';
-    errorContainer.style.right = '20px';
-    errorContainer.style.zIndex = '1000';
-    
-    errorContainer.innerHTML = `
-      <div class="alert alert-danger" role="alert">
-        <i class="fas fa-exclamation-triangle"></i> ${message}
-      </div>
-    `;
-    
-    document.body.appendChild(errorContainer);
-    
-    setTimeout(() => {
-      errorContainer.style.opacity = '0';
-      setTimeout(() => errorContainer.remove(), 300);
-    }, 5000);
-  }
-}
-
-// Notification System
-class NotificationSystem {
-  constructor(dashboard) {
-    this.dashboard = dashboard;
-    this.notificationBell = document.querySelector('.notification-bell');
-    this.notificationDropdown = document.querySelector('.notification-dropdown');
-    this.setup();
-  }
-
-  setup() {
-    this.notificationBell.addEventListener('click', (e) => {
-      e.stopPropagation();
-      this.toggleNotifications();
-    });
-
-    document.addEventListener('click', () => {
-      this.notificationDropdown.classList.remove('active');
-    });
-
-    // Mark all as read
-    document.querySelector('.mark-all-read')?.addEventListener('click', () => {
-      this.markAllAsRead();
-    });
-  }
-
-  toggleNotifications() {
-    this.notificationDropdown.classList.toggle('active');
-  }
-
-  markAllAsRead() {
-    this.dashboard.state.notifications.forEach(n => n.read = true);
-    this.updateNotificationCount(0);
-    this.renderNotifications();
-  }
-
-  updateNotificationCount(count) {
-    const counter = document.querySelector('.notification-count');
-    if (counter) {
-      counter.textContent = count;
-      counter.style.display = count > 0 ? 'flex' : 'none';
+        candidates.forEach(candidate => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>
+                    <div class="d-flex align-items-center">
+                        <div class="avatar me-3">
+                            ${candidate.firstname.charAt(0)}${candidate.lastname.charAt(0)}
+                        </div>
+                        <div>
+                            <div class="fw-bold">${candidate.firstname} ${candidate.lastname}</div>
+                            <div class="text-muted small">${candidate.role}</div>
+                        </div>
+                    </div>
+                </td>
+                <td>
+                    <div>${formatDate(candidate.birthdate, 'dd MMM yyyy')}</div>
+                    <div class="text-muted small">${candidate.gender}</div>
+                </td>
+                <td>${candidate.location}</td>
+                <td>${candidate.region}</td>
+                <td>
+                    <span class="badge bg-primary">${candidate.party}</span>
+                </td>
+                <td>
+                    <div class="btn-group btn-group-sm">
+                        <button class="btn btn-outline-primary" title="View">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <button class="btn btn-outline-secondary" title="Edit">
+                            <i class="fas fa-pencil-alt"></i>
+                        </button>
+                        <button class="btn btn-outline-danger" title="Delete">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </td>
+            `;
+            tbody.appendChild(row);
+        });
     }
-  }
 
-  renderNotifications() {
-    const unreadCount = this.dashboard.state.notifications.filter(n => !n.read).length;
-    this.updateNotificationCount(unreadCount);
-    
-    if (this.notificationDropdown) {
-      this.notificationDropdown.innerHTML = `
-        <div class="notification-header">
-          <h4>Notifications</h4>
-          <button class="mark-all-read">Mark all as read</button>
-        </div>
-        ${this.dashboard.state.notifications.slice(0, 5).map(n => `
-          <div class="notification-item ${n.read ? '' : 'unread'}">
-            <div class="notification-icon">
-              <i class="fas ${this.dashboard.getActivityIcon(n.type)}"></i>
+    function loadVoters() {
+        // In a real app, you would fetch this data from an API
+        const voters = [
+            {
+                id: 1,
+                firstname: "Alex",
+                lastname: "Johnson",
+                birthdate: "1982-03-12",
+                gender: "Male",
+                location: "Capital City",
+                region: "North",
+                party: "Progressive",
+                role: "Member",
+                status: "active"
+            },
+            {
+                id: 2,
+                firstname: "Maria",
+                lastname: "Garcia",
+                birthdate: "1991-07-25",
+                gender: "Female",
+                location: "Coastal Town",
+                region: "East",
+                party: "Unity",
+                role: "Volunteer",
+                status: "active"
+            },
+            {
+                id: 3,
+                firstname: "David",
+                lastname: "Kim",
+                birthdate: "1975-11-08",
+                gender: "Male",
+                location: "Mountain View",
+                region: "West",
+                party: "Independent",
+                role: "Observer",
+                status: "inactive"
+            }
+        ];
+
+        const tbody = document.getElementById('votersTableBody');
+        tbody.innerHTML = '';
+
+        voters.forEach(voter => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${voter.firstname} ${voter.lastname}</td>
+                <td>${formatDate(voter.birthdate)}</td>
+                <td>${voter.gender}</td>
+                <td>${voter.location}</td>
+                <td>${voter.region}</td>
+                <td>${voter.party}</td>
+                <td>${voter.role}</td>
+                <td>
+                    <button class="btn btn-sm btn-outline-primary view-voter" data-id="${voter.id}">
+                        <i class="fas fa-eye"></i> View
+                    </button>
+                </td>
+            `;
+            tbody.appendChild(row);
+        });
+
+        // Add event listeners to view buttons
+        document.querySelectorAll('.view-voter').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const voterId = this.getAttribute('data-id');
+                showVoterDetails(voterId);
+            });
+        });
+    }
+
+    function loadVoteOffices() {
+        // In a real app, you would fetch this data from an API
+        const offices = [
+            {
+                id: 1,
+                name: "Main Election Office",
+                location: "123 Democracy Ave, Capital City",
+                manager: "John Smith",
+                contact: "office@votenow.org"
+            },
+            {
+                id: 2,
+                name: "North Region Office",
+                location: "456 Freedom St, North Town",
+                manager: "Lisa Brown",
+                contact: "north@votenow.org"
+            },
+            {
+                id: 3,
+                name: "East Coastal Office",
+                location: "789 Liberty Blvd, Coastal City",
+                manager: "Robert Lee",
+                contact: "east@votenow.org"
+            }
+        ];
+
+        const container = document.getElementById('officesContainer');
+        container.innerHTML = '';
+
+        offices.forEach(office => {
+            const officeCard = document.createElement('div');
+            officeCard.className = 'office-card';
+            officeCard.innerHTML = `
+                <h3 class="office-name">${office.name}</h3>
+                <div class="office-location">
+                    <i class="fas fa-map-marker-alt"></i>
+                    ${office.location}
+                </div>
+                <div class="office-staff">
+                    <p><strong>Manager:</strong> ${office.manager}</p>
+                    <p><strong>Contact:</strong> ${office.contact}</p>
+                </div>
+                <div class="office-actions">
+                    <button class="btn btn-outline btn-sm">
+                        <i class="fas fa-edit"></i> Edit
+                    </button>
+                    <button class="btn btn-outline btn-sm">
+                        <i class="fas fa-users"></i> Staff
+                    </button>
+                </div>
+            `;
+            container.appendChild(officeCard);
+        });
+    }
+
+    function initResultsChart() {
+        const ctx = document.createElement('canvas');
+        const placeholder = document.querySelector('.chart-placeholder');
+        placeholder.parentNode.replaceChild(ctx, placeholder);
+
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Michael Chen', 'Sarah Williams', 'James Wilson'],
+                datasets: [{
+                    label: 'Votes',
+                    data: [342, 289, 151],
+                    backgroundColor: [
+                        '#4f46e5',
+                        '#f59e0b',
+                        '#10b981'
+                    ],
+                    borderColor: [
+                        '#4f46e5',
+                        '#f59e0b',
+                        '#10b981'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return `${context.dataset.label}: ${context.raw}`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Number of Votes'
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Candidates'
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    // ======================
+    // Utility Functions
+    // ======================
+    function formatDate(dateString, format = 'yyyy-MM-dd') {
+        const date = new Date(dateString);
+        const options = { year: 'numeric', month: 'short', day: 'numeric' };
+        return date.toLocaleDateString(undefined, options);
+    }
+
+    function filterElections(status) {
+        const electionCards = document.querySelectorAll('.election-card');
+        
+        electionCards.forEach(card => {
+            const cardStatus = card.querySelector('.election-status').className.includes('active') ? 'active' : 
+                             card.querySelector('.election-status').className.includes('coming') ? 'upcoming' : 
+                             'ended';
+            
+            if (status === 'all' || cardStatus === status) {
+                card.style.display = '';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+    }
+
+    function filterVoters(region, party, gender) {
+        const voterRows = document.querySelectorAll('#votersTableBody tr');
+        
+        voterRows.forEach(row => {
+            const rowRegion = row.cells[4].textContent;
+            const rowParty = row.cells[5].textContent;
+            const rowGender = row.cells[2].textContent;
+            
+            const regionMatch = !region || rowRegion === region;
+            const partyMatch = !party || rowParty === party;
+            const genderMatch = !gender || rowGender === gender;
+            
+            row.style.display = regionMatch && partyMatch && genderMatch ? '' : 'none';
+        });
+    }
+
+    function showVoterDetails(voterId) {
+        // In a real app, you would fetch voter details from an API
+        const voterDetails = {
+            id: voterId,
+            firstname: "Alex",
+            lastname: "Johnson",
+            birthdate: "1982-03-12",
+            gender: "Male",
+            email: "alex.johnson@example.com",
+            phone: "+1 555-123-4567",
+            address: "123 Main St, Capital City",
+            region: "North",
+            party: "Progressive",
+            role: "Member",
+            status: "active",
+            registered: "2023-01-15",
+            lastVoted: "2023-11-05"
+        };
+
+        const modalContent = document.getElementById('voterDetailsContent');
+        modalContent.innerHTML = `
+            <div class="row">
+                <div class="col-md-4 text-center mb-4">
+                    <div class="voter-avatar mb-3" style="width: 120px; height: 120px; font-size: 2.5rem;">
+                        ${voterDetails.firstname.charAt(0)}${voterDetails.lastname.charAt(0)}
+                    </div>
+                    <h4>${voterDetails.firstname} ${voterDetails.lastname}</h4>
+                    <span class="badge ${voterDetails.status === 'active' ? 'bg-success' : 'bg-secondary'}">
+                        ${voterDetails.status}
+                    </span>
+                </div>
+                <div class="col-md-8">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <p><strong>Birth Date:</strong> ${formatDate(voterDetails.birthdate)}</p>
+                            <p><strong>Gender:</strong> ${voterDetails.gender}</p>
+                            <p><strong>Email:</strong> ${voterDetails.email}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Phone:</strong> ${voterDetails.phone}</p>
+                            <p><strong>Address:</strong> ${voterDetails.address}</p>
+                            <p><strong>Region:</strong> ${voterDetails.region}</p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>Political Party:</strong> ${voterDetails.party}</p>
+                            <p><strong>Role:</strong> ${voterDetails.role}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Registered:</strong> ${formatDate(voterDetails.registered)}</p>
+                            <p><strong>Last Voted:</strong> ${voterDetails.lastVoted ? formatDate(voterDetails.lastVoted) : 'Never'}</p>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="notification-content">
-              <p>${n.message}</p>
-              <small>${this.dashboard.formatTimeAgo(n.timestamp)}</small>
-            </div>
-          </div>
-        `).join('')}
-      `;
+        `;
+
+        // Show the modal
+        document.getElementById('voterDetailsModal').classList.add('show');
+        document.getElementById('voterDetailsModal').style.display = 'block';
+        document.body.classList.add('modal-open');
     }
-  }
-}
 
-// Modal Manager
-class ModalManager {
-  constructor() {
-    this.modals = {};
-    this.setupModals();
-  }
-
-  setupModals() {
-    document.querySelectorAll('.modal').forEach(modal => {
-      const id = modal.id;
-      this.modals[id] = modal;
-      
-      // Close buttons
-      modal.querySelectorAll('.modal-close, .modal-cancel').forEach(btn => {
-        btn.addEventListener('click', () => this.hideModal(id));
-      });
-      
-      // Prevent click inside modal from closing it
-      modal.querySelector('.modal-content')?.addEventListener('click', (e) => {
-        e.stopPropagation();
-      });
-    });
-    
-    // Close modal when clicking outside
-    document.addEventListener('click', (e) => {
-      if (e.target.classList.contains('modal')) {
-        this.hideModal(e.target.id);
-      }
-    });
-    
-    // Close with Escape key
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') {
-        this.hideAllModals();
-      }
-    });
-  }
-
-  showModal(id) {
-    if (this.modals[id]) {
-      this.modals[id].style.display = 'flex';
-      setTimeout(() => {
-        this.modals[id].classList.add('active');
-      }, 10);
+    function updateResults(electionId) {
+        // In a real app, you would fetch results for the selected election
+        console.log('Updating results for election:', electionId);
+        
+        // Update the results table and chart based on electionId
+        const resultsTable = document.querySelector('.results-table tbody');
+        if (electionId === "1") {
+            // Student Council Election results
+            resultsTable.innerHTML = `
+                <tr>
+                    <td>President</td>
+                    <td>
+                        <div class="candidate-info">
+                            <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Candidate photo">
+                            <span>Michael Chen</span>
+                        </div>
+                    </td>
+                    <td>342</td>
+                    <td>43.7%</td>
+                    <td>+53 votes</td>
+                </tr>
+                <tr>
+                    <td>Vice President</td>
+                    <td>
+                        <div class="candidate-info">
+                            <img src="https://randomuser.me/api/portraits/women/28.jpg" alt="Candidate photo">
+                            <span>Sarah Williams</span>
+                        </div>
+                    </td>
+                    <td>289</td>
+                    <td>36.9%</td>
+                    <td>+134 votes</td>
+                </tr>
+                <tr>
+                    <td>Treasurer</td>
+                    <td>
+                        <div class="candidate-info">
+                            <img src="https://randomuser.me/api/portraits/women/42.jpg" alt="Candidate photo">
+                            <span>Lisa Thompson</span>
+                        </div>
+                    </td>
+                    <td>412</td>
+                    <td>52.6%</td>
+                    <td>+287 votes</td>
+                </tr>
+            `;
+        } else if (electionId === "2") {
+            // HOA Board Election results
+            resultsTable.innerHTML = `
+                <tr>
+                    <td>President</td>
+                    <td>
+                        <div class="candidate-info">
+                            <img src="https://randomuser.me/api/portraits/men/45.jpg" alt="Candidate photo">
+                            <span>Robert Johnson</span>
+                        </div>
+                    </td>
+                    <td>215</td>
+                    <td>51.2%</td>
+                    <td>+87 votes</td>
+                </tr>
+                <tr>
+                    <td>Secretary</td>
+                    <td>
+                        <div class="candidate-info">
+                            <img src="https://randomuser.me/api/portraits/women/33.jpg" alt="Candidate photo">
+                            <span>Emily Davis</span>
+                        </div>
+                    </td>
+                    <td>198</td>
+                    <td>47.1%</td>
+                    <td>+156 votes</td>
+                </tr>
+            `;
+        }
+        
+        // Update the summary cards
+        document.querySelector('.summary-value').textContent = electionId === "1" ? "782" : "420";
+        document.querySelector('.summary-meta').textContent = electionId === "1" ? "62% participation" : "47% participation";
     }
-  }
 
-  hideModal(id) {
-    if (this.modals[id]) {
-      this.modals[id].classList.remove('active');
-      setTimeout(() => {
-        this.modals[id].style.display = 'none';
-      }, 300);
-    }
-  }
-
-  hideAllModals() {
-    Object.keys(this.modals).forEach(id => this.hideModal(id));
-  }
-}
-
-// Data Table Manager
-class DataTableManager {
-  constructor() {
-    this.sortDirections = {};
-  }
-
-  initTable(tableId, config) {
-    const table = document.getElementById(tableId);
-    if (!table) return;
-
-    // Add sorting to headers
-    table.querySelectorAll('th[data-sort]').forEach(header => {
-      header.style.cursor = 'pointer';
-      header.addEventListener('click', () => {
-        this.sortTable(table, header.dataset.sort, header.dataset.sortType || 'string');
-      });
-    });
-
-    // Initialize pagination if needed
-    if (config.pagination) {
-      this.setupPagination(tableId, config);
-    }
-  }
-
-  sortTable(table, key, type = 'string') {
-    const tbody = table.querySelector('tbody');
-    const rows = Array.from(tbody.querySelectorAll('tr'));
-    
-    // Determine sort direction
-    if (!this.sortDirections[key]) {
-      this.sortDirections[key] = 'asc';
-    } else {
-      this.sortDirections[key] = this.sortDirections[key] === 'asc' ? 'desc' : 'asc';
-    }
-    
-    const direction = this.sortDirections[key];
-    
-    rows.sort((a, b) => {
-      let aValue = a.querySelector(`td[data-${key}]`)?.getAttribute(`data-${key}`) || 
-                  a.querySelector(`td:nth-child(${parseInt(key) + 1})`)?.textContent;
-      let bValue = b.querySelector(`td[data-${key}]`)?.getAttribute(`data-${key}`) || 
-                  b.querySelector(`td:nth-child(${parseInt(key) + 1})`)?.textContent;
-      
-      if (type === 'number') {
-        aValue = parseFloat(aValue);
-        bValue = parseFloat(bValue);
-      } else if (type === 'date') {
-        aValue = new Date(aValue);
-        bValue = new Date(bValue);
-      }
-      
-      if (direction === 'asc') {
-        return aValue > bValue ? 1 : -1;
-      } else {
-        return aValue < bValue ? 1 : -1;
-      }
-    });
-    
-    // Re-append sorted rows
-    rows.forEach(row => tbody.appendChild(row));
-    
-    // Update sort indicators
-    table.querySelectorAll('th').forEach(th => {
-      th.classList.remove('sort-asc', 'sort-desc');
-    });
-    
-    const header = table.querySelector(`th[data-sort="${key}"]`);
-    if (header) {
-      header.classList.add(`sort-${direction}`);
-    }
-  }
-
-  setupPagination(tableId, config) {
-    // Implementation would depend on your specific pagination needs
-  }
-}
-
-// Initialize the dashboard when DOM is loaded
-document.addEventListener('DOMContentLoaded', () => {
-  const dashboard = new VoteNowDashboard();
-  
-  // Make dashboard available globally for debugging (remove in production)
-  window.dashboard = dashboard;
+    // ======================
+    // Initialize Dashboard
+    // ======================
+    initDashboard();
 });
