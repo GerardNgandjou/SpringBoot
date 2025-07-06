@@ -30,3 +30,9 @@ spring:
       enabled: true
     livereload:
       enabled: true
+  # Security configuration
+  security:
+    user:
+      name: admin
+      password: admin
+      

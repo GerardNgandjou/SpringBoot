@@ -35,4 +35,12 @@ public class ElectionService {
                 .map(electionMapper::toElectionDto)
                 .collect(Collectors.toList());
     }
+
+    public ElectionDto findElectionById(
+            Long id
+    ){
+        return electionRepository.findById(id)
+                .map(electionMapper::toElectionDto)
+                .orElse(null);
+    }
 }
