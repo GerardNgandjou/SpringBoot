@@ -19,9 +19,4 @@ public class Candidate extends User {
         super();
     }
 
-    public boolean isRegisteredForElection(Long electionId) {
-        return this.getRegister().stream()
-            .anyMatch(e -> e.getIdElection().equals(electionId));
-    }
-
 }

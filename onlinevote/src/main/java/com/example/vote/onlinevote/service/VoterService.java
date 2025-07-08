@@ -1,4 +1,4 @@
-package com.example.vote.onlinevote.sevirce;
+package com.example.vote.onlinevote.service;
 
 import com.example.vote.onlinevote.dto.VoterDto;
 import com.example.vote.onlinevote.dto.VoterResponseDto;
@@ -50,6 +50,10 @@ public class VoterService {
                 .stream()
                 .map(voterMapper::toVoterResponseDto)
                 .collect(Collectors.toList());
+    }
+
+     public boolean emailExists(String email) {
+        return voterRepository.findByEmail(email).isPresent();
     }
 
     public void deleteRegistrationById(

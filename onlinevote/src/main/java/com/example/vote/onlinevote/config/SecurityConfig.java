@@ -74,7 +74,7 @@ public class SecurityConfig {
     //                             .build();
 
     //     return new InMemoryUserDetailsManager(user1Details);
-
     // }
 
 }
+ 

@@ -2,10 +2,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById('electionForm');
     const statusMessage = document.getElementById('statusMessage');
 
-    // Base URL for your Spring Boot API
-    const API_BASE_URL = 'http://localhost:8080/api'; // Adjust this to your actual API URL
-    const ELECTIONS_ENDPOINT = `${API_BASE_URL}/elections`;
-
     // Set default dates (today for start, tomorrow for end)
     const today = new Date().toISOString().split('T')[0];
     document.getElementById('electionStartDate').min = today;
@@ -110,7 +106,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 submitBtn.textContent = 'Saving...';
 
                 // Send data to Spring Boot endpoint
-                const response = await fetch(ELECTIONS_ENDPOINT, {
+                const response = await fetch("/election/add", {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

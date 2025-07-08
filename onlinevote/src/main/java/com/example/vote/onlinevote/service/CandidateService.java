@@ -1,4 +1,4 @@
-package com.example.vote.onlinevote.sevirce;
+package com.example.vote.onlinevote.service;
 
 import com.example.vote.onlinevote.dto.CandidateDto;
 import com.example.vote.onlinevote.dto.CandidateResponseDto;

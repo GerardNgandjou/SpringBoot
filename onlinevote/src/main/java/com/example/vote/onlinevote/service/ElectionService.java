@@ -1,4 +1,4 @@
-package com.example.vote.onlinevote.sevirce;
+package com.example.vote.onlinevote.service;
 
 import com.example.vote.onlinevote.dto.ElectionDto;
 import com.example.vote.onlinevote.mapper.ElectionMapper;
@@ -34,13 +34,5 @@ public class ElectionService {
                 .stream()
                 .map(electionMapper::toElectionDto)
                 .collect(Collectors.toList());
-    }
-
-    public ElectionDto findElectionById(
-            Long id
-    ){
-        return electionRepository.findById(id)
-                .map(electionMapper::toElectionDto)
-                .orElse(null);
     }
 }

@@ -2,11 +2,11 @@ package com.example.vote.onlinevote.controller;
 
 
 import com.example.vote.onlinevote.dto.ElectionDto;
-import com.example.vote.onlinevote.sevirce.ElectionService;
+import com.example.vote.onlinevote.service.ElectionService;
+
 import lombok.Getter;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -36,10 +36,4 @@ public class ElectionController {
         return ResponseEntity.ok(elections);
     }
 
-    @GetMapping("/election/find/{id}")  // Get Election with her id
-    public ElectionDto getElectionById(
-            @PathVariable Long id
-    ){
-        return electionService.findElectionById(id);
-    }
 }

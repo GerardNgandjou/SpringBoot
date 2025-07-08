@@ -1,7 +1,8 @@
 package com.example.vote.onlinevote.controller;
 
 import com.example.vote.onlinevote.dto.VoteOfficeDto;
-import com.example.vote.onlinevote.sevirce.VoteOfficeService;
+import com.example.vote.onlinevote.service.VoteOfficeService;
+
 import lombok.Getter;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;

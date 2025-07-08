@@ -2,7 +2,9 @@ package com.example.vote.onlinevote.controller;
 
 import com.example.vote.onlinevote.dto.VoterDto;
 import com.example.vote.onlinevote.dto.VoterResponseDto;
-import com.example.vote.onlinevote.sevirce.VoterService;
+import com.example.vote.onlinevote.model.Voter;
+import com.example.vote.onlinevote.service.VoterService;
+
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,33 +35,11 @@ public class VoterController {
         return "success"; // or another Thymeleaf template name
     }
 
-    // @GetMapping("/voter/add")
-    // public String showRegisterPage() {
-    //     return "registration";
-    // }
-
-
-    // @PostMapping("/voter/add")
-    // public VoterResponseDto register(
-    //         @Valid @RequestBody VoterDto voterDto
-    // ) {
-    //     return voterService.saveVoter(voterDto);
-    // }
-
-
-//    @PostMapping("/voter/register")
-//    public String processRegistration(@Valid @ModelAttribute("voter") Voter voter,
-//                                      BindingResult result,
-//                                      Model model) {
-//        if (result.hasErrors()) {
-//            return "register";
-//        }
-//
-//        // Save voter to database
-//        voterService.save(voter);
-//
-//        return "redirect:/success";
-//    }
+    @GetMapping("/voter/add")
+    public String showRegistrationForm(Model model) {
+        model.addAttribute("voter", new VoterDto());
+        return "voter-registration"; // Thymeleaf template for registration form
+    }
 
     @GetMapping("/voter/display")
     public List<VoterResponseDto> show() {

@@ -2,7 +2,8 @@ package com.example.vote.onlinevote.controller;
 
 import com.example.vote.onlinevote.dto.CandidateDto;
 import com.example.vote.onlinevote.dto.CandidateResponseDto;
-import com.example.vote.onlinevote.sevirce.CandidateService;
+import com.example.vote.onlinevote.service.CandidateService;
+
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;

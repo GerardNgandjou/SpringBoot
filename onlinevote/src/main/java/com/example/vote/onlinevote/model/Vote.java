@@ -11,14 +11,8 @@ import java.sql.Timestamp;
 @Entity
 @Getter
 @Setter
-@NoArgsConstructor
 @AllArgsConstructor
-@Table(
-    name = "votes", indexes = {
-        @Index(name = "idx_vote_voter_election", columnList = "voter_id, election_id", unique = true),
-        @Index(name = "idx_vote_election", columnList = "election_id"),
-        @Index(name = "idx_vote_candidate", columnList = "candidate_id")
-})
+@NoArgsConstructor
 public class Vote {
 
     @Id
@@ -26,20 +20,14 @@ public class Vote {
     private Long voteId;
 
     @ManyToOne
-    // @JoinColumn(name = "voter_id", nullable = false)
+    @JoinColumn(name = "voter_id")
     private Voter voter;
 
     @ManyToOne
-    // @JoinColumn(name = "candidate_id", nullable = false)
+    @JoinColumn(name = "candidate_id")
     private Candidate candidate;
 
-    @ManyToOne
-    // @JoinColumn(name = "election_id", nullable = false)
-    private Election election;
-
-    @Column(nullable = false)
     private String voteContent;
-
-    @Column(nullable = false)
     private Timestamp voteTime;
+    
 }

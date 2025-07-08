@@ -69,8 +69,6 @@ public record VoterDto(
 
         User.Role role,
 
-        Long officeId,   // Just the ID of VoteOffice to avoid recursion
-
-        Boolean statusVoter
+        Long officeId   // Just the ID of VoteOffice to avoid recursion
 ) {}
 

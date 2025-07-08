@@ -2,9 +2,7 @@ package com.example.vote.onlinevote.controller;
 
 import com.example.vote.onlinevote.exception.ResourceNotFoundException;
 import com.example.vote.onlinevote.model.Voter;
-import com.example.vote.onlinevote.sevirce.VoterService;
-
-import java.util.Map;
+import com.example.vote.onlinevote.service.VoterService;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,7 +11,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
@@ -25,7 +22,7 @@ public class RoutController {
         this.voterService = voterService;
     }
 
-    @GetMapping("/")
+    @GetMapping("/home")
     public String home() {
         return "index"; // This will return index.html from templates folder
         // For static index.html, you don't even need this controller
@@ -35,27 +32,6 @@ public class RoutController {
     @GetMapping("/auth")
     public String showAuthPage() {
         return "auth"; // combined login/register page
-    }
-
-    @PostMapping("/login")
-    @ResponseBody
-    public <LoginRequest> ResponseEntity<Map<String, String>> login(@RequestBody LoginRequest loginRequest) {
-        // Your authentication logic here
-        boolean authenticated = false; // TODO: Replace with actual authentication logic
-        // Example: authenticated = voterService.authenticate(loginRequest.getUsername(), loginRequest.getPassword());
-
-        if (authenticated) {
-            return ResponseEntity.ok()
-                .body(Map.of(
-                    "status", "success",
-                    "redirectUrl", "/dash"
-                ));
-        } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                .body(Map.of(
-                    "error", "Invalid credentials"
-                ));
-        }
     }
 
     // @GetMapping("/voter/add")

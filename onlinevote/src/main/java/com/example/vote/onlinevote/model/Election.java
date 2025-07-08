@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,8 +22,8 @@ public class Election {
     @Enumerated(EnumType.STRING)
     private StatusElec electionStatus;
 
-    private Timestamp electionStartDate;
-    private Timestamp electionEndDate;
+    private LocalDate electionStartDate;
+    private LocalDate electionEndDate;
 
     @ManyToMany(mappedBy = "register", cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
 //    @JsonManagedReference(value = "user-election")
@@ -39,8 +39,8 @@ public class Election {
                 String electionName,
                 String electionDescription,
                 StatusElec electionStatus,
-                Timestamp electionStartDate,
-                Timestamp electionEndDate,
+                LocalDate electionStartDate,
+                LocalDate electionEndDate,
                 List<User> users
     ) {
         this.electionName = electionName;
@@ -50,5 +50,4 @@ public class Election {
         this.electionEndDate = electionEndDate;
         this.users = users;
     }
-
 }

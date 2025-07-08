@@ -1,3 +1,4 @@
+package com.example.vote.onlinevote.service;
 // package com.example.vote.onlinevote.sevirce;
 
 // public interface EmailService {
