@@ -5,6 +5,7 @@ import com.example.vote.onlinevote.dto.VoterResponseDto;
 import com.example.vote.onlinevote.model.Election;
 import com.example.vote.onlinevote.model.VoteOffice;
 import com.example.vote.onlinevote.model.Voter;
+
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -44,6 +45,7 @@ public class VoterMapper {
         var voteOffice = new VoteOffice();
         voteOffice.setIdOffice(voterDto.officeId());
         voter.setOffice(voteOffice);
+        voter.setStatusVoter(voterDto.statusVoter());
 
         return voter;
     }
@@ -61,7 +63,8 @@ public class VoterMapper {
                 voter.getDepartment(),
                 voter.getArron(),
                 voter.getParty(),
-                voter.getRole()
+                voter.getRole(),
+                voter.getStatusVoter()  // Include statusVoter in response
         );
     }
 }

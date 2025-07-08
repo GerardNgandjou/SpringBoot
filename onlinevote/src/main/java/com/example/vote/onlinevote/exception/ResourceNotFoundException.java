@@ -1,4 +1,4 @@
-package com.example.vote.onlinevote.model;
+package com.example.vote.onlinevote.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;

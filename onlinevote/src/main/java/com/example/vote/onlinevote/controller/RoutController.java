@@ -1,7 +1,6 @@
 package com.example.vote.onlinevote.controller;
 
-import com.example.vote.onlinevote.model.LoginRequest;
-import com.example.vote.onlinevote.model.ResourceNotFoundException;
+import com.example.vote.onlinevote.exception.ResourceNotFoundException;
 import com.example.vote.onlinevote.model.Voter;
 import com.example.vote.onlinevote.sevirce.VoterService;
 
@@ -40,7 +39,7 @@ public class RoutController {
 
     @PostMapping("/login")
     @ResponseBody
-    public ResponseEntity<Map<String, String>> login(@RequestBody LoginRequest loginRequest) {
+    public <LoginRequest> ResponseEntity<Map<String, String>> login(@RequestBody LoginRequest loginRequest) {
         // Your authentication logic here
         boolean authenticated = false; // TODO: Replace with actual authentication logic
         // Example: authenticated = voterService.authenticate(loginRequest.getUsername(), loginRequest.getPassword());

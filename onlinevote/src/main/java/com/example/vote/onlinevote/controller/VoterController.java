@@ -33,10 +33,10 @@ public class VoterController {
         return "success"; // or another Thymeleaf template name
     }
 
-    @GetMapping("/voter/add")
-    public String showRegisterPage() {
-        return "registration";
-    }
+    // @GetMapping("/voter/add")
+    // public String showRegisterPage() {
+    //     return "registration";
+    // }
 
 
     // @PostMapping("/voter/add")

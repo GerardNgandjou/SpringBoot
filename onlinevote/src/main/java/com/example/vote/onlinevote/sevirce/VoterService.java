@@ -2,8 +2,8 @@ package com.example.vote.onlinevote.sevirce;
 
 import com.example.vote.onlinevote.dto.VoterDto;
 import com.example.vote.onlinevote.dto.VoterResponseDto;
+import com.example.vote.onlinevote.exception.ResourceNotFoundException;
 import com.example.vote.onlinevote.mapper.VoterMapper;
-import com.example.vote.onlinevote.model.ResourceNotFoundException;
 import com.example.vote.onlinevote.model.Voter;
 import com.example.vote.onlinevote.repository.VoterRepository;
 import org.springframework.stereotype.Service;

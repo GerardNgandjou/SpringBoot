@@ -2,10 +2,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById('officeForm');
     const statusMessage = document.getElementById('statusMessage');
 
-    // Base URL for your Spring Boot API
-    const API_BASE_URL = 'http://localhost:8080/api'; // Adjust this to your actual API URL
-    const OFFICES_ENDPOINT = `${API_BASE_URL}/offices`;
-
     // Form validation and submission
     form.addEventListener('submit', async function(e) {
         e.preventDefault();
@@ -50,7 +46,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 submitBtn.textContent = 'Saving...';
 
                 // Send data to Spring Boot endpoint
-                const response = await fetch(OFFICES_ENDPOINT, {
+                const response = await fetch("/vote_office/set", {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

@@ -15,6 +15,7 @@ public class Voter extends User {
     @JoinColumn(name = "office_id_office")
     @JsonBackReference(value = "office-voter")  // Changed to match
     private VoteOffice office;
+    private Boolean statusVoter;
 
     public Voter() {
         super();

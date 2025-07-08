@@ -41,7 +41,6 @@ public class User {
             joinColumns = @JoinColumn(name = "user_id"),  // FK to user
             inverseJoinColumns = @JoinColumn(name = "election_id")
     )
-//    @JsonBackReference(value = "user-election")
     private List<Election> register = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)
@@ -50,7 +49,7 @@ public class User {
     public User() {
     }
 
-    public User(String firstname, String lastname, LocalDate birthdate, String gender, String email, Integer phoneNumber, String region, String department, String arron, String politicalParty, Election register) {
+    public User(String firstname, String lastname, LocalDate birthdate, String gender, String email, Integer phoneNumber, String region, String department, String arron, String politicalParty, String currentRegion, String pollingStation, List<Election> register, Role role) {
         this.firstname = firstname;
         this.lastname = lastname;
         this.birthdate = birthdate;
@@ -61,6 +60,10 @@ public class User {
         this.department = department;
         this.arron = arron;
         this.party = politicalParty;
+        this.pollingstation = pollingStation;
+        this.currentregion = currentRegion;
+        this.register = register;
+        this.role = role;
     }
 
     public enum Role {
