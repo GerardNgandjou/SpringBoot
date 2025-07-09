@@ -2,10 +2,13 @@ package com.example.vote.onlinevote.controller;
 
 import com.example.vote.onlinevote.dto.CandidateDto;
 import com.example.vote.onlinevote.dto.CandidateResponseDto;
+import com.example.vote.onlinevote.model.User;
 import com.example.vote.onlinevote.service.CandidateService;
+import com.example.vote.onlinevote.service.UserService;
 
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -14,10 +17,19 @@ import java.util.List;
 @Getter
 public class CandidateController {
 
-    private  final CandidateService candidateService;
+    private final CandidateService candidateService;
+    private final UserService userService;
 
     public CandidateController(CandidateService candidateService) {
         this.candidateService = candidateService;
+        this.userService = null;
+    }
+
+    @GetMapping("/candidate/add")
+    public String showCandidateForm(Model model) {
+        List<User> users = userService.findNonCandidateUsers();
+        model.addAttribute("users", users);
+        return "candidate";
     }
 
     @PostMapping("/candidate/add")
@@ -25,6 +37,16 @@ public class CandidateController {
             @RequestBody CandidateDto candidateDto
     ) {
         return candidateService.savedCandidate(candidateDto);
+    }
+
+    @PostMapping
+    public String saveCandidate(
+            @RequestParam Long userId,
+            @RequestParam(required = false) Float deposit,
+            @RequestParam(required = false) Integer score) {
+        
+        candidateService.createCandidate(userId, deposit, score);
+        return "redirect:/candidates";
     }
 
     @GetMapping("/candidate/display")

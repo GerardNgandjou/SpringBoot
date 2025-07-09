@@ -13,18 +13,11 @@ public record CandidateResponseDto(
         LocalDate birthdate,
         String gender,
         String placeofbirth,
-//        String email,
         String location,
-//        Integer number,
         String region,
         String department,
         String arron,
         String party,
-//        String currentregion,
-//        String pollingstation,
-        // Just IDs from register list
         User.Role role
-//        Float deposit,
-//        Integer Score
 ) {
 }

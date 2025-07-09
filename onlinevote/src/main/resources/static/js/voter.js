@@ -3,6 +3,14 @@ document.addEventListener('DOMContentLoaded', function() {
     initForm();
 });
 
+const voteOffices = {
+    // This should come from your backend, but here's an example structure
+    "1": { id: 1, name: "Yaoundé Main Office", location: "Bastos, Yaoundé" },
+    "2": { id: 2, name: "Douala Central Office", location: "Bonanjo, Douala" }
+    // Add more offices as needed
+};
+
+
 function initForm() {
     // Set max date for birthdate (today)
     document.getElementById('birthdate').max = new Date().toISOString().split('T')[0];
@@ -12,6 +20,12 @@ function initForm() {
     
     // Initialize polling stations dropdown
     updatePollingStations();
+
+    // Setup vote office dropdown
+    setupVoteOfficeDropdown();
+
+    // Setup election checkboxes
+    setupElectionCheckboxes();
 }
 
 function setupEventListeners() {
@@ -210,6 +224,16 @@ async function handleFormSubmit(e) {
     const form = e.target;
     const submitButton = document.getElementById('submitButton');
 
+        // Collect checkbox values
+    const selectedElections = Array.from(document.querySelectorAll('input[name="register"]:checked'))
+                                 .map(checkbox => checkbox.value);
+    
+    // Prepare form data including the new fields
+    const formData = {
+        ...Object.fromEntries(new FormData(form)),
+        register: selectedElections
+    };
+
     // Validate all fields before submission
     if (!validateAllFields(form)) {
         showAlert('Please fill out all required fields correctly.', 'error');
@@ -340,3 +364,52 @@ function showAlert(message, type = 'error') {
     // In a production app, you would use a proper notification system
     alert(`${type.toUpperCase()}: ${message}`);
 }
+
+function setupVoteOfficeDropdown() {
+    const officeSelect = document.getElementById('office');
+    
+    // Clear existing options
+    officeSelect.innerHTML = '';
+    
+    // Add default option
+    const defaultOption = new Option('Select your voting office', '', true, true);
+    defaultOption.disabled = true;
+    officeSelect.add(defaultOption);
+    
+    // Add office options (in a real app, this would come from an API)
+    Object.values(voteOffices).forEach(office => {
+        const option = new Option(`${office.name} - ${office.location}`, office.id);
+        officeSelect.add(option);
+    });
+}
+
+function setupElectionCheckboxes() {
+    // In a real app, you would fetch this from your backend
+    const elections = [
+        { id: 1, name: "Presidential Election", date: "2023-10-07" },
+        { id: 2, name: "Legislative Election", date: "2023-10-07" },
+        { id: 3, name: "Municipal Election", date: "2024-02-10" }
+    ];
+    
+    const container = document.querySelector('.checkbox-group');
+    
+    elections.forEach(election => {
+        const div = document.createElement('div');
+        div.className = 'checkbox-item';
+        
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.id = `election_${election.id}`;
+        checkbox.value = election.id;
+        checkbox.name = 'register';
+        
+        const label = document.createElement('label');
+        label.htmlFor = `election_${election.id}`;
+        label.textContent = `${election.name} (${election.date})`;
+        
+        div.appendChild(checkbox);
+        div.appendChild(label);
+        container.appendChild(div);
+    });
+}
+

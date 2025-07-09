@@ -53,4 +53,12 @@ public class CandidateService {
     public void deleteCandidateById(Long id){
         candidateRepository.deleteById(id);
     }
+
+    public void createCandidate(Long userId, Float deposit, Integer score) {
+        // CandidateDto candidateDto = new CandidateDto();
+        // candidateDto.setUserId(userId);
+        // candidateDto.setDeposit(deposit);
+        // candidateDto.setScore(score);
+        // savedCandidate(candidateDto);
+    }
 }

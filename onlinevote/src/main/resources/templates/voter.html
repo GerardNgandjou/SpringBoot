@@ -201,6 +201,59 @@
                                   th:errors="*{pollingstation}" role="alert"></span>
                         </div>
                     </section>
+
+                    <!-- Add this section after the Political Party section -->
+                    <section class="form-section" aria-labelledby="voting-info-heading">
+                        <header class="section-header">
+                            <i class="fas fa-vote-yea" aria-hidden="true"></i>
+                            <h2 id="voting-info-heading">Voting Information</h2>
+                        </header>
+
+                        <!-- Vote Office Selection -->
+                        <div class="form-group floating">
+                            <select id="office" th:field="*{office}" required aria-required="true">
+                                <option value="" disabled selected>Select your voting office</option>
+                                <option th:each="office : ${voteOffices}" 
+                                        th:value="${office.id}" 
+                                        th:text="${office.name + ' - ' + office.location}">
+                                </option>
+                            </select>
+                            <label for="office">Voting Office <span class="required" aria-hidden="true">*</span></label>
+                            <span class="error-message" th:if="${#fields.hasErrors('office')}"
+                                th:errors="*{office}" role="alert"></span>
+                        </div>
+
+                        <!-- Election Registration -->
+                        <div class="form-group">
+                            <label>Elections to Register For <span class="required" aria-hidden="true">*</span></label>
+                            <div class="checkbox-group">
+                                <div th:each="election : ${elections}" class="checkbox-item">
+                                    <input type="checkbox" 
+                                        th:id="'election_' + ${election.id}"
+                                        th:value="${election.id}"
+                                        th:field="*{register}">
+                                    <label th:for="'election_' + ${election.id}" 
+                                        th:text="${election.name + ' (' + election.date + ')'}"></label>
+                                </div>
+                            </div>
+                            <span class="error-message" th:if="${#fields.hasErrors('register')}"
+                                th:errors="*{register}" role="alert"></span>
+                        </div>
+
+                        <!-- Role Selection -->
+                        <div class="form-group floating">
+                            <select id="role" th:field="*{role}" required aria-required="true">
+                                <option value="" disabled selected>Select your role</option>
+                                <option th:each="role : ${roles}" 
+                                        th:value="${role}" 
+                                        th:text="${#strings.capitalizeWords(role.name().toLowerCase().replace('_', ' '))}">
+                                </option>
+                            </select>
+                            <label for="role">Role <span class="required" aria-hidden="true">*</span></label>
+                            <span class="error-message" th:if="${#fields.hasErrors('role')}"
+                                th:errors="*{role}" role="alert"></span>
+                        </div>
+                    </section>
                 </div>
 
                 <footer class="form-actions">
@@ -213,6 +266,12 @@
                 </footer>
             </form>
         </div>
+
+        <div class="form-footer">
+            <p>Already registered? <a th:href="@{/auth}">Sign in here</a></p>
+            <p>By registering, you agree to our <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>.</p>
+        </div>
+
     </main>
 
     <!-- JavaScript -->

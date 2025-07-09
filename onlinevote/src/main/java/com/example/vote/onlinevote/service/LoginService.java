@@ -14,11 +14,12 @@ public class LoginService {
     @Autowired
     private LoginRepository loginRepository;
 
-    @Autowired
-    private BCryptPasswordEncoder passwordEncoder;
+    // @Autowired
+    private BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder(12); // No 'new', no manual instantiation
 
     public Login saveLogin(@RequestBody Login login) {
+        String hashedPassword = passwordEncoder.encode(login.getPassword());
+        login.setPassword(hashedPassword);
         return loginRepository.save(login);
     }
-
 }

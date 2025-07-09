@@ -46,13 +46,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 submitBtn.textContent = 'Saving...';
 
                 // Send data to Spring Boot endpoint
-                const response = await fetch("/vote_office/set", {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        // Include this if your API requires authentication
-                        // 'Authorization': 'Bearer ' + yourAuthToken
-                    },
+                const response = await fetch("/vote_office/add", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
                     body: JSON.stringify(formData)
                 });
 

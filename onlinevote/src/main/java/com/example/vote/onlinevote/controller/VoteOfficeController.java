@@ -4,6 +4,8 @@ import com.example.vote.onlinevote.dto.VoteOfficeDto;
 import com.example.vote.onlinevote.service.VoteOfficeService;
 
 import lombok.Getter;
+
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -21,11 +23,17 @@ public class VoteOfficeController {
         this.voteOfficeService = voteOfficeService;
     }
 
-    @PostMapping("/vote_office/set")
+    @PostMapping("/vote_office/add")
     public VoteOfficeDto addVoteOffice(
             @RequestBody VoteOfficeDto voteOfficeDto
     ) {
         return voteOfficeService.addVoteOffice(voteOfficeDto);
+    }
+
+     @GetMapping("/vote_office/add")
+    public String officeForm(Model model) {
+        model.addAttribute("voteOffice", new VoteOfficeDto());
+        return "voteoffice";     // vote_office.html
     }
 
     @GetMapping("/vote_office/get")

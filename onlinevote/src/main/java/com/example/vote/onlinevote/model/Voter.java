@@ -19,4 +19,9 @@ public class Voter extends User {
     public Voter() {
         super();
     }
+
+    public Voter(User user, VoteOffice office) {
+        super();
+        this.office = office;
+    }
 }

@@ -2,7 +2,10 @@ package com.example.vote.onlinevote.controller;
 
 import com.example.vote.onlinevote.dto.VoterDto;
 import com.example.vote.onlinevote.dto.VoterResponseDto;
+import com.example.vote.onlinevote.model.User.Role;
 import com.example.vote.onlinevote.model.Voter;
+import com.example.vote.onlinevote.service.ElectionService;
+import com.example.vote.onlinevote.service.VoteOfficeService;
 import com.example.vote.onlinevote.service.VoterService;
 
 import lombok.Getter;
@@ -23,9 +26,13 @@ import java.util.List;
 public class VoterController {
 
     private final VoterService voterService;
+    private final VoteOfficeService voteOfficeService;
+    private final ElectionService electionService;
 
-    public VoterController(VoterService voterService) {
+    public VoterController(VoterService voterService, VoteOfficeService voteOfficeService, ElectionService electionService) {
         this.voterService = voterService;
+        this.voteOfficeService = voteOfficeService;
+        this.electionService = electionService;
     }
 
     @PostMapping("/voter/add")
@@ -35,10 +42,12 @@ public class VoterController {
         return "success"; // or another Thymeleaf template name
     }
 
-    @GetMapping("/voter/add")
     public String showRegistrationForm(Model model) {
-        model.addAttribute("voter", new VoterDto());
-        return "voter-registration"; // Thymeleaf template for registration form
+        model.addAttribute("voter", new Voter());
+        model.addAttribute("voteOffices", voteOfficeService.showVoteOffices());
+        model.addAttribute("elections", electionService.getAllElections());
+        model.addAttribute("roles", Role.values());
+        return "voter";
     }
 
     @GetMapping("/voter/display")

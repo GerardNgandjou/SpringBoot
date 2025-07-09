@@ -1,7 +1,6 @@
 package com.example.vote.onlinevote.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -9,7 +8,6 @@ import lombok.Setter;
 @Setter
 @Entity
 @DiscriminatorValue("CANDIDATE")
-@AllArgsConstructor
 public class Candidate extends User {
 
     private Float deposit;
@@ -18,5 +16,12 @@ public class Candidate extends User {
     public Candidate() {
         super();
     }
+
+    public Candidate(User user, Float deposit, Integer score) {
+        super();
+        this.deposit = deposit;
+        this.score = score;
+    }
+    
 
 }
