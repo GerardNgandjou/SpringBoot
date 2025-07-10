@@ -1,174 +1,217 @@
 document.addEventListener('DOMContentLoaded', function() {
-    let currentPage = 1;
-    const itemsPerPage = 10;
+    const voterGrid = document.getElementById('voterGrid');
+    const loadingIndicator = document.getElementById('loadingIndicator');
+    const noResults = document.getElementById('noResults');
+    const searchInput = document.getElementById('searchInput');
+    const regionFilter = document.getElementById('regionFilter');
+    const roleFilter = document.getElementById('roleFilter');
+    const pagination = document.getElementById('pagination');
+    const editVoterBtn = document.getElementById('editVoterBtn');
+    
     let allVoters = [];
-    let filteredVoters = [];
-
-    // Fetch voters from API
-    fetch('/voters/api')
-        .then(response => response.json())
-        .then(data => {
-            allVoters = data;
-            filteredVoters = [...allVoters];
-            renderTable(currentPage);
-            renderPagination();
-        })
-        .catch(error => console.error('Error fetching voters:', error));
-
-    // Apply filters
-    document.getElementById('applyFilters').addEventListener('click', function() {
-        const regionFilter = document.getElementById('regionFilter').value;
-        const partyFilter = document.getElementById('partyFilter').value;
-        const genderFilter = document.getElementById('genderFilter').value;
-
-        filteredVoters = allVoters.filter(voter => {
-            return (regionFilter === '' || voter.region === regionFilter) &&
-                   (partyFilter === '' || voter.party === partyFilter) &&
-                   (genderFilter === '' || voter.gender === genderFilter);
-        });
-
-        currentPage = 1;
-        renderTable(currentPage);
-        renderPagination();
-        
-        // Close modal
-        const modal = bootstrap.Modal.getInstance(document.getElementById('filterModal'));
-        modal.hide();
+    let currentPage = 1;
+    const votersPerPage = 9;
+    
+    // Initialize modal
+    const voterModal = new bootstrap.Modal(document.getElementById('voterModal'));
+    
+    // Fetch voters from Spring Boot backend
+    fetchVoters();
+    
+    // Search and filter event listeners
+    searchInput.addEventListener('input', filterVoters);
+    regionFilter.addEventListener('change', filterVoters);
+    roleFilter.addEventListener('change', filterVoters);
+    
+    // Edit button handler
+    editVoterBtn.addEventListener('click', function() {
+        // In a real app, this would open an edit form
+        alert('Edit functionality would be implemented here');
     });
-
-    // Render table with pagination
-    function renderTable(page) {
-        const startIndex = (page - 1) * itemsPerPage;
-        const endIndex = startIndex + itemsPerPage;
-        const votersToDisplay = filteredVoters.slice(startIndex, endIndex);
-        
-        const tableBody = document.getElementById('votersTableBody');
-        tableBody.innerHTML = '';
-
-        votersToDisplay.forEach(voter => {
-            const row = document.createElement('tr');
+    
+    async function fetchVoters() {
+        try {
+            const response = await fetch('/voter/display');
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            allVoters = await response.json();
             
-            row.innerHTML = `
-                <td>${voter.lastname}, ${voter.firstname}</td>
-                <td>${new Date(voter.birthdate).toLocaleDateString()}</td>
-                <td>${voter.gender}</td>
-                <td>${voter.location}</td>
-                <td>${voter.region}</td>
-                <td><span class="badge bg-primary">${voter.party || 'None'}</span></td>
-                <td><span class="badge bg-success">${voter.role}</span></td>
-                <td>
-                    <button class="btn btn-sm btn-outline-primary action-btn view-details" data-id="${voter.id}">
-                        <i class="bi bi-eye-fill"></i> View
-                    </button>
-                </td>
+            // Populate filters
+            populateFilters();
+            
+            // Display voters
+            displayVoters(allVoters);
+            
+            // Hide loading indicator
+            loadingIndicator.classList.add('d-none');
+        } catch (error) {
+            console.error('Error fetching voters:', error);
+            loadingIndicator.innerHTML = `
+                <div class="alert alert-danger" role="alert">
+                    Failed to load voters. Please try again later.
+                </div>
             `;
-            
-            tableBody.appendChild(row);
-        });
-
-        // Add event listeners to view buttons
-        document.querySelectorAll('.view-details').forEach(button => {
-            button.addEventListener('click', function() {
-                const voterId = this.getAttribute('data-id');
-                showVoterDetails(voterId);
-            });
-        });
-    }
-
-    // Render pagination controls
-    function renderPagination() {
-        const totalPages = Math.ceil(filteredVoters.length / itemsPerPage);
-        const pagination = document.getElementById('pagination');
-        pagination.innerHTML = '';
-
-        // Previous button
-        const prevLi = document.createElement('li');
-        prevLi.className = `page-item ${currentPage === 1 ? 'disabled' : ''}`;
-        prevLi.innerHTML = `<a class="page-link" href="#">Previous</a>`;
-        prevLi.addEventListener('click', (e) => {
-            e.preventDefault();
-            if (currentPage > 1) {
-                currentPage--;
-                renderTable(currentPage);
-                renderPagination();
-            }
-        });
-        pagination.appendChild(prevLi);
-
-        // Page numbers
-        for (let i = 1; i <= totalPages; i++) {
-            const li = document.createElement('li');
-            li.className = `page-item ${i === currentPage ? 'active' : ''}`;
-            li.innerHTML = `<a class="page-link" href="#">${i}</a>`;
-            li.addEventListener('click', (e) => {
-                e.preventDefault();
-                currentPage = i;
-                renderTable(currentPage);
-                renderPagination();
-            });
-            pagination.appendChild(li);
         }
-
-        // Next button
-        const nextLi = document.createElement('li');
-        nextLi.className = `page-item ${currentPage === totalPages ? 'disabled' : ''}`;
-        nextLi.innerHTML = `<a class="page-link" href="#">Next</a>`;
-        nextLi.addEventListener('click', (e) => {
-            e.preventDefault();
-            if (currentPage < totalPages) {
-                currentPage++;
-                renderTable(currentPage);
-                renderPagination();
-            }
-        });
-        pagination.appendChild(nextLi);
     }
-
-    // Show voter details in modal
-    function showVoterDetails(voterId) {
-        const voter = allVoters.find(v => v.id == voterId);
-        if (!voter) return;
-
-        const modalContent = document.getElementById('voterDetailsContent');
-        modalContent.innerHTML = `
-            <div class="row mb-4">
-                <div class="col-md-3 text-center">
-                    <div class="bg-light rounded-circle d-flex align-items-center justify-content-center" style="width: 120px; height: 120px; margin: 0 auto;">
-                        <i class="bi bi-person-fill" style="font-size: 3rem; color: #6c757d;"></i>
-                    </div>
-                    <h5 class="mt-3">${voter.firstname} ${voter.lastname}</h5>
-                    <span class="badge ${voter.role === 'ADMIN' ? 'bg-danger' : 'bg-success'}">${voter.role}</span>
-                </div>
-                <div class="col-md-9">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <p class="mb-2"><span class="detail-label">Birth Date:</span> <span class="detail-value">${new Date(voter.birthdate).toLocaleDateString()}</span></p>
-                            <p class="mb-2"><span class="detail-label">Gender:</span> <span class="detail-value">${voter.gender}</span></p>
-                            <p class="mb-2"><span class="detail-label">Place of Birth:</span> <span class="detail-value">${voter.placeofbirth}</span></p>
-                        </div>
-                        <div class="col-md-6">
-                            <p class="mb-2"><span class="detail-label">Location:</span> <span class="detail-value">${voter.location}</span></p>
-                            <p class="mb-2"><span class="detail-label">Voter Number:</span> <span class="detail-value">${voter.number}</span></p>
-                            <p class="mb-2"><span class="detail-label">Political Party:</span> <span class="detail-value badge bg-primary">${voter.party || 'None'}</span></p>
-                        </div>
-                    </div>
-                    <hr>
-                    <div class="row">
-                        <div class="col-md-4">
-                            <p class="mb-2"><span class="detail-label">Region:</span> <span class="detail-value">${voter.region}</span></p>
-                        </div>
-                        <div class="col-md-4">
-                            <p class="mb-2"><span class="detail-label">Department:</span> <span class="detail-value">${voter.department}</span></p>
-                        </div>
-                        <div class="col-md-4">
-                            <p class="mb-2"><span class="detail-label">Arrondissement:</span> <span class="detail-value">${voter.arron}</span></p>
-                        </div>
-                    </div>
-                </div>
+    
+    function populateFilters() {
+        // Get unique regions
+        const regions = [...new Set(allVoters.map(v => v.region))].filter(r => r);
+        regions.forEach(region => {
+            const option = document.createElement('option');
+            option.value = region;
+            option.textContent = region;
+            regionFilter.appendChild(option);
+        });
+    }
+    
+    function displayVoters(voters) {
+        voterGrid.innerHTML = '';
+        
+        if (voters.length === 0) {
+            noResults.classList.remove('d-none');
+            pagination.classList.add('d-none');
+            return;
+        }
+        
+        noResults.classList.add('d-none');
+        
+        voters.forEach(voter => {
+            const card = createVoterCard(voter);
+            voterGrid.appendChild(card);
+        });
+        
+        // In a real app, you would implement pagination here
+        // setupPagination(voters);
+    }
+    
+    function createVoterCard(voter) {
+        const col = document.createElement('div');
+        col.className = 'col';
+        
+        const card = document.createElement('div');
+        card.className = 'voter-card';
+        
+        // Generate initials for avatar
+        const initials = getInitials(voter.firstname, voter.lastname);
+        
+        // Calculate age
+        const age = calculateAge(voter.birthdate);
+        
+        // Determine role badge class
+        const roleClass = getRoleClass(voter.role);
+        
+        card.innerHTML = `
+            <div class="card-avatar">${initials}</div>
+            <div class="card-body">
+                <h5 class="card-title">${voter.firstname} ${voter.lastname}</h5>
+                <h6 class="card-subtitle">Voter #${voter.number || 'N/A'}</h6>
+                <p class="card-text"><strong>Region:</strong> ${voter.region || 'N/A'}</p>
+                <p class="card-text"><strong>Age:</strong> ${age} years</p>
+                <span class="role-badge ${roleClass}">${formatRole(voter.role)}</span>
+                <button class="btn btn-view mt-3" data-id="${voter.id}">
+                    View Details
+                </button>
             </div>
         `;
-
-        const modal = new bootstrap.Modal(document.getElementById('voterDetailsModal'));
-        modal.show();
+        
+        col.appendChild(card);
+        
+        // Add click event to view button
+        col.querySelector('.btn-view').addEventListener('click', () => showVoterDetails(voter));
+        
+        return col;
+    }
+    
+    function showVoterDetails(voter) {
+        // Calculate age
+        const age = calculateAge(voter.birthdate);
+        
+        // Format birthdate
+        const formattedBirthdate = formatDate(voter.birthdate);
+        
+        // Set modal content
+        document.getElementById('modalVoterName').textContent = 
+            `${voter.firstname} ${voter.lastname}`;
+            
+        document.getElementById('modalAvatar').textContent = 
+            getInitials(voter.firstname, voter.lastname);
+            
+        document.getElementById('modalRole').textContent = formatRole(voter.role);
+        document.getElementById('modalRole').className = `badge ${getRoleClass(voter.role)}`;
+        document.getElementById('modalBirthdate').textContent = formattedBirthdate;
+        document.getElementById('modalGender').textContent = voter.gender || 'N/A';
+        document.getElementById('modalPlaceOfBirth').textContent = voter.placeofbirth || 'N/A';
+        document.getElementById('modalAge').textContent = `${age} years`;
+        document.getElementById('modalNumber').textContent = voter.number || 'N/A';
+        document.getElementById('modalLocation').textContent = voter.location || 'N/A';
+        document.getElementById('modalRegion').textContent = voter.region || 'N/A';
+        document.getElementById('modalDepartment').textContent = voter.department || 'N/A';
+        document.getElementById('modalArron').textContent = voter.arron || 'N/A';
+        
+        // Show modal
+        voterModal.show();
+    }
+    
+    function filterVoters() {
+        const searchTerm = searchInput.value.toLowerCase();
+        const selectedRegion = regionFilter.value;
+        const selectedRole = roleFilter.value;
+        
+        const filtered = allVoters.filter(voter => {
+            const fullName = `${voter.firstname} ${voter.lastname}`.toLowerCase();
+            const matchesSearch = fullName.includes(searchTerm) || 
+                                (voter.number && voter.number.toString().includes(searchTerm)) ||
+                                (voter.region && voter.region.toLowerCase().includes(searchTerm));
+            
+            const matchesRegion = !selectedRegion || voter.region === selectedRegion;
+            const matchesRole = !selectedRole || voter.role === selectedRole;
+            
+            return matchesSearch && matchesRegion && matchesRole;
+        });
+        
+        displayVoters(filtered);
+    }
+    
+    // Utility functions
+    function getInitials(firstname, lastname) {
+        return `${firstname?.charAt(0) || ''}${lastname?.charAt(0) || ''}`.toUpperCase();
+    }
+    
+    function calculateAge(birthdate) {
+        if (!birthdate) return 'N/A';
+        
+        const birthDate = new Date(birthdate);
+        const today = new Date();
+        let age = today.getFullYear() - birthDate.getFullYear();
+        const monthDiff = today.getMonth() - birthDate.getMonth();
+        
+        if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+            age--;
+        }
+        
+        return age;
+    }
+    
+    function formatDate(dateString) {
+        if (!dateString) return 'N/A';
+        
+        const options = { year: 'numeric', month: 'long', day: 'numeric' };
+        return new Date(dateString).toLocaleDateString(undefined, options);
+    }
+    
+    function formatRole(role) {
+        if (!role) return 'Unknown';
+        return role.charAt(0).toUpperCase() + role.slice(1).toLowerCase();
+    }
+    
+    function getRoleClass(role) {
+        switch(role) {
+            case 'ADMIN': return 'bg-danger';
+            case 'OFFICIAL': return 'bg-warning text-dark';
+            case 'VOTER': return 'bg-success';
+            default: return 'bg-secondary';
+        }
     }
 });

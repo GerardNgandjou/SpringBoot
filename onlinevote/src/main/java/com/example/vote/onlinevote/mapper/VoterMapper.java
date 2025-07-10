@@ -1,5 +1,6 @@
 package com.example.vote.onlinevote.mapper;
 
+
 import com.example.vote.onlinevote.dto.VoterDto;
 import com.example.vote.onlinevote.dto.VoterResponseDto;
 import com.example.vote.onlinevote.model.Election;
@@ -14,36 +15,41 @@ import java.util.List;
 public class VoterMapper {
 
     public Voter toVoter(VoterDto voterDto) {
-        var voter = new Voter();
-        voter.setFirstname(voterDto.firstname());
-        voter.setLastname(voterDto.lastname());
-        voter.setBirthdate(voterDto.birthdate());
-        voter.setGender(voterDto.gender());
-        voter.setPlaceofbirth(voterDto.placeofbirth());
-        voter.setEmail(voterDto.email());
-        voter.setLocation(voterDto.location());
-        voter.setNumber(voterDto.number());
-        voter.setRegion(voterDto.region());
-        voter.setDepartment(voterDto.department());
-        voter.setArron(voterDto.arron());
-        voter.setParty(voterDto.party());
-        voter.setCurrentregion(voterDto.currentregion());
-        voter.setPollingstation(voterDto.pollingstation());
+        Voter voter = new Voter();
 
-        // Properly convert IDs to Election list
+        voter.setFirstname(voterDto.getFirstname());
+        voter.setLastname(voterDto.getLastname());
+        voter.setBirthdate(voterDto.getBirthdate());
+        voter.setGender(voterDto.getGender());
+        voter.setPlaceofbirth(voterDto.getPlaceofbirth());
+        voter.setEmail(voterDto.getEmail());
+        voter.setLocation(voterDto.getLocation());
+        voter.setNumber(voterDto.getNumber());
+        voter.setRegion(voterDto.getRegion());
+        voter.setDepartment(voterDto.getDepartment());
+        voter.setArron(voterDto.getArron());
+        voter.setParty(voterDto.getParty());
+        voter.setCurrentregion(voterDto.getCurrentregion());
+        voter.setPollingstation(voterDto.getPollingstation());
+
+        // Convertir les IDs en objets Election
         List<Election> elections = new ArrayList<>();
-        for (Long id : voterDto.registeredElectionIds()) {
-            Election election = new Election();
-            election.setIdElection(id);
-            elections.add(election);
+        if (voterDto.getRegisteredElectionIds() != null) {
+            for (Long id : voterDto.getRegisteredElectionIds()) {
+                Election election = new Election();
+                election.setIdElection(id);
+                elections.add(election);
+            }
         }
         voter.setRegister(elections);
 
-        voter.setRole(voterDto.role());
+        voter.setRole(voterDto.getRole());
 
-        var voteOffice = new VoteOffice();
-        voteOffice.setIdOffice(voterDto.officeId());
-        voter.setOffice(voteOffice);
+        if (voterDto.getOfficeId() != null) {
+            VoteOffice voteOffice = new VoteOffice();
+            voteOffice.setIdOffice(voterDto.getOfficeId());
+            voter.setOffice(voteOffice);
+        }
 
         return voter;
     }

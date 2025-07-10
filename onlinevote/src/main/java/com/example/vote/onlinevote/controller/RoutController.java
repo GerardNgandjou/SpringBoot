@@ -1,5 +1,6 @@
 package com.example.vote.onlinevote.controller;
 
+import com.example.vote.onlinevote.dto.VoterDto;
 import com.example.vote.onlinevote.exception.ResourceNotFoundException;
 import com.example.vote.onlinevote.model.Voter;
 import com.example.vote.onlinevote.service.VoterService;
@@ -17,9 +18,19 @@ import org.springframework.web.bind.annotation.ResponseBody;
 public class RoutController {
 
     private final VoterService voterService;
+    // private final VoterRepository voterRepository;
+    // private final CandidateRepository candidateRepository;
+    // private final ElectionRepository electionRepository;
 
-    public RoutController(VoterService voterService) {
+    public RoutController(VoterService voterService
+                        //   VoterRepository voterRepository,
+                        //   CandidateRepository candidateRepository,
+                        //   ElectionRepository electionRepository
+                        ) {
         this.voterService = voterService;
+        // this.voterRepository = voterRepository;
+        // this.candidateRepository = candidateRepository;
+        // this.electionRepository = electionRepository;
     }
 
     @GetMapping("/")
@@ -28,16 +39,16 @@ public class RoutController {
         // For static index.html, you don't even need this controller
     }
 
-    // @GetMapping("/dash")
-    // public String dash() {
-    //     return "dash"; // This will return dash.html from templates folder
-    //     // For static dash.html, you don't even need this controller
-    // }
+    @GetMapping("/voter")
+    public String showRegistrationForm(Model model) {
+        if (!model.containsAttribute("voter")) {
+            model.addAttribute("voter", new VoterDto());
+        }
+        return "voter"; // This should match your Thymeleaf template name
+    }
 
     @GetMapping("/dash")
-    public String showDashboard(Model model) {        
-        // By default, show the dashboard section
-        model.addAttribute("activeSection", "dashboard");
+    public String showDashboard() { 
         return "dash";
     }
 

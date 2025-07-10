@@ -79,41 +79,45 @@ public class VoterService {
     }
 
     public void registerVoter(Long electionId, VoterDto voterForm) {
-       
-        List<Election> elections = electionRepository.findAllById(voterForm.registeredElectionIds());
+        // Récupérer les élections par leurs ID
+        List<Election> elections = electionRepository.findAllById(voterForm.getRegisteredElectionIds());
 
-        if (elections.size() != voterForm.registeredElectionIds().size()) {
+        if (elections.size() != voterForm.getRegisteredElectionIds().size()) {
             throw new EntityNotFoundException("One or more elections not found");
         }
 
         Voter voter = new Voter();
-        voter.setFirstname(voterForm.firstname());
-        voter.setLastname(voterForm.firstname());
-        voter.setBirthdate(voterForm.birthdate());
-        voter.setGender(voterForm.gender());
-        voter.setPlaceofbirth(voterForm.placeofbirth());
-        voter.setEmail(voterForm.email());
-        voter.setLocation(voterForm.location());
-        voter.setNumber(voterForm.number());
-        voter.setRegion(voterForm.region());
-        voter.setDepartment(voterForm.department());
-        voter.setArron(voterForm.arron());
-        voter.setParty(voterForm.party());
-        voter.setCurrentregion(voterForm.currentregion());
-        voter.setPollingstation(voterForm.pollingstation());
-        
-        // voter.setElection(elections);
-        voter.setRole(voterForm.role());
-        VoteOffice office = voteOfficeRepository.findById(voterForm.officeId())
-                .orElseThrow(() -> new EntityNotFoundException("VoteOffice not found with id: " + voterForm.officeId()));
+
+        // Copier les données depuis le formulaire
+        voter.setFirstname(voterForm.getFirstname());
+        voter.setLastname(voterForm.getLastname()); // Corrigé (avant c'était firstname deux fois)
+        voter.setBirthdate(voterForm.getBirthdate());
+        voter.setGender(voterForm.getGender());
+        voter.setPlaceofbirth(voterForm.getPlaceofbirth());
+        voter.setEmail(voterForm.getEmail());
+        voter.setLocation(voterForm.getLocation());
+        voter.setNumber(voterForm.getNumber());
+        voter.setRegion(voterForm.getRegion());
+        voter.setDepartment(voterForm.getDepartment());
+        voter.setArron(voterForm.getArron());
+        voter.setParty(voterForm.getParty());
+        voter.setCurrentregion(voterForm.getCurrentregion());
+        voter.setPollingstation(voterForm.getPollingstation());
+
+        // Associer les élections
+        voter.setRegister(elections);
+
+        // Définir le rôle
+        voter.setRole(voterForm.getRole());
+
+        // Lier au bureau de vote
+        VoteOffice office = voteOfficeRepository.findById(voterForm.getOfficeId())
+            .orElseThrow(() -> new EntityNotFoundException("VoteOffice not found with id: " + voterForm.getOfficeId()));
         voter.setOffice(office);
 
-        // voter.setEmail(voterForm.getEmail());
-        // voter.setAddress(voterForm.getAddress());
-        // voter.setDateOfBirth(voterForm.getDateOfBirth());
-        // 
-        
+        // Sauvegarder dans la base
         voterRepository.save(voter);
     }
+
 
 }

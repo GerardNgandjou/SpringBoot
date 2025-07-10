@@ -1,13 +1,7 @@
-body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #f8f9fa;
-}
-
-
 :root {
-    --primary-color: #4a6fa5;
-    --secondary-color: #3a5a78;
-    --accent-color: #6b8cae;
+    --primary-color: #4361ee;
+    --secondary-color: #3f37c9;
+    --accent-color: #4cc9f0;
     --light-color: #f8f9fa;
     --dark-color: #212529;
     --gray-color: #6c757d;
@@ -21,7 +15,7 @@ body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-.voter-header {
+.candidate-header {
     background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
     padding: 2rem 0;
     margin-bottom: 2rem;
@@ -46,7 +40,7 @@ body {
     height: 50px;
 }
 
-.voter-card {
+.candidate-card {
     background: white;
     border-radius: var(--border-radius);
     box-shadow: var(--box-shadow);
@@ -57,7 +51,7 @@ body {
     flex-direction: column;
 }
 
-.voter-card:hover {
+.candidate-card:hover {
     transform: translateY(-5px);
 }
 
@@ -103,29 +97,16 @@ body {
     font-size: 0.9rem;
 }
 
-.role-badge {
+.card-badge {
     display: inline-block;
+    background-color: var(--accent-color);
+    color: white;
     padding: 0.25rem 0.5rem;
     border-radius: 4px;
     font-size: 0.75rem;
     font-weight: 600;
     margin-top: auto;
     align-self: flex-start;
-}
-
-.role-admin {
-    background-color: #dc3545;
-    color: white;
-}
-
-.role-official {
-    background-color: #fd7e14;
-    color: white;
-}
-
-.role-voter {
-    background-color: #28a745;
-    color: white;
 }
 
 .btn-view {
@@ -161,7 +142,7 @@ body {
 }
 
 @media (max-width: 768px) {
-    .voter-header {
+    .candidate-header {
         text-align: center;
     }
     
