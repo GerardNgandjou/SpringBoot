@@ -1,6 +1,6 @@
 // ===== GLOBAL VARIABLES & CONFIG =====
-const API_BASE_URL = 'https://your-api-domain.com/api/v1';
-const AUTH_TOKEN = localStorage.getItem('authToken');
+// const API_BASE_URL = 'https://your-api-domain.com/api/v1';
+// const AUTH_TOKEN = localStorage.getItem('authToken');
 
 // Axios instance with auth header
 const api = axios.create({
@@ -963,3 +963,235 @@ const handleRouteChange = () => {
     loadInitialData();
   }
 };
+
+document.addEventListener('DOMContentLoaded', function() {
+  // Handle navigation clicks
+  document.querySelectorAll('.nav-link').forEach(link => {
+    link.addEventListener('click', function(e) {
+      e.preventDefault();
+      
+      // Get the target section from data attribute or href
+      const targetSection = this.getAttribute('data-section') || 
+                          this.getAttribute('href').substring(1);
+      
+      // Switch to the selected section
+      switchSection(targetSection);
+    });
+  });
+
+  // Also handle direct URL hashes
+  window.addEventListener('hashchange', function() {
+    const hash = window.location.hash.substring(1);
+    if (hash) switchSection(hash);
+  });
+
+  // Initialize with current hash
+  const initialHash = window.location.hash.substring(1);
+  if (initialHash) {
+    switchSection(initialHash);
+  } else {
+    switchSection('dashboard');
+  }
+});
+
+function switchSection(sectionId) {
+  // Hide all sections
+  document.querySelectorAll('.content-section').forEach(section => {
+    section.classList.remove('active');
+  });
+
+  // Deactivate all nav links
+  document.querySelectorAll('.nav-link').forEach(link => {
+    link.classList.remove('active');
+  });
+
+  // Show the selected section
+  const targetSection = document.getElementById(`${sectionId}-content`);
+  if (targetSection) {
+    targetSection.classList.add('active');
+    
+    // Update URL hash
+    window.location.hash = sectionId;
+    
+    // Activate the corresponding nav link
+    const navLink = document.querySelector(`.nav-link[data-section="${sectionId}"], 
+                                         .nav-link[href="#${sectionId}"]`);
+    if (navLink) {
+      navLink.classList.add('active');
+    }
+    
+    // Load data for the section
+    loadSectionData(sectionId);
+  } else {
+    console.error(`Section ${sectionId} not found`);
+    // Fallback to dashboard if section doesn't exist
+    switchSection('dashboard');
+  }
+}
+
+function loadSectionData(sectionId) {
+  switch(sectionId) {
+    case 'dashboard':
+      loadDashboardStats();
+      break;
+    case 'elections':
+      loadElections();
+      break;
+    case 'candidates':
+      loadCandidates();
+      break;
+    case 'voters':
+      loadVoters();
+      break;
+    case 'voteoffice':
+      loadVoteOffices();
+      break;
+    case 'results':
+      loadElectionResults();
+      break;
+    case 'settings':
+      loadSettings();
+      break;
+  }
+}
+
+// Initialize the form when DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
+  // Handle "Add Candidate" button click
+  document.getElementById('addCandidateBtn').addEventListener('click', function() {
+    // Reset form and show modal
+    resetCandidateForm();
+    const modal = new bootstrap.Modal(document.getElementById('addCandidateModal'));
+    modal.show();
+  });
+
+  // Setup form submission
+  const candidateForm = document.getElementById('candidateForm');
+  candidateForm.addEventListener('submit', handleCandidateSubmit);
+
+  // Setup multi-step form navigation
+  setupFormNavigation();
+});
+
+// Reset form to initial state
+function resetCandidateForm() {
+  const form = document.getElementById('candidateForm');
+  form.reset();
+  document.querySelectorAll('.form-section').forEach(section => {
+    section.classList.remove('active');
+  });
+  document.querySelector('[data-section="1"]').classList.add('active');
+}
+
+// Handle form navigation between sections
+function setupFormNavigation() {
+  // Next button
+  document.querySelector('.next-section').addEventListener('click', function() {
+    const currentSection = document.querySelector('.form-section.active');
+    const nextSection = document.querySelector(`[data-section="${parseInt(currentSection.dataset.section) + 1}"]`);
+    
+    if (validateSection(currentSection)) {
+      currentSection.classList.remove('active');
+      nextSection.classList.add('active');
+    }
+  });
+
+  // Previous button
+  document.querySelector('.prev-section').addEventListener('click', function() {
+    const currentSection = document.querySelector('.form-section.active');
+    const prevSection = document.querySelector(`[data-section="${parseInt(currentSection.dataset.section) - 1}"]`);
+    
+    currentSection.classList.remove('active');
+    prevSection.classList.add('active');
+  });
+}
+
+// Validate form section before proceeding
+function validateSection(section) {
+  let isValid = true;
+  const inputs = section.querySelectorAll('input[required], select[required]');
+  
+  inputs.forEach(input => {
+    if (!input.value.trim()) {
+      input.classList.add('invalid');
+      isValid = false;
+    } else {
+      input.classList.remove('invalid');
+    }
+  });
+
+  return isValid;
+}
+
+// Handle form submission
+async function handleCandidateSubmit(e) {
+  e.preventDefault();
+  
+  const form = e.target;
+  const submitButton = form.querySelector('#submitButton');
+  const formData = new FormData(form);
+  
+  // Validate elections selection if candidate
+  if (formData.get('role') === 'CANDIDATE') {
+    const selectedElections = form.querySelectorAll('input[name="elections"]:checked');
+    if (selectedElections.length === 0) {
+      document.getElementById('electionsError').style.display = 'block';
+      return;
+    }
+    document.getElementById('electionsError').style.display = 'none';
+  }
+
+  // Add loading state
+  submitButton.disabled = true;
+  submitButton.querySelector('.btn-text').textContent = 'Processing...';
+  submitButton.querySelector('.loading-spinner').style.display = 'inline-block';
+
+  try {
+    const response = await fetch('/api/candidates', {
+      method: 'POST',
+      body: formData,
+      headers: {
+        // CSRF token if needed
+        // 'X-CSRF-TOKEN': document.querySelector('meta[name="_csrf"]').content
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error(await response.text());
+    }
+
+    const data = await response.json();
+    showSuccessMessage('Candidate added successfully!');
+    
+    // Close modal and refresh candidates list
+    bootstrap.Modal.getInstance(document.getElementById('addCandidateModal')).hide();
+    loadCandidates();
+    
+  } catch (error) {
+    console.error('Error submitting candidate:', error);
+    showErrorMessage(error.message || 'Failed to add candidate');
+  } finally {
+    // Reset button state
+    submitButton.disabled = false;
+    submitButton.querySelector('.btn-text').textContent = 'Complete Registration';
+    submitButton.querySelector('.loading-spinner').style.display = 'none';
+  }
+}
+
+// Helper functions for notifications
+function showSuccessMessage(message) {
+  const toast = document.createElement('div');
+  toast.className = 'toast success';
+  toast.textContent = message;
+  document.body.appendChild(toast);
+  setTimeout(() => toast.remove(), 3000);
+}
+
+function showErrorMessage(message) {
+  const toast = document.createElement('div');
+  toast.className = 'toast error';
+  toast.textContent = message;
+  document.body.appendChild(toast);
+  setTimeout(() => toast.remove(), 3000);
+}
+

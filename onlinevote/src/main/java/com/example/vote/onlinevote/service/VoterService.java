@@ -102,7 +102,6 @@ public class VoterService {
         voter.setArron(voterForm.getArron());
         voter.setParty(voterForm.getParty());
         voter.setCurrentregion(voterForm.getCurrentregion());
-        voter.setPollingstation(voterForm.getPollingstation());
 
         // Associer les élections
         voter.setRegister(elections);

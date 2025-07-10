@@ -37,7 +37,7 @@
         </div>
       </header>
 
-      <form id="voterForm" th:action="@{/voter}" th:object="${voter}" method="post" novalidate class="registration-form">
+      <form id="voterForm" th:action="@{/voter/add}" th:object="${voter}" method="post" novalidate class="registration-form">
         <!-- <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"> -->
 
         <div class="form-grid">

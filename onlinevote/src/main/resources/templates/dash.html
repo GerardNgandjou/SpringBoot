@@ -636,23 +636,23 @@
                         <form th:action="@{/settings/account}" method="post" class="settings-form" enctype="multipart/form-data">
                             <div class="form-group">
                                 <label for="username">Username</label>
-                                <input type="text" id="username" th:value="${user.username}" readonly>
+                                <input type="text" id="username" value="${user.username}" readonly>
                             </div>
                             <div class="form-group">
                                 <label for="fullname">Full Name</label>
                                 <div class="name-fields">
-                                    <input type="text" id="firstName" name="firstName" th:value="${user.firstName}" placeholder="First Name" required>
-                                    <input type="text" id="lastName" name="lastName" th:value="${user.lastName}" placeholder="Last Name" required>
+                                    <input type="text" id="firstName" name="firstName" value="${user.firstName}" placeholder="First Name" required>
+                                    <input type="text" id="lastName" name="lastName" value="${user.lastName}" placeholder="Last Name" required>
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label for="email">Email</label>
-                                <input type="email" id="email" name="email" th:value="${user.email}" required>
+                                <input type="email" id="email" name="email" value="${user.email}" required>
                             </div>
                             <div class="form-group">
                                 <label>Profile Photo</label>
                                 <div class="file-upload">
-                                    <img th:src="@{${user.profileImageUrl != null} ? ${user.profileImageUrl} : '/images/default-profile.png'}" 
+                                    <img src="@{${user.profileImageUrl != null} ? ${user.profileImageUrl} : '/images/default-profile.png'}" 
                                          alt="Current profile" 
                                          class="profile-preview"
                                          id="profilePreview">
@@ -698,9 +698,9 @@
                             <div class="form-group">
                                 <label for="2fa-toggle">Two-Factor Authentication</label>
                                 <div class="toggle-switch">
-                                    <input type="checkbox" id="2fa-toggle" name="twoFactorEnabled" th:checked="${user.twoFactorEnabled}">
+                                    <input type="checkbox" id="2fa-toggle" name="twoFactorEnabled" checked="${user.twoFactorEnabled}">
                                     <label for="2fa-toggle"></label>
-                                    <span th:text="${user.twoFactorEnabled} ? 'Enabled' : 'Disabled'">Enabled</span>
+                                    <span text="${user.twoFactorEnabled} ? 'Enabled' : 'Disabled'">Enabled</span>
                                 </div>
                                 <small class="form-text">Add an extra layer of security to your account</small>
                             </div>
@@ -716,30 +716,30 @@
                             <div class="option-group">
                                 <h5>Email Notifications</h5>
                                 <div class="option-item">
-                                    <input type="checkbox" id="email-election" name="emailElection" th:checked="${user.notificationPreferences.emailElection}">
+                                    <input type="checkbox" id="email-election" name="emailElection" checked="${user.notificationPreferences.emailElection}">
                                     <label for="email-election">Election updates</label>
                                 </div>
                                 <div class="option-item">
-                                    <input type="checkbox" id="email-results" name="emailResults" th:checked="${user.notificationPreferences.emailResults}">
+                                    <input type="checkbox" id="email-results" name="emailResults" checked="${user.notificationPreferences.emailResults}">
                                     <label for="email-results">Election results</label>
                                 </div>
                                 <div class="option-item">
-                                    <input type="checkbox" id="email-system" name="emailSystem" th:checked="${user.notificationPreferences.emailSystem}">
+                                    <input type="checkbox" id="email-system" name="emailSystem" checked="${user.notificationPreferences.emailSystem}">
                                     <label for="email-system">System notifications</label>
                                 </div>
                             </div>
                             <div class="option-group">
                                 <h5>In-App Notifications</h5>
                                 <div class="option-item">
-                                    <input type="checkbox" id="app-new-voter" name="appNewVoter" th:checked="${user.notificationPreferences.appNewVoter}">
+                                    <input type="checkbox" id="app-new-voter" name="appNewVoter" checked="${user.notificationPreferences.appNewVoter}">
                                     <label for="app-new-voter">New voter registrations</label>
                                 </div>
                                 <div class="option-item">
-                                    <input type="checkbox" id="app-new-candidate" name="appNewCandidate" th:checked="${user.notificationPreferences.appNewCandidate}">
+                                    <input type="checkbox" id="app-new-candidate" name="appNewCandidate" checked="${user.notificationPreferences.appNewCandidate}">
                                     <label for="app-new-candidate">New candidate applications</label>
                                 </div>
                                 <div class="option-item">
-                                    <input type="checkbox" id="app-vote-activity" name="appVoteActivity" th:checked="${user.notificationPreferences.appVoteActivity}">
+                                    <input type="checkbox" id="app-vote-activity" name="appVoteActivity" checked="${user.notificationPreferences.appVoteActivity}">
                                     <label for="app-vote-activity">Vote activity</label>
                                 </div>
                             </div>
@@ -751,36 +751,36 @@
                 <div class="settings-tab-content" id="system-tab" role="tabpanel" aria-labelledby="system-tab" data-tab="system">
                     <div class="settings-card">
                         <h4><i class="fas fa-server" aria-hidden="true"></i> System Settings</h4>
-                        <form th:action="@{/settings/system}" method="post" class="settings-form">
+                        <form action="@{/settings/system}" method="post" class="settings-form">
                             <div class="form-group">
                                 <label for="timezone">Timezone</label>
-                                <select id="timezone" name="timezone" th:value="${systemSettings.timezone}">
-                                    <option th:each="tz : ${timezones}" 
-                                            th:value="${tz.id}" 
-                                            th:text="${tz.displayName}"
-                                            th:selected="${tz.id == systemSettings.timezone}">
+                                <select id="timezone" name="timezone" value="${systemSettings.timezone}">
+                                    <option each="tz : ${timezones}" 
+                                            value="${tz.id}" 
+                                            text="${tz.displayName}"
+                                            selected="${tz.id == systemSettings.timezone}">
                                         (UTC-05:00) Eastern Time (US & Canada)
                                     </option>
                                 </select>
                             </div>
                             <div class="form-group">
                                 <label for="dateFormat">Date Format</label>
-                                <select id="dateFormat" name="dateFormat" th:value="${systemSettings.dateFormat}">
-                                    <option th:each="format : ${dateFormats}" 
-                                            th:value="${format}" 
-                                            th:text="${format}"
-                                            th:selected="${format == systemSettings.dateFormat}">
+                                <select id="dateFormat" name="dateFormat" value="${systemSettings.dateFormat}">
+                                    <option each="format : ${dateFormats}" 
+                                            value="${format}" 
+                                            text="${format}"
+                                            selected="${format == systemSettings.dateFormat}">
                                         MM/DD/YYYY
                                     </option>
                                 </select>
                             </div>
                             <div class="form-group">
                                 <label for="resultsVisibility">Results Visibility</label>
-                                <select id="resultsVisibility" name="resultsVisibility" th:value="${systemSettings.resultsVisibility}">
-                                    <option th:each="visibility : ${visibilityOptions}" 
-                                            th:value="${visibility.key}" 
-                                            th:text="${visibility.value}"
-                                            th:selected="${visibility.key == systemSettings.resultsVisibility}">
+                                <select id="resultsVisibility" name="resultsVisibility" value="${systemSettings.resultsVisibility}">
+                                    <option each="visibility : ${visibilityOptions}" 
+                                            value="${visibility.key}" 
+                                            text="${visibility.value}"
+                                            selected="${visibility.key == systemSettings.resultsVisibility}">
                                         Show after election ends
                                     </option>
                                 </select>
@@ -789,14 +789,14 @@
                                 <label for="electionDuration">Default Election Duration</label>
                                 <div class="input-group">
                                     <input type="number" id="electionDuration" name="electionDuration" 
-                                           th:value="${systemSettings.defaultElectionDuration}" min="1" max="30">
+                                           value="${systemSettings.defaultElectionDuration}" min="1" max="30">
                                     <span class="input-group-text">Days</span>
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label for="maxCandidates">Max Candidates Per Position</label>
                                 <input type="number" id="maxCandidates" name="maxCandidates" 
-                                       th:value="${systemSettings.maxCandidatesPerPosition}" min="1" max="20">
+                                       value="${systemSettings.maxCandidatesPerPosition}" min="1" max="20">
                             </div>
                             <button type="submit" class="btn btn-primary">Save System Settings</button>
                         </form>
@@ -816,7 +816,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form id="candidateForm" th:action="@{/candidates}" method="post" novalidate enctype="multipart/form-data">
+                <form id="candidateForm" action="@{/candidates}" method="post" novalidate enctype="multipart/form-data">
                     <div class="row g-3">
                         <div class="col-md-6">
                             <label for="firstname" class="form-label">First Name</label>
@@ -836,9 +836,9 @@
                             <label for="gender" class="form-label">Gender</label>
                             <select class="form-select" id="gender" name="gender">
                                 <option value="">Select Gender</option>
-                                <option th:each="gender : ${genders}" 
-                                        th:value="${gender}" 
-                                        th:text="${gender}">
+                                <option each="gender : ${genders}" 
+                                        value="${gender}" 
+                                        text="${gender}">
                                     Male
                                 </option>
                             </select>
@@ -851,9 +851,9 @@
                             <label for="election" class="form-label">Election</label>
                             <select class="form-select" id="election" name="electionId">
                                 <option value="">Select Election</option>
-                                <option th:each="election : ${activeElections}" 
-                                        th:value="${election.id}" 
-                                        th:text="${election.title}">
+                                <option each="election : ${activeElections}" 
+                                        value="${election.id}" 
+                                        text="${election.title}">
                                 </option>
                             </select>
                         </div>
@@ -901,7 +901,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form id="electionForm" th:action="@{/elections}" method="post" novalidate enctype="multipart/form-data">
+                <form id="electionForm" action="@{/elections}" method="post" novalidate enctype="multipart/form-data">
                     <div class="row g-3">
                         <div class="col-md-12">
                             <label for="electionTitle" class="form-label">Election Title</label>
@@ -925,9 +925,9 @@
                         <div class="col-md-6">
                             <label for="electionType" class="form-label">Election Type</label>
                             <select class="form-select" id="electionType" name="type">
-                                <option th:each="type : ${electionTypes}" 
-                                        th:value="${type.key}" 
-                                        th:text="${type.value}">
+                                <option each="type : ${electionTypes}" 
+                                        value="${type.key}" 
+                                        text="${type.value}">
                                     Single Choice
                                 </option>
                             </select>
@@ -935,9 +935,9 @@
                         <div class="col-md-6">
                             <label for="eligibleVoters" class="form-label">Eligible Voters</label>
                             <select class="form-select" id="eligibleVoters" name="eligibleGroups" multiple>
-                                <option th:each="group : ${voterGroups}" 
-                                        th:value="${group.id}" 
-                                        th:text="${group.name}">
+                                <option each="group : ${voterGroups}" 
+                                        value="${group.id}" 
+                                        text="${group.name}">
                                     All registered voters
                                 </option>
                             </select>
@@ -974,7 +974,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form id="officeForm" th:action="@{/offices}" method="post" novalidate>
+                <form id="officeForm" action="@{/offices}" method="post" novalidate>
                     <div class="row g-3">
                         <div class="col-md-12">
                             <label for="officeName" class="form-label">Office Name</label>
@@ -985,7 +985,7 @@
                             <label for="officeRegion" class="form-label">Region</label>
                             <select class="form-select" id="officeRegion" name="region" required>
                                 <option value="">Select Region</option>
-                                <option th:each="region : ${regions}" th:value="${region}">[[${region}]]</option>
+                                <option each="region : ${regions}" value="${region}">[[${region}]]</option>
                             </select>
                         </div>
                         <div class="col-md-6">
@@ -1032,7 +1032,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <form th:action="@{/logout}" method="post">
+                <form action="@{/logout}" method="post">
                     <button type="submit" class="btn btn-primary" id="confirmLogout">Logout</button>
                 </form>
             </div>

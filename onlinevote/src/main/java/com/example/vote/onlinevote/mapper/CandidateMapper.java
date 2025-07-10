@@ -43,7 +43,6 @@ public class CandidateMapper {
         candidate.setArron(candidateDto.arron());
         candidate.setParty(candidateDto.party());
         candidate.setCurrentregion(candidateDto.currentregion());
-        candidate.setPollingstation(candidateDto.pollingstation());
 
         // Properly convert IDs to Election list
         List<Election> elections = new ArrayList<>();

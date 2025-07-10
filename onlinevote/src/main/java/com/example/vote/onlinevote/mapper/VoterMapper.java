@@ -30,7 +30,6 @@ public class VoterMapper {
         voter.setArron(voterDto.getArron());
         voter.setParty(voterDto.getParty());
         voter.setCurrentregion(voterDto.getCurrentregion());
-        voter.setPollingstation(voterDto.getPollingstation());
 
         // Convertir les IDs en objets Election
         List<Election> elections = new ArrayList<>();

@@ -286,33 +286,5 @@ function setupVoteOfficeDropdown() {
     });
 }
 
-function setupElectionCheckboxes() {
-    // In a real app, you would fetch this from your backend
-    const elections = [
-        { id: 1, name: "Presidential Election", date: "2023-10-07" },
-        { id: 2, name: "Legislative Election", date: "2023-10-07" },
-        { id: 3, name: "Municipal Election", date: "2024-02-10" }
-    ];
-    
-    const container = document.querySelector('.checkbox-group');
-    
-    elections.forEach(election => {
-        const div = document.createElement('div');
-        div.className = 'checkbox-item';
-        
-        const checkbox = document.createElement('input');
-        checkbox.type = 'checkbox';
-        checkbox.id = `election_${election.id}`;
-        checkbox.value = election.id;
-        checkbox.name = 'register';
-        
-        const label = document.createElement('label');
-        label.htmlFor = `election_${election.id}`;
-        label.textContent = `${election.name} (${election.date})`;
-        
-        div.appendChild(checkbox);
-        div.appendChild(label);
-        container.appendChild(div);
-    });
-}
+
 

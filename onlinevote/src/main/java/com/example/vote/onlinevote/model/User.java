@@ -33,7 +33,6 @@ public class User {
     private String arron;
     private String party;
     private String currentregion;
-    private String pollingstation;
 
     @ManyToMany
     @JoinTable(
@@ -62,7 +61,6 @@ public class User {
             String arron, 
             String politicalParty, 
             String currentregion,
-            String pollingstation,
             List<Election> register) {
         this.firstname = firstname;
         this.lastname = lastname;
@@ -75,7 +73,6 @@ public class User {
         this.arron = arron;
         this.party = politicalParty;
         this.currentregion = currentregion;
-        this.pollingstation = pollingstation;
         this.register = register;
     }
 
