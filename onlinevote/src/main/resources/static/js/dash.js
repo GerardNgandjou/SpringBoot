@@ -154,15 +154,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Filter buttons in elections section
-    filterBtns.forEach(btn => {
-        btn.addEventListener('click', function() {
-            filterBtns.forEach(b => b.classList.remove('active'));
-            this.classList.add('active');
-            const status = this.getAttribute('data-status');
-            filterElections(status);
-        });
-    });
 
     // Search functionality with debounce
     searchInputs.forEach(input => {
@@ -240,118 +231,158 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         // Load initial data
-        loadElections();
-        loadCandidates();
-        loadVoters();
-        loadVoteOffices();
+        // loadElections();
+        // loadCandidates();
+        // loadVoters();
+        // loadVoteOffices();
     }
 
-    function loadElections() {
-        // In a real app, you would fetch this data from an API
-        const elections = [
-            {
-                id: 1,
-                title: "Student Council Election 2024",
-                description: "Annual election for student council positions",
-                startDate: "2024-05-15",
-                endDate: "2024-05-30",
-                status: "active",
-                candidates: 4,
-                voters: 1245,
-                verified: 782,
-                pending: 463,
-                participation: 62,
-                bannerColor: "linear-gradient(135deg, #4361ee, #4895ef)"
-            },
-            {
-                id: 2,
-                title: "HOA Board Election",
-                description: "Homeowners association board member election",
-                startDate: "2024-05-25",
-                endDate: "2024-05-31",
-                status: "active",
-                candidates: 5,
-                voters: 892,
-                verified: 512,
-                pending: 380,
-                participation: 45,
-                bannerColor: "linear-gradient(135deg, #f72585, #b5179e)"
-            },
-            {
-                id: 3,
-                title: "Faculty Senate Election (2023)",
-                description: "Election for faculty senate representatives",
-                startDate: "2023-11-01",
-                endDate: "2023-11-15",
-                status: "ended",
-                candidates: 8,
-                voters: 1560,
-                verified: 1450,
-                pending: 110,
-                participation: 93,
-                bannerColor: "linear-gradient(135deg, #3f37c9, #560bad)"
-            }
-        ];
+    document.addEventListener('DOMContentLoaded', function() {
+    // DOM elements
+    const electionsContainer = document.getElementById('electionsContainer');
+    const filterButtons = document.querySelectorAll('.filter-btn');
 
-        const container = document.getElementById('electionsContainer');
-        container.innerHTML = '';
+    // Initialize
+    fetchElections();
+    setupFilterButtons();
 
-        elections.forEach(election => {
-            const daysLeft = election.status === 'active' ? 
-                Math.ceil((new Date(election.endDate) - new Date()) / (1000 * 60 * 60 * 24)) : 
-                null;
+    // Fetch elections from backend
+    async function fetchElections() {
+        try {
+            const response = await fetch('/election/show');
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+            const elections = await response.json();
+            window.electionData = elections; // Store for filtering
+            renderElections(elections);
+        } catch (error) {
+            console.error('Fetch error:', error);
+            showErrorMessage();
+        }
+    }
 
-            const electionCard = document.createElement('div');
-            electionCard.className = 'election-card';
-            electionCard.innerHTML = `
-                <div class="election-banner" style="background: ${election.bannerColor}">
-                    <i class="fas fa-vote-yea"></i>
-                    <span class="election-status ${election.status}">
-                        ${election.status === 'active' ? `Active • ${daysLeft} days left` : 
-                          election.status === 'coming' ? 'Coming Soon' : 'Ended'}
-                    </span>
-                </div>
-                <div class="election-details">
-                    <h3 class="election-title">${election.title}</h3>
-                    <div class="election-meta">
-                        <div class="election-date">
-                            <i class="far fa-calendar-alt"></i> 
-                            ${formatDate(election.startDate)} - ${formatDate(election.endDate)}
-                        </div>
-                        <div><i class="fas fa-users"></i> ${election.candidates} candidates</div>
-                    </div>
-                    <div class="progress-container">
-                        <div class="progress-label">
-                            <span>Participation (${election.voters} voters)</span>
-                            <span>${election.participation}%</span>
-                        </div>
-                        <div class="progress-bar">
-                            <div class="progress-fill" style="width: ${election.participation}%"></div>
-                        </div>
-                    </div>
-                    <div class="election-stats">
-                        <div class="stat-item">
-                            <i class="fas fa-check-circle"></i>
-                            <span>${election.verified} Verified</span>
-                        </div>
-                        <div class="stat-item">
-                            <i class="fas fa-user-clock"></i>
-                            <span>${election.pending} Pending</span>
-                        </div>
-                    </div>
-                    <div class="election-actions">
-                        <button class="btn btn-outline">
-                            <i class="fas fa-chart-bar"></i> Results
-                        </button>
-                        <button class="btn btn-primary">
-                            <i class="fas fa-cog"></i> Manage
-                        </button>
-                    </div>
+    // Show error message
+    function showErrorMessage() {
+        electionsContainer.innerHTML = `
+            <div class="error-message">
+                <i class="fas fa-exclamation-triangle"></i>
+                <p>Error loading elections. Please try again later.</p>
+            </div>
+        `;
+    }
+
+    // Render elections list
+    function renderElections(elections) {
+        if (!elections || !elections.length) {
+            electionsContainer.innerHTML = `
+                <div class="no-elections">
+                    <i class="fas fa-info-circle"></i>
+                    <p>No elections found matching your criteria.</p>
                 </div>
             `;
-            container.appendChild(electionCard);
+            return;
+        }
+
+        electionsContainer.innerHTML = elections.map(election => `
+            <div class="election-card">
+                <div class="card-header">
+                    <span class="status-badge ${getStatusClass(election.electionStatus)}">
+                        ${election.electionStatus || 'UNKNOWN'}
+                    </span>
+                    <h3 class="card-title">${election.electionName || 'Unnamed Election'}</h3>
+                </div>
+                <div class="card-body">
+                    <p class="card-description">${election.electionDescription || 'No description available'}</p>
+                    <div class="card-dates">
+                        <div class="date-item">
+                            <i class="fas fa-calendar-alt"></i>
+                            <span>Starts: ${formatDate(election.electionStartDate)}</span>
+                        </div>
+                        <div class="date-item">
+                            <i class="fas fa-calendar-check"></i>
+                            <span>Ends: ${formatDate(election.electionEndDate)}</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <div class="participants">
+                        <i class="fas fa-users"></i>
+                        <span>${election.users?.length || 0} participants</span>
+                    </div>
+                    ${createActionButton(election)}
+                </div>
+            </div>
+        `).join('');
+    }
+
+    // Get status class for styling
+    function getStatusClass(status) {
+        if (!status) return 'status-unknown';
+        switch(status.toUpperCase()) {
+            case 'ACTIVE': return 'status-active';
+            case 'UPCOMING': return 'status-upcoming';
+            case 'SCHEDULED': return 'status-upcoming';
+            case 'ENDED': return 'status-ended';
+            default: return 'status-unknown';
+        }
+    }
+
+    // Format date
+    function formatDate(dateString) {
+        if (!dateString) return 'N/A';
+        try {
+            return new Date(dateString).toLocaleDateString();
+        } catch {
+            return 'Invalid date';
+        }
+    }
+
+    // Create appropriate action button
+    function createActionButton(election) {
+        const status = election.electionStatus?.toUpperCase();
+        const isUpcoming = status === 'UPCOMING' || status === 'SCHEDULED';
+        const id = election.idElection || election.id;
+        
+        return isUpcoming ?
+            `<a href="#" class="action-btn register-btn" data-id="${id}">
+                <i class="fas fa-user-plus"></i> Register
+            </a>` :
+            `<a href="/elections/${id}" class="action-btn view-btn">
+                <i class="fas fa-eye"></i> View
+            </a>`;
+    }
+
+    // Set up filter buttons
+    function setupFilterButtons() {
+        filterButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                // Update active button
+                filterButtons.forEach(btn => btn.classList.remove('active'));
+                this.classList.add('active');
+                
+                // Filter elections
+                const status = this.dataset.status;
+                filterElections(status);
+            });
         });
     }
+
+    // Filter elections by status
+    function filterElections(status) {
+        if (!window.electionData) return;
+        
+        const filtered = status === 'all' ? 
+            window.electionData : 
+            window.electionData.filter(election => {
+                const electionStatus = election.electionStatus?.toUpperCase();
+                if (status === 'UPCOMING') {
+                    return electionStatus === 'UPCOMING' || electionStatus === 'SCHEDULED';
+                }
+                return electionStatus === status;
+            });
+        
+        renderElections(filtered);
+    }
+});
 
     function loadCandidates() {
         // In a real app, you would fetch this data from an API

@@ -2,7 +2,6 @@ package com.example.vote.onlinevote.controller;
 
 import com.example.vote.onlinevote.dto.VoterDto;
 import com.example.vote.onlinevote.dto.VoterResponseDto;
-import com.example.vote.onlinevote.model.User.Role;
 import com.example.vote.onlinevote.model.Voter;
 import com.example.vote.onlinevote.service.ElectionService;
 import com.example.vote.onlinevote.service.VoteOfficeService;
@@ -42,13 +41,20 @@ public class VoterController {
         return "success"; // or another Thymeleaf template name
     }
 
+    @GetMapping("/voter/add")
+    @ResponseStatus(HttpStatus.CREATED)
     public String showRegistrationForm(Model model) {
         model.addAttribute("voter", new Voter());
-        model.addAttribute("voteOffices", voteOfficeService.showVoteOffices());
-        model.addAttribute("elections", electionService.getAllElections());
-        model.addAttribute("roles", Role.values());
-        return "voter";
+        return "voter"; // maps to voter.html in templates folder
     }
+
+    // public String showRegistrationForm(Model model) {
+    //     model.addAttribute("voter", new Voter());
+    //     model.addAttribute("voteOffices", voteOfficeService.showVoteOffices());
+    //     // model.addAttribute("elections", electionService.getAllElections());
+    //     // model.addAttribute("roles", Role.values());
+    //     return "voter";
+    // }
 
     @GetMapping("/voter/display")
     public List<VoterResponseDto> show() {

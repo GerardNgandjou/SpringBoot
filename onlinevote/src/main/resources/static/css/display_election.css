@@ -1,232 +1,168 @@
-:root {
-    --primary: #4361ee;
-    --secondary: #3f37c9;
-    --success: #4cc9f0;
-    --danger: #f72585;
-    --warning: #f8961e;
-    --info: #4895ef;
-    --light: #f8f9fa;
-    --dark: #212529;
-    --gray: #6c757d;
-}
-
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
-
-body {
-    background-color: #f5f7fa;
-    color: var(--dark);
-    line-height: 1.6;
-}
-
-.container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 20px;
-}
-
-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 30px;
-    padding-bottom: 20px;
-    border-bottom: 1px solid #e0e0e0;
-}
-
-h1 {
-    font-size: 2.2rem;
-    color: var(--primary);
-}
-
-.btn {
-    display: inline-flex;
-    align-items: center;
-    padding: 10px 20px;
-    border-radius: 6px;
-    font-weight: 500;
-    text-decoration: none;
-    transition: all 0.3s ease;
-    cursor: pointer;
-    border: none;
-}
-
-.btn-primary {
-    background-color: var(--primary);
-    color: white;
-}
-
-.btn-primary:hover {
-    background-color: var(--secondary);
-    transform: translateY(-2px);
-}
-
-.btn i {
-    margin-right: 8px;
-}
-
-.filters {
-    display: flex;
-    gap: 15px;
-    margin-bottom: 25px;
-    flex-wrap: wrap;
-}
-
-.filter-btn {
-    padding: 8px 16px;
-    border-radius: 20px;
-    background-color: white;
-    border: 1px solid #e0e0e0;
-    cursor: pointer;
-    transition: all 0.2s;
-}
-
-.filter-btn.active {
-    background-color: var(--primary);
-    color: white;
-    border-color: var(--primary);
-}
-
-.filter-btn:hover {
-    border-color: var(--primary);
-}
-
-.elections-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-    gap: 25px;
-}
-
-.election-card {
-    background-color: white;
-    border-radius: 10px;
-    overflow: hidden;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-    transition: transform 0.3s, box-shadow 0.3s;
-}
-
-.election-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-}
-
-.card-header {
-    padding: 20px;
-    background-color: var(--primary);
-    color: white;
-    position: relative;
-}
-
-.status-badge {
-    position: absolute;
-    top: 15px;
-    right: 15px;
-    padding: 5px 10px;
-    border-radius: 20px;
-    font-size: 0.8rem;
-    font-weight: 600;
-}
-
-.status-active {
-    background-color: var(--success);
-}
-
-.status-upcoming {
-    background-color: var(--warning);
-    color: var(--dark);
-}
-
-.status-ended {
-    background-color: var(--gray);
-}
-
-.card-body {
-    padding: 20px;
-}
-
-.card-title {
-    font-size: 1.4rem;
-    margin-bottom: 10px;
-    color: var(--dark);
-}
-
-.card-description {
-    color: var(--gray);
-    margin-bottom: 15px;
-}
-
-.card-dates {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 20px;
-    font-size: 0.9rem;
-}
-
-.date-item {
-    display: flex;
-    align-items: center;
-}
-
-.date-item i {
-    margin-right: 5px;
-    color: var(--primary);
-}
-
-.card-footer {
-    display: flex;
-    justify-content: space-between;
-    padding: 15px 20px;
-    border-top: 1px solid #eee;
-}
-
-.participants {
-    display: flex;
-    align-items: center;
-    color: var(--gray);
-    font-size: 0.9rem;
-}
-
-.participants i {
-    margin-right: 5px;
-}
-
-.action-btn {
-    padding: 8px 15px;
-    border-radius: 6px;
-    font-size: 0.9rem;
-    text-decoration: none;
-}
-
-.view-btn {
-    background-color: var(--light);
-    color: var(--primary);
-}
-
-.view-btn:hover {
-    background-color: #e9ecef;
-}
-
-.register-btn {
-    background-color: var(--primary);
-    color: white;
-}
-
-.register-btn:hover {
-    background-color: var(--secondary);
-}
-
-@media (max-width: 768px) {
-    .elections-grid {
-        grid-template-columns: 1fr;
-    }
-
-    header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 15px;
-    }
-}
+   /* Basic styling - customize as needed */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f7fa;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .filters {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .filter-btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            background-color: #e0e0e0;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .filter-btn.active {
+            background-color: #3498db;
+            color: white;
+        }
+        
+        .elections-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .election-card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            transition: transform 0.3s;
+        }
+        
+        .election-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .card-header {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            position: relative;
+        }
+        
+        .status-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .status-active {
+            background-color: #2ecc71;
+            color: white;
+        }
+        
+        .status-upcoming {
+            background-color: #f39c12;
+            color: white;
+        }
+        
+        .status-ended {
+            background-color: #e74c3c;
+            color: white;
+        }
+        
+        .status-unknown {
+            background-color: #95a5a6;
+            color: white;
+        }
+        
+        .card-title {
+            margin: 0;
+            font-size: 1.2rem;
+            color: #2c3e50;
+        }
+        
+        .card-body {
+            padding: 15px;
+        }
+        
+        .card-description {
+            color: #7f8c8d;
+            margin-bottom: 15px;
+        }
+        
+        .card-dates {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            color: #34495e;
+        }
+        
+        .date-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-top: 1px solid #eee;
+        }
+        
+        .participants {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: #7f8c8d;
+        }
+        
+        .action-btn {
+            padding: 6px 12px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: background-color 0.3s;
+        }
+        
+        .register-btn {
+            background-color: #3498db;
+            color: white;
+        }
+        
+        .view-btn {
+            background-color: #2ecc71;
+            color: white;
+        }
+        
+        .error-message, .no-elections {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 40px;
+            color: #7f8c8d;
+        }
+        
+        .error-message {
+            color: #e74c3c;
+        }

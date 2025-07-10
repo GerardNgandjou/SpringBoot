@@ -3,6 +3,7 @@ package com.example.vote.onlinevote.controller;
 import com.example.vote.onlinevote.dto.CandidateDto;
 import com.example.vote.onlinevote.dto.CandidateResponseDto;
 import com.example.vote.onlinevote.model.User;
+import com.example.vote.onlinevote.model.Voter;
 import com.example.vote.onlinevote.service.CandidateService;
 import com.example.vote.onlinevote.service.UserService;
 
@@ -29,7 +30,15 @@ public class CandidateController {
     public String showCandidateForm(Model model) {
         List<User> users = userService.findNonCandidateUsers();
         model.addAttribute("users", users);
-        return "candidate";
+        return "signin";
+    }
+
+    // @GetMapping("/candidate/add")
+    public String showRegistrationForm(Model model) {
+        if (!model.containsAttribute("voter")) {
+            model.addAttribute("voter", new Voter());
+        }
+        return "signin"; // This should match your Thymeleaf template name
     }
 
     @PostMapping("/candidate/add")

@@ -1,4 +1,3 @@
-/* Modern Design System Variables */
 :root {
   /* Color Palette */
   --primary-50: #f0f9ff;
@@ -44,11 +43,11 @@
   --gray-700: #374151;
   --gray-800: #1f2937;
   --gray-900: #111827;
-  
+
   /* Typography */
   --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
   --font-mono: 'Roboto Mono', monospace;
-  
+
   /* Spacing */
   --space-xs: 0.25rem;
   --space-sm: 0.5rem;
@@ -56,29 +55,28 @@
   --space-lg: 1.5rem;
   --space-xl: 2rem;
   --space-2xl: 3rem;
-  
+
   /* Border Radius */
   --radius-sm: 0.25rem;
   --radius-md: 0.5rem;
   --radius-lg: 0.75rem;
   --radius-full: 9999px;
-  
+
   /* Shadows */
   --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
   --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
   --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
   --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
   --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-  
+
   /* Transitions */
   --transition-default: all 150ms cubic-bezier(0.4, 0, 0.2, 1);
   --transition-slow: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
-  
+
   /* Container */
   --container-max-width: 1200px;
 }
 
-/* Base Styles */
 *,
 *::before,
 *::after {
@@ -103,7 +101,6 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Utility Classes */
 .sr-only {
   position: absolute;
   width: 1px;
@@ -116,7 +113,6 @@ body {
   border-width: 0;
 }
 
-/* Layout */
 .registration-container {
   display: flex;
   flex-direction: column;
@@ -137,7 +133,6 @@ body {
   transition: var(--transition-slow);
 }
 
-/* Form Header */
 .form-header {
   background: linear-gradient(135deg, var(--primary-600), var(--primary-800));
   color: white;
@@ -186,7 +181,6 @@ body {
   margin-right: auto;
 }
 
-/* Progress Indicator */
 .progress-indicator {
   width: 100%;
   max-width: 400px;
@@ -209,6 +203,7 @@ body {
   background: white;
   transition: width 0.6s cubic-bezier(0.65, 0, 0.35, 1);
   position: relative;
+  will-change: width;
 }
 
 .progress-bar::after {
@@ -227,7 +222,6 @@ body {
   100% { transform: translateX(100%); }
 }
 
-/* Form Layout */
 .registration-form {
   padding: var(--space-xl);
 }
@@ -243,9 +237,13 @@ body {
   display: flex;
   flex-direction: column;
   gap: var(--space-md);
+  animation: fadeIn 0.5s ease-out forwards;
 }
 
-/* Section Header */
+.form-section:nth-child(2) {
+  animation-delay: 0.1s;
+}
+
 .section-header {
   display: flex;
   align-items: center;
@@ -278,13 +276,11 @@ body {
   color: var(--primary-700);
 }
 
-/* Form Groups */
 .form-group {
   position: relative;
   margin-bottom: var(--space-md);
 }
 
-/* Floating Label Pattern */
 .form-group.floating {
   padding-top: var(--space-sm);
 }
@@ -314,7 +310,6 @@ body {
   padding: 0 var(--space-xs);
 }
 
-/* Input & Select Styles */
 .form-group input,
 .form-group select {
   width: 100%;
@@ -339,7 +334,6 @@ body {
   color: transparent;
 }
 
-/* Select Specific Styles */
 .form-group select {
   appearance: none;
   background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
@@ -350,7 +344,6 @@ body {
   padding-right: 2.5rem;
 }
 
-/* Validation States */
 .error-message {
   color: var(--error-600);
   font-size: 0.75rem;
@@ -378,7 +371,6 @@ body {
   margin-left: var(--space-xs);
 }
 
-/* Form Actions */
 .form-actions {
   display: flex;
   justify-content: flex-end;
@@ -387,7 +379,6 @@ body {
   border-top: 1px solid var(--gray-200);
 }
 
-/* Button Styles */
 .btn {
   display: inline-flex;
   align-items: center;
@@ -446,7 +437,6 @@ body {
   box-shadow: var(--shadow);
 }
 
-/* Loading State */
 .btn.loading {
   pointer-events: none;
   opacity: 0.9;
@@ -478,7 +468,37 @@ body {
   to { transform: rotate(1turn); }
 }
 
-/* Responsive Design */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.form-footer {
+  text-align: center;
+  color: var(--gray);
+  font-size: 0.875rem;
+  margin-top: 1rem;
+}
+
+.form-footer a {
+  color: var(--secondary);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.form-footer a:hover {
+  text-decoration: underline;
+}
+
+.js-focus-visible :focus:not(.focus-visible) {
+  outline: none;
+}
+
+.js-focus-visible .focus-visible {
+  outline: 2px solid var(--primary-500);
+  outline-offset: 2px;
+}
+
 @media (max-width: 768px) {
   .registration-container {
     padding: var(--space-md);
@@ -499,77 +519,4 @@ body {
   .btn {
     width: 100%;
   }
-}
-
-/* Animation Enhancements */
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-.form-section {
-  animation: fadeIn 0.5s ease-out forwards;
-}
-
-.form-section:nth-child(2) {
-  animation-delay: 0.1s;
-}
-
-/* Focus Visible Polyfill */
-.js-focus-visible :focus:not(.focus-visible) {
-  outline: none;
-}
-
-.js-focus-visible .focus-visible {
-  outline: 2px solid var(--primary-500);
-  outline-offset: 2px;
-}
-
-/* Voting Information Section Styles */
-.checkbox-group {
-    margin-top: 0.5rem;
-    border: 1px solid var(--gray-300);
-    border-radius: var(--radius-md);
-    padding: 1rem;
-    background-color: var(--gray-50);
-}
-
-.checkbox-item {
-    margin-bottom: 0.75rem;
-    display: flex;
-    align-items: center;
-}
-
-.checkbox-item input[type="checkbox"] {
-    margin-right: 0.75rem;
-    width: auto;
-}
-
-.checkbox-item label {
-    margin-bottom: 0;
-    font-weight: normal;
-    cursor: pointer;
-}
-
-/* Floating label adjustment for selects */
-.form-group.floating select:not([value=""]) ~ label {
-    transform: translateY(-1.5rem) scale(0.85);
-}
-
-/* Form Footer */
-.form-footer {
-    text-align: center;
-    color: var(--gray);
-    font-size: 0.875rem;
-    margin-top: 1rem;
-}
-
-.form-footer a {
-    color: var(--secondary);
-    text-decoration: none;
-    font-weight: 500;
-}
-
-.form-footer a:hover {
-    text-decoration: underline;
 }

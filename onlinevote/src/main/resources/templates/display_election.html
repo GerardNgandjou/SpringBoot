@@ -5,8 +5,176 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Elections Dashboard</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" th:href="@{/css/display_election.css}">
-    <link rel="stylesheet" href="../static/css/display_election.css">
+    <style>
+        /* Basic styling - customize as needed */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f7fa;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .filters {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .filter-btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            background-color: #e0e0e0;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .filter-btn.active {
+            background-color: #3498db;
+            color: white;
+        }
+        
+        .elections-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .election-card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            transition: transform 0.3s;
+        }
+        
+        .election-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .card-header {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            position: relative;
+        }
+        
+        .status-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .status-active {
+            background-color: #2ecc71;
+            color: white;
+        }
+        
+        .status-upcoming {
+            background-color: #f39c12;
+            color: white;
+        }
+        
+        .status-ended {
+            background-color: #e74c3c;
+            color: white;
+        }
+        
+        .status-unknown {
+            background-color: #95a5a6;
+            color: white;
+        }
+        
+        .card-title {
+            margin: 0;
+            font-size: 1.2rem;
+            color: #2c3e50;
+        }
+        
+        .card-body {
+            padding: 15px;
+        }
+        
+        .card-description {
+            color: #7f8c8d;
+            margin-bottom: 15px;
+        }
+        
+        .card-dates {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            color: #34495e;
+        }
+        
+        .date-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-top: 1px solid #eee;
+        }
+        
+        .participants {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: #7f8c8d;
+        }
+        
+        .action-btn {
+            padding: 6px 12px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: background-color 0.3s;
+        }
+        
+        .register-btn {
+            background-color: #3498db;
+            color: white;
+        }
+        
+        .view-btn {
+            background-color: #2ecc71;
+            color: white;
+        }
+        
+        .error-message, .no-elections {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 40px;
+            color: #7f8c8d;
+        }
+        
+        .error-message {
+            color: #e74c3c;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
@@ -16,9 +184,9 @@
 
         <div class="filters">
             <button class="filter-btn active" data-status="all">All Elections</button>
-            <button class="filter-btn" data-status="active">Active</button>
-            <button class="filter-btn" data-status="upcoming">Upcoming</button>
-            <button class="filter-btn" data-status="ended">Ended</button>
+            <button class="filter-btn" data-status="ACTIVE">Active</button>
+            <button class="filter-btn" data-status="UPCOMING">Upcoming</button>
+            <button class="filter-btn" data-status="ENDED">Ended</button>
         </div>
 
         <div class="elections-grid" id="electionsContainer">
@@ -26,7 +194,153 @@
         </div>
     </div>
 
-<script th:src="@{/js/display_election.js}"></script>
-<script src="../static/js/display_election.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // DOM elements
+    const electionsContainer = document.getElementById('electionsContainer');
+    const filterButtons = document.querySelectorAll('.filter-btn');
+
+    // Initialize
+    fetchElections();
+    setupFilterButtons();
+
+    // Fetch elections from backend
+    async function fetchElections() {
+        try {
+            const response = await fetch('/election/show');
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+            const elections = await response.json();
+            window.electionData = elections; // Store for filtering
+            renderElections(elections);
+        } catch (error) {
+            console.error('Fetch error:', error);
+            showErrorMessage();
+        }
+    }
+
+    // Show error message
+    function showErrorMessage() {
+        electionsContainer.innerHTML = `
+            <div class="error-message">
+                <i class="fas fa-exclamation-triangle"></i>
+                <p>Error loading elections. Please try again later.</p>
+            </div>
+        `;
+    }
+
+    // Render elections list
+    function renderElections(elections) {
+        if (!elections || !elections.length) {
+            electionsContainer.innerHTML = `
+                <div class="no-elections">
+                    <i class="fas fa-info-circle"></i>
+                    <p>No elections found matching your criteria.</p>
+                </div>
+            `;
+            return;
+        }
+
+        electionsContainer.innerHTML = elections.map(election => `
+            <div class="election-card">
+                <div class="card-header">
+                    <span class="status-badge ${getStatusClass(election.electionStatus)}">
+                        ${election.electionStatus || 'UNKNOWN'}
+                    </span>
+                    <h3 class="card-title">${election.electionName || 'Unnamed Election'}</h3>
+                </div>
+                <div class="card-body">
+                    <p class="card-description">${election.electionDescription || 'No description available'}</p>
+                    <div class="card-dates">
+                        <div class="date-item">
+                            <i class="fas fa-calendar-alt"></i>
+                            <span>Starts: ${formatDate(election.electionStartDate)}</span>
+                        </div>
+                        <div class="date-item">
+                            <i class="fas fa-calendar-check"></i>
+                            <span>Ends: ${formatDate(election.electionEndDate)}</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <div class="participants">
+                        <i class="fas fa-users"></i>
+                        <span>${election.users?.length || 0} participants</span>
+                    </div>
+                    ${createActionButton(election)}
+                </div>
+            </div>
+        `).join('');
+    }
+
+    // Get status class for styling
+    function getStatusClass(status) {
+        if (!status) return 'status-unknown';
+        switch(status.toUpperCase()) {
+            case 'ACTIVE': return 'status-active';
+            case 'UPCOMING': return 'status-upcoming';
+            case 'SCHEDULED': return 'status-upcoming';
+            case 'ENDED': return 'status-ended';
+            default: return 'status-unknown';
+        }
+    }
+
+    // Format date
+    function formatDate(dateString) {
+        if (!dateString) return 'N/A';
+        try {
+            return new Date(dateString).toLocaleDateString();
+        } catch {
+            return 'Invalid date';
+        }
+    }
+
+    // Create appropriate action button
+    function createActionButton(election) {
+        const status = election.electionStatus?.toUpperCase();
+        const isUpcoming = status === 'UPCOMING' || status === 'SCHEDULED';
+        const id = election.idElection || election.id;
+        
+        return isUpcoming ?
+            `<a th:href="@{/elections/register/${id}}" class="action-btn register-btn" data-id="${id}">
+                <i class="fas fa-user-plus"></i> Register
+            </a>` :
+            `<a th:href="@{/elections/${id}}" class="action-btn view-btn">
+                <i class="fas fa-eye"></i> View
+            </a>`;
+    }
+
+    // Set up filter buttons
+    function setupFilterButtons() {
+        filterButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                // Update active button
+                filterButtons.forEach(btn => btn.classList.remove('active'));
+                this.classList.add('active');
+                
+                // Filter elections
+                const status = this.dataset.status;
+                filterElections(status);
+            });
+        });
+    }
+
+    // Filter elections by status
+    function filterElections(status) {
+        if (!window.electionData) return;
+        
+        const filtered = status === 'all' ? 
+            window.electionData : 
+            window.electionData.filter(election => {
+                const electionStatus = election.electionStatus?.toUpperCase();
+                if (status === 'UPCOMING') {
+                    return electionStatus === 'UPCOMING' || electionStatus === 'SCHEDULED';
+                }
+                return electionStatus === status;
+            });
+        
+        renderElections(filtered);
+    }
+});
+</script>
 </body>
 </html>

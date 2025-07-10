@@ -22,10 +22,23 @@ public class RoutController {
         this.voterService = voterService;
     }
 
-    @GetMapping("/home")
+    @GetMapping("/")
     public String home() {
         return "index"; // This will return index.html from templates folder
         // For static index.html, you don't even need this controller
+    }
+
+    // @GetMapping("/dash")
+    // public String dash() {
+    //     return "dash"; // This will return dash.html from templates folder
+    //     // For static dash.html, you don't even need this controller
+    // }
+
+    @GetMapping("/dash")
+    public String showDashboard(Model model) {        
+        // By default, show the dashboard section
+        model.addAttribute("activeSection", "dashboard");
+        return "dash";
     }
 
     // Or for combined page
@@ -77,4 +90,5 @@ public class RoutController {
         model.addAttribute("voter", voter);
         return "print_voter"; // You'll need to create this Thymeleaf template
     }
+
 }

@@ -29,8 +29,8 @@ public class Election {
 //    @JsonManagedReference(value = "user-election")
     private List<User> users = new ArrayList<>();
 
-    public enum  StatusElec {
-        ACTIVE, Upcoming, Ended
+    public enum StatusElec {
+        ACTIVE, UPCOMING, ENDED, SCHEDULED  // Add SCHEDULED to match existing data
     }
 
     public Election() {}

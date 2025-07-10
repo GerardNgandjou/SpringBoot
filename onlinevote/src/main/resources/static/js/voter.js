@@ -58,80 +58,6 @@ function setupEventListeners() {
     document.getElementById('saveDraftBtn').addEventListener('click', saveAsDraft);
 }
 
-// Polling stations data for each region
-const pollingStations = {
-    "Centre": [
-        { id: "CEN001", name: "Yaoundé I – Ecole Publique Bastos" },
-        { id: "CEN002", name: "Yaoundé II – Lycée Bilingue d'Essos" },
-        { id: "CEN003", name: "Obala – Ecole Catholique Obala Centre" },
-        { id: "CEN004", name: "Mbalmayo – Lycée Classique de Mbalmayo" },
-        { id: "CEN005", name: "Akonolinga – Ecole Publique Akonolinga Nord" }
-    ],
-    "Littoral": [
-        { id: "LIT001", name: "Douala I – Collège Saint-Michel" },
-        { id: "LIT002", name: "Douala V – Lycée de Bépanda" },
-        { id: "LIT003", name: "Bonabéri – Ecole Publique Bonabéri" },
-        { id: "LIT004", name: "Nkongsamba – Lycée de Nkongsamba" },
-        { id: "LIT005", name: "Manjo – Ecole Communale Manjo" }
-    ],
-    "Ouest": [
-        { id: "OUE001", name: "Bafoussam I – Lycée Bilingue de Bafoussam" },
-        { id: "OUE002", name: "Dschang – Ecole Publique Groupée A" },
-        { id: "OUE003", name: "Mbouda – Collège Evangélique Mbouda" },
-        { id: "OUE004", name: "Foumbot – Ecole Publique de Foumbot Centre" },
-        { id: "OUE005", name: "Bangangté – Lycée Classique Bangangté" }
-    ],
-    "Nord-Ouest": [
-        { id: "NW001", name: "Bamenda I – GHS Bamenda" },
-        { id: "NW002", name: "Kumbo – Ecole Catholique Tobin" },
-        { id: "NW003", name: "Ndop – Ecole Communale Ndop" },
-        { id: "NW004", name: "Fundong – GBHS Fundong" },
-        { id: "NW005", name: "Wum – Government Primary School Wum" }
-    ],
-    "Sud-Ouest": [
-        { id: "SW001", name: "Buea – Buea Town School" },
-        { id: "SW002", name: "Limbe – Government School Limbe I" },
-        { id: "SW003", name: "Kumba – GHS Kumba Town" },
-        { id: "SW004", name: "Tiko – Ecole Anglophone Tiko" },
-        { id: "SW005", name: "Ekondo-Titi – GBHS Ekondo-Titi" }
-    ],
-    "Nord": [
-        { id: "NOR001", name: "Garoua I – Lycée de Garoua" },
-        { id: "NOR002", name: "Guider – Ecole Publique Guider Centre" },
-        { id: "NOR003", name: "Pitoa – Lycée Technique de Pitoa" },
-        { id: "NOR004", name: "Poli – Ecole Communale de Poli" },
-        { id: "NOR005", name: "Figuil – Ecole de Figuil Est" }
-    ],
-    "Extrême-Nord": [
-        { id: "EN001", name: "Maroua I – Ecole Publique Doualaré" },
-        { id: "EN002", name: "Mokolo – Lycée Bilingue de Mokolo" },
-        { id: "EN003", name: "Mora – Ecole Publique de Mora" },
-        { id: "EN004", name: "Kousseri – Lycée Moderne Kousseri" },
-        { id: "EN005", name: "Yagoua – GHS Yagoua" }
-    ],
-    "Adamaoua": [
-        { id: "ADA001", name: "Ngaoundéré – Lycée Classique de Ngaoundéré" },
-        { id: "ADA002", name: "Meiganga – Ecole Publique de Meiganga" },
-        { id: "ADA003", name: "Tibati – Collège Adventiste Tibati" },
-        { id: "ADA004", name: "Banyo – Ecole Communale de Banyo" },
-        { id: "ADA005", name: "Ngaoundal – Lycée de Ngaoundal" }
-    ],
-    "Sud": [
-        { id: "SUD001", name: "Ebolowa – Lycée Bilingue d'Ebolowa" },
-        { id: "SUD002", name: "Kribi – Collège d'Enseignement Général Kribi" },
-        { id: "SUD003", name: "Sangmélima – Ecole Publique Sangmélima Centre" },
-        { id: "SUD004", name: "Ambam – Lycée d'Ambam" },
-        { id: "SUD005", name: "Djoum – Ecole Primaire Djoum I" }
-    ],
-    "Est": [
-        { id: "EST001", name: "Bertoua – Lycée Technique de Bertoua" },
-        { id: "EST002", name: "Batouri – Ecole Publique de Batouri" },
-        { id: "EST003", name: "Abong-Mbang – Ecole Communale Abong-Mbang" },
-        { id: "EST004", name: "Yokadouma – GHS Yokadouma" },
-        { id: "EST005", name: "Lomié – Ecole Primaire Lomié Centre" }
-    ]
-};
-
 function validateField(element) {
     const errorElement = element.nextElementSibling?.classList.contains('error-message')
         ? element.nextElementSibling
@@ -195,29 +121,6 @@ function validateBirthDate() {
     }
 }
 
-function updatePollingStations() {
-    const regionSelect = document.getElementById('currentregion');
-    const pollingStationSelect = document.getElementById('pollingstation');
-    const selectedRegion = regionSelect.value;
-
-    // Clear existing options
-    pollingStationSelect.innerHTML = '';
-
-    // Add default option
-    const defaultOption = new Option('Select your polling station', '', true, true);
-    defaultOption.disabled = true;
-    pollingStationSelect.add(defaultOption);
-
-    // Add options for selected region
-    if (selectedRegion && pollingStations[selectedRegion]) {
-        pollingStations[selectedRegion].forEach(station => {
-            const option = new Option(`${station.name} (${station.id})`, station.id);
-            pollingStationSelect.add(option);
-        });
-    }
-
-    validateField(pollingStationSelect);
-}
 
 async function handleFormSubmit(e) {
     e.preventDefault();

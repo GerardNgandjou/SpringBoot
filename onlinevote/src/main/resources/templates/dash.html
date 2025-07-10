@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>VoteNow - Online Voting Dashboard</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/css/dash.css}">
     <link rel="stylesheet" href="../static/css/dash.css">
     <meta name="description" content="VoteNow - Secure online voting platform dashboard">
     <meta name="theme-color" content="#4f46e5">
@@ -124,10 +125,10 @@
                 </div>
                 <div class="profile-dropdown">
                     <button class="profile-button" aria-label="User profile" aria-expanded="false">
-                        <img th:src="#" alt="User profile" class="profile-img">
+                        <img th:src="@{${user.profileImageUrl != null} ? ${user.profileImageUrl} : '/images/default-profile.png'}" alt="User profile" class="profile-img">
                         <div class="user-info">
-                            <h4>Super Admin</h4>
-                            <p>Admin</p>
+                            <h4 th:text="${user.firstName + ' ' + user.lastName}">Super Admin</h4>
+                            <p th:text="${user.role}">Admin</p>
                         </div>
                     </button>
                     <div class="dropdown-menu" role="menu">
@@ -150,9 +151,10 @@
                     <div class="card-header">
                         <div>
                             <h3 class="card-title">Total Voters</h3>
-                            <div class="card-value">2,451</div>
+                            <div class="card-value" th:text="${stats.totalVoters}">2,451</div>
                             <div class="card-change positive">
-                                <i class="fas fa-arrow-up" aria-hidden="true"></i> 12% from last month
+                                <i class="fas fa-arrow-up" aria-hidden="true"></i> 
+                                <span th:text="${stats.voterChangePercentage} + '% from last month'">12% from last month</span>
                             </div>
                         </div>
                         <div class="card-icon voters">
@@ -166,9 +168,10 @@
                     <div class="card-header">
                         <div>
                             <h3 class="card-title">Active Elections</h3>
-                            <div class="card-value">8</div>
+                            <div class="card-value" th:text="${stats.activeElections}">8</div>
                             <div class="card-change positive">
-                                <i class="fas fa-arrow-up" aria-hidden="true"></i> 2 new this week
+                                <i class="fas fa-arrow-up" aria-hidden="true"></i> 
+                                <span th:text="${stats.newElectionsThisWeek} + ' new this week'">2 new this week</span>
                             </div>
                         </div>
                         <div class="card-icon elections">
@@ -182,9 +185,10 @@
                     <div class="card-header">
                         <div>
                             <h3 class="card-title">Candidates</h3>
-                            <div class="card-value">127</div>
+                            <div class="card-value" th:text="${stats.totalCandidates}">127</div>
                             <div class="card-change negative">
-                                <i class="fas fa-arrow-down" aria-hidden="true"></i> 3 withdrawn
+                                <i class="fas fa-arrow-down" aria-hidden="true"></i> 
+                                <span th:text="${stats.withdrawnCandidates} + ' withdrawn'">3 withdrawn</span>
                             </div>
                         </div>
                         <div class="card-icon candidates">
@@ -198,9 +202,10 @@
                     <div class="card-header">
                         <div>
                             <h3 class="card-title">Completed</h3>
-                            <div class="card-value">24</div>
+                            <div class="card-value" th:text="${stats.completedElections}">24</div>
                             <div class="card-change positive">
-                                <i class="fas fa-arrow-up" aria-hidden="true"></i> 5 this quarter
+                                <i class="fas fa-arrow-up" aria-hidden="true"></i> 
+                                <span th:text="${stats.completedThisQuarter} + ' this quarter'">5 this quarter</span>
                             </div>
                         </div>
                         <div class="card-icon completed">
@@ -213,102 +218,21 @@
 
             <!-- Active Elections Section -->
             <section aria-labelledby="active-elections-heading">
-                <div class="section-header">
-                    <h3 id="active-elections-heading" class="section-title">
-                        <i class="fas fa-vote-yea" aria-hidden="true"></i> Active Elections
-                    </h3>
-                    <div class="section-actions">
-                        <button class="btn btn-outline" aria-label="Schedule new election">
-                            <i class="fas fa-calendar-plus" aria-hidden="true"></i> Schedule New
-                        </button>
-                    </div>
-                </div>
-                <div class="elections-grid">
-                    <article class="election-card">
-                        <div class="election-banner">
-                            <i class="fas fa-landmark" aria-hidden="true"></i>
-                            <span class="election-status active">Active • 3 days left</span>
-                        </div>
-                        <div class="election-details">
-                            <h4 class="election-title">Student Council Election 2024</h4>
-                            <div class="election-meta">
-                                <div class="election-date">
-                                    <i class="far fa-calendar-alt" aria-hidden="true"></i> May 15 - May 30
-                                </div>
-                                <div><i class="fas fa-users" aria-hidden="true"></i> 4 candidates</div>
-                            </div>
-                            <div class="progress-container">
-                                <div class="progress-label">
-                                    <span>Participation (1,245 voters)</span>
-                                    <span>62%</span>
-                                </div>
-                                <div class="progress-bar">
-                                    <div class="progress-fill" style="width: 62%" aria-valuenow="62" aria-valuemin="0" aria-valuemax="100"></div>
-                                </div>
-                            </div>
-                            <div class="election-stats">
-                                <div class="stat-item">
-                                    <i class="fas fa-check-circle" aria-hidden="true"></i>
-                                    <span>782 Verified</span>
-                                </div>
-                                <div class="stat-item">
-                                    <i class="fas fa-user-clock" aria-hidden="true"></i>
-                                    <span>463 Pending</span>
-                                </div>
-                            </div>
-                            <div class="election-actions">
-                                <button class="btn btn-outline" aria-label="View election results">
-                                    <i class="fas fa-chart-bar" aria-hidden="true"></i> Results
-                                </button>
-                                <button class="btn btn-primary" aria-label="Manage election">
-                                    <i class="fas fa-cog" aria-hidden="true"></i> Manage
-                                </button>
-                            </div>
-                        </div>
-                    </article>
+                <div class="container">
+                    <header>
+                        <h1>Posting elections</h1>
+                    </header>
 
-                    <article class="election-card">
-                        <div class="election-banner" style="background: linear-gradient(135deg, #f72585, #b5179e);">
-                            <i class="fas fa-building" aria-hidden="true"></i>
-                            <span class="election-status active">Active • 1 day left</span>
-                        </div>
-                        <div class="election-details">
-                            <h4 class="election-title">HOA Board Election</h4>
-                            <div class="election-meta">
-                                <div class="election-date">
-                                    <i class="far fa-calendar-alt" aria-hidden="true"></i> May 25 - May 31
-                                </div>
-                                <div><i class="fas fa-users" aria-hidden="true"></i> 5 candidates</div>
-                            </div>
-                            <div class="progress-container">
-                                <div class="progress-label">
-                                    <span>Participation (892 voters)</span>
-                                    <span>45%</span>
-                                </div>
-                                <div class="progress-bar">
-                                    <div class="progress-fill" style="width: 45%" aria-valuenow="45" aria-valuemin="0" aria-valuemax="100"></div>
-                                </div>
-                            </div>
-                            <div class="election-stats">
-                                <div class="stat-item">
-                                    <i class="fas fa-check-circle" aria-hidden="true"></i>
-                                    <span>512 Verified</span>
-                                </div>
-                                <div class="stat-item">
-                                    <i class="fas fa-user-clock" aria-hidden="true"></i>
-                                    <span>380 Pending</span>
-                                </div>
-                            </div>
-                            <div class="election-actions">
-                                <button class="btn btn-outline" aria-label="View election results">
-                                    <i class="fas fa-chart-bar" aria-hidden="true"></i> Results
-                                </button>
-                                <button class="btn btn-primary" aria-label="Manage election">
-                                    <i class="fas fa-cog" aria-hidden="true"></i> Manage
-                                </button>
-                            </div>
-                        </div>
-                    </article>
+                    <div class="filters">
+                        <button class="filter-btn active" data-status="all">All Elections</button>
+                        <button class="filter-btn" data-status="ACTIVE">Active</button>
+                        <button class="filter-btn" data-status="UPCOMING">Upcoming</button>
+                        <button class="filter-btn" data-status="ENDED">Ended</button>
+                    </div>
+
+                    <div class="elections-grid" id="electionsContainer">
+                        <!-- Elections will be loaded here dynamically -->
+                    </div>
                 </div>
             </section>
 
@@ -320,33 +244,17 @@
                     </h3>
                 </div>
                 <div class="activity-timeline" role="list">
-                    <div class="timeline-item" role="listitem">
-                        <div class="timeline-icon success">
-                            <i class="fas fa-check-circle" aria-hidden="true"></i>
+                    <th:block th:each="activity : ${recentActivities}">
+                        <div class="timeline-item" role="listitem">
+                            <div th:class="'timeline-icon ' + ${activity.type}">
+                                <i th:class="'fas ' + ${activity.icon}" aria-hidden="true"></i>
+                            </div>
+                            <div class="timeline-content">
+                                <p th:text="${activity.message}">New vote recorded for <strong>Student Council Election</strong></p>
+                                <small th:text="${#temporals.format(activity.timestamp, 'MMM d, h:mm a')}">2 minutes ago</small>
+                            </div>
                         </div>
-                        <div class="timeline-content">
-                            <p>New vote recorded for <strong>Student Council Election</strong></p>
-                            <small>2 minutes ago</small>
-                        </div>
-                    </div>
-                    <div class="timeline-item" role="listitem">
-                        <div class="timeline-icon info">
-                            <i class="fas fa-info-circle" aria-hidden="true"></i>
-                        </div>
-                        <div class="timeline-content">
-                            <p>Candidate <strong>Alex Morgan</strong> updated their profile</p>
-                            <small>1 hour ago</small>
-                        </div>
-                    </div>
-                    <div class="timeline-item" role="listitem">
-                        <div class="timeline-icon warning">
-                            <i class="fas fa-exclamation-triangle" aria-hidden="true"></i>
-                        </div>
-                        <div class="timeline-content">
-                            <p>Voter verification required for <strong>5 pending registrations</strong></p>
-                            <small>3 hours ago</small>
-                        </div>
-                    </div>
+                    </th:block>
                 </div>
             </section>
         </section>
@@ -356,7 +264,7 @@
             <div class="container">
                 <header>
                     <h1 id="elections-heading">Elections Dashboard</h1>
-                    <a th:href="@{election}" class="btn btn-primary" id="createElectionBtn" aria-label="Create new election">
+                    <a th:href="@{/elections/new}" class="btn btn-primary" id="createElectionBtn" aria-label="Create new election">
                         <i class="fas fa-plus" aria-hidden="true"></i> Create New Election
                     </a>
                 </header>
@@ -369,10 +277,45 @@
                 </div>
 
                 <div class="elections-grid" id="electionsContainer" aria-live="polite">
-                    <div class="loading-state" aria-busy="true" aria-hidden="false">
-                        <i class="fas fa-spinner fa-spin" aria-hidden="true"></i>
-                        <span>Loading elections...</span>
-                    </div>
+                    <th:block th:if="${elections != null and !elections.empty}">
+                        <th:block th:each="election : ${elections}">
+                            <article class="election-card">
+                                <div class="election-banner" th:style="'background: linear-gradient(135deg, ' + ${election.color1} + ', ' + ${election.color2} + ');'">
+                                    <i th:class="'fas ' + ${election.icon}" aria-hidden="true"></i>
+                                    <span th:class="'election-status ' + ${election.statusClass}" 
+                                          th:text="${election.status} + (${election.daysLeft} != null ? ' • ' + ${election.daysLeft} + ' days left' : '')">
+                                        Active • 3 days left
+                                    </span>
+                                </div>
+                                <div class="election-details">
+                                    <h4 class="election-title" th:text="${election.title}">Student Council Election 2024</h4>
+                                    <div class="election-meta">
+                                        <div class="election-date">
+                                            <i class="far fa-calendar-alt" aria-hidden="true"></i> 
+                                            <span th:text="${#temporals.format(election.startDate, 'MMM d')} + ' - ' + ${#temporals.format(election.endDate, 'MMM d')}">May 15 - May 30</span>
+                                        </div>
+                                        <div><i class="fas fa-users" aria-hidden="true"></i> 
+                                            <span th:text="${election.candidateCount} + ' candidates'">4 candidates</span>
+                                        </div>
+                                    </div>
+                                    <div class="election-actions">
+                                        <a th:href="@{/elections/{id}/results(id=${election.id})}" class="btn btn-outline" aria-label="View election results">
+                                            <i class="fas fa-chart-bar" aria-hidden="true"></i> Results
+                                        </a>
+                                        <a th:href="@{/elections/{id}/manage(id=${election.id})}" class="btn btn-primary" aria-label="Manage election">
+                                            <i class="fas fa-cog" aria-hidden="true"></i> Manage
+                                        </a>
+                                    </div>
+                                </div>
+                            </article>
+                        </th:block>
+                    </th:block>
+                    <th:block th:if="${elections == null or elections.empty}">
+                        <div class="no-results">
+                            <i class="fas fa-calendar-times" aria-hidden="true"></i>
+                            <p>No elections found</p>
+                        </div>
+                    </th:block>
                 </div>
             </div>
         </section>
@@ -408,7 +351,7 @@
                                         <label for="partyFilter" class="sr-only">Filter by party</label>
                                         <select class="form-select" id="partyFilter">
                                             <option value="">All Parties</option>
-                                            <option th:each="party : ${#lists.distinct(candidates.![party])}" 
+                                            <option th:each="party : ${distinctParties}" 
                                                     th:text="${party}" th:value="${party}"></option>
                                         </select>
                                     </div>
@@ -416,7 +359,7 @@
                                         <label for="regionFilter" class="sr-only">Filter by region</label>
                                         <select class="form-select" id="regionFilter">
                                             <option value="">All Regions</option>
-                                            <option th:each="region : ${#lists.distinct(candidates.![region])}" 
+                                            <option th:each="region : ${distinctRegions}" 
                                                     th:text="${region}" th:value="${region}"></option>
                                         </select>
                                     </div>
@@ -445,16 +388,16 @@
                                                 <td>
                                                     <div class="d-flex align-items-center">
                                                         <div class="avatar me-3">
-                                                            <span th:text="${#strings.substring(candidate.firstname, 0, 1) + #strings.substring(candidate.lastname, 0, 1)}"></span>
+                                                            <span th:text="${#strings.substring(candidate.firstName, 0, 1) + #strings.substring(candidate.lastName, 0, 1)}"></span>
                                                         </div>
                                                         <div>
-                                                            <div class="fw-bold" th:text="${candidate.firstname + ' ' + candidate.lastname}"></div>
+                                                            <div class="fw-bold" th:text="${candidate.firstName + ' ' + candidate.lastName}"></div>
                                                             <div class="text-muted small" th:text="${candidate.role}"></div>
                                                         </div>
                                                     </div>
                                                 </td>
                                                 <td>
-                                                    <div th:text="${#temporals.format(candidate.birthdate, 'dd MMM yyyy')}"></div>
+                                                    <div th:text="${#temporals.format(candidate.birthDate, 'dd MMM yyyy')}"></div>
                                                     <div class="text-muted small" th:text="${candidate.gender}"></div>
                                                 </td>
                                                 <td th:text="${candidate.location}"></td>
@@ -464,15 +407,18 @@
                                                 </td>
                                                 <td>
                                                     <div class="btn-group btn-group-sm" role="group" aria-label="Candidate actions">
-                                                        <button class="btn btn-outline-primary" title="View" aria-label="View candidate">
+                                                        <a th:href="@{/candidates/{id}(id=${candidate.id})}" class="btn btn-outline-primary" title="View" aria-label="View candidate">
                                                             <i class="fas fa-eye" aria-hidden="true"></i>
-                                                        </button>
-                                                        <button class="btn btn-outline-secondary" title="Edit" aria-label="Edit candidate">
+                                                        </a>
+                                                        <a th:href="@{/candidates/{id}/edit(id=${candidate.id})}" class="btn btn-outline-secondary" title="Edit" aria-label="Edit candidate">
                                                             <i class="fas fa-pencil-alt" aria-hidden="true"></i>
-                                                        </button>
-                                                        <button class="btn btn-outline-danger" title="Delete" aria-label="Delete candidate">
-                                                            <i class="fas fa-trash" aria-hidden="true"></i>
-                                                        </button>
+                                                        </a>
+                                                        <form th:action="@{/candidates/{id}(id=${candidate.id})}" method="post" style="display: inline;">
+                                                            <input type="hidden" name="_method" value="DELETE">
+                                                            <button type="submit" class="btn btn-outline-danger" title="Delete" aria-label="Delete candidate">
+                                                                <i class="fas fa-trash" aria-hidden="true"></i>
+                                                            </button>
+                                                        </form>
                                                     </div>
                                                 </td>
                                             </tr>
@@ -532,15 +478,78 @@
                                     </tr>
                                 </thead>
                                 <tbody id="votersTableBody">
-                                    <!-- Will be populated by JavaScript -->
+                                    <tr th:each="voter : ${voters}">
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <div class="avatar me-3">
+                                                    <span th:text="${#strings.substring(voter.firstName, 0, 1) + #strings.substring(voter.lastName, 0, 1)}"></span>
+                                                </div>
+                                                <div>
+                                                    <div class="fw-bold" th:text="${voter.firstName + ' ' + voter.lastName}"></div>
+                                                    <div class="text-muted small" th:text="${voter.email}"></div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td th:text="${#temporals.format(voter.birthDate, 'dd MMM yyyy')}"></td>
+                                        <td th:text="${voter.gender}"></td>
+                                        <td th:text="${voter.location}"></td>
+                                        <td th:text="${voter.region}"></td>
+                                        <td>
+                                            <span class="badge bg-primary" th:text="${voter.party != null} ? ${voter.party} : 'None'">None</span>
+                                        </td>
+                                        <td th:text="${voter.role}"></td>
+                                        <td>
+                                            <div class="btn-group btn-group-sm" role="group" aria-label="Voter actions">
+                                                <button class="btn btn-outline-primary view-voter" 
+                                                        th:attr="data-id=${voter.id}" title="View" aria-label="View voter">
+                                                    <i class="fas fa-eye" aria-hidden="true"></i>
+                                                </button>
+                                                <a th:href="@{/voters/{id}/edit(id=${voter.id})}" class="btn btn-outline-secondary" title="Edit" aria-label="Edit voter">
+                                                    <i class="fas fa-pencil-alt" aria-hidden="true"></i>
+                                                </a>
+                                                <form th:action="@{/voters/{id}(id=${voter.id})}" method="post" style="display: inline;">
+                                                    <input type="hidden" name="_method" value="DELETE">
+                                                    <button type="submit" class="btn btn-outline-danger" title="Delete" aria-label="Delete voter">
+                                                        <i class="fas fa-trash" aria-hidden="true"></i>
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </td>
+                                    </tr>
                                 </tbody>
                             </table>
                         </div>
 
                         <!-- Pagination -->
-                        <nav aria-label="Voters pagination">
-                            <ul class="pagination justify-content-center" id="pagination">
-                                <!-- Will be populated by JavaScript -->
+                        <nav aria-label="Voters pagination" th:if="${totalPages > 1}">
+                            <ul class="pagination justify-content-center">
+                                <li class="page-item" th:classappend="${currentPage == 1} ? 'disabled'">
+                                    <a class="page-link" th:href="@{/voters(page=1)}" aria-label="First">
+                                        <span aria-hidden="true">&laquo;&laquo;</span>
+                                    </a>
+                                </li>
+                                <li class="page-item" th:classappend="${currentPage == 1} ? 'disabled'">
+                                    <a class="page-link" th:href="@{/voters(page=${currentPage-1})}" aria-label="Previous">
+                                        <span aria-hidden="true">&laquo;</span>
+                                    </a>
+                                </li>
+                                
+                                <th:block th:each="page : ${#numbers.sequence(1, totalPages)}">
+                                    <li class="page-item" th:classappend="${currentPage == page} ? 'active'">
+                                        <a class="page-link" th:href="@{/voters(page=${page})}" th:text="${page}"></a>
+                                    </li>
+                                </th:block>
+                                
+                                <li class="page-item" th:classappend="${currentPage == totalPages} ? 'disabled'">
+                                    <a class="page-link" th:href="@{/voters(page=${currentPage+1})}" aria-label="Next">
+                                        <span aria-hidden="true">&raquo;</span>
+                                    </a>
+                                </li>
+                                <li class="page-item" th:classappend="${currentPage == totalPages} ? 'disabled'">
+                                    <a class="page-link" th:href="@{/voters(page=${totalPages})}" aria-label="Last">
+                                        <span aria-hidden="true">&raquo;&raquo;</span>
+                                    </a>
+                                </li>
                             </ul>
                         </nav>
                     </main>
@@ -567,12 +576,72 @@
                 </div>
                 
                 <div class="offices-grid" id="officesContainer" aria-live="polite">
-                    <!-- Offices will be loaded here dynamically -->
+                    <th:block th:each="office : ${offices}">
+                        <article class="office-card">
+                            <div class="office-header">
+                                <h3 th:text="${office.name}">Main Voting Office</h3>
+                                <span class="badge" th:classappend="${office.status == 'ACTIVE'} ? 'bg-success' : 'bg-secondary'"
+                                      th:text="${office.status}">ACTIVE</span>
+                            </div>
+                            <div class="office-details">
+                                <div class="detail-item">
+                                    <i class="fas fa-map-marker-alt" aria-hidden="true"></i>
+                                    <span th:text="${office.location}">123 Main St, City</span>
+                                </div>
+                                <div class="detail-item">
+                                    <i class="fas fa-phone" aria-hidden="true"></i>
+                                    <span th:text="${office.phone}">+1 (555) 123-4567</span>
+                                </div>
+                                <div class="detail-item">
+                                    <i class="fas fa-user" aria-hidden="true"></i>
+                                    <span th:text="${office.managerName}">John Doe</span>
+                                </div>
+                                <div class="detail-item">
+                                    <i class="fas fa-calendar" aria-hidden="true"></i>
+                                    <span th:text="${#temporals.format(office.openingDate, 'MMM d, yyyy')}">Jan 1, 2023</span>
+                                </div>
+                            </div>
+                            <div class="office-actions">
+                                <a th:href="@{/offices/{id}/edit(id=${office.id})}" class="btn btn-outline" aria-label="Edit office">
+                                    <i class="fas fa-pencil-alt" aria-hidden="true"></i> Edit
+                                </a>
+                                <a th:href="@{/offices/{id}(id=${office.id})}" class="btn btn-primary" aria-label="View office details">
+                                    <i class="fas fa-info-circle" aria-hidden="true"></i> Details
+                                </a>
+                            </div>
+                        </article>
+                    </th:block>
                 </div>
                 
-                <nav aria-label="Vote offices pagination">
+                <nav aria-label="Vote offices pagination" th:if="${officeTotalPages > 1}">
                     <ul class="pagination" id="officePagination">
-                        <!-- Pagination will be loaded here dynamically -->
+                        <li class="page-item" th:classappend="${officeCurrentPage == 1} ? 'disabled'">
+                            <a class="page-link" th:href="@{/offices(page=1)}" aria-label="First">
+                                <span aria-hidden="true">&laquo;&laquo;</span>
+                            </a>
+                        </li>
+                        <li class="page-item" th:classappend="${officeCurrentPage == 1} ? 'disabled'">
+                            <a class="page-link" th:href="@{/offices(page=${officeCurrentPage-1})}" aria-label="Previous">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+                        
+                        <th:block th:each="page : ${#numbers.sequence(1, officeTotalPages)}">
+                            <li class="page-item" th:classappend="${officeCurrentPage == page} ? 'active'">
+                                <a class="page-link" th:href="@{/offices(page=${page})}" th:text="${page}"></a>
+                            </li>
+                        </th:block>
+                        
+                        <li class="page-item" th:classappend="${officeCurrentPage == officeTotalPages} ? 'disabled'">
+                            <a class="page-link" th:href="@{/offices(page=${officeCurrentPage+1})}" aria-label="Next">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+                        <li class="page-item" th:classappend="${officeCurrentPage == officeTotalPages} ? 'disabled'">
+                            <a class="page-link" th:href="@{/offices(page=${officeTotalPages})}" aria-label="Last">
+                                <span aria-hidden="true">&raquo;&raquo;</span>
+                            </a>
+                        </li>
                     </ul>
                 </nav>
             </div>
@@ -597,53 +666,54 @@
                     <label for="electionSelect" class="sr-only">Select election</label>
                     <select class="election-select" id="electionSelect">
                         <option value="">Select an election</option>
-                        <option value="1" selected>Student Council Election 2024</option>
-                        <option value="2">HOA Board Election</option>
-                        <option value="3">Faculty Senate Election (2023)</option>
+                        <option th:each="election : ${pastElections}" 
+                                th:value="${election.id}" 
+                                th:text="${election.title + ' (' + #temporals.format(election.endDate, 'yyyy') + ')'}">
+                            Student Council Election 2024
+                        </option>
                     </select>
                 </div>
 
-                <div class="results-container">
+                <div class="results-container" th:if="${selectedElection != null}">
                     <div class="results-summary">
                         <article class="summary-card">
                             <h3>Total Votes</h3>
-                            <div class="summary-value">782</div>
-                            <div class="summary-meta">62% participation</div>
+                            <div class="summary-value" th:text="${selectedElection.totalVotes}">782</div>
+                            <div class="summary-meta" th:text="${selectedElection.participationRate} + '% participation'">62% participation</div>
                         </article>
                         <article class="summary-card">
                             <h3>Valid Votes</h3>
-                            <div class="summary-value">765</div>
-                            <div class="summary-meta">97.8% of total</div>
+                            <div class="summary-value" th:text="${selectedElection.validVotes}">765</div>
+                            <div class="summary-meta" th:text="${#numbers.formatDecimal(selectedElection.validVotes/selectedElection.totalVotes*100, 1, 1)} + '% of total'">97.8% of total</div>
                         </article>
                         <article class="summary-card">
                             <h3>Invalid Votes</h3>
-                            <div class="summary-value">17</div>
-                            <div class="summary-meta">2.2% of total</div>
+                            <div class="summary-value" th:text="${selectedElection.invalidVotes}">17</div>
+                            <div class="summary-meta" th:text="${#numbers.formatDecimal(selectedElection.invalidVotes/selectedElection.totalVotes*100, 1, 1)} + '% of total'">2.2% of total</div>
                         </article>
                     </div>
 
                     <div class="results-chart">
                         <div class="chart-header">
-                            <h3>President - Vote Distribution</h3>
+                            <h3 th:text="${selectedElection.mainPosition} + ' - Vote Distribution'">President - Vote Distribution</h3>
                             <div class="chart-legend" role="list">
-                                <div class="legend-item" role="listitem">
-                                    <span class="legend-color" style="background-color: #4f46e5;"></span>
-                                    <span>Michael Chen (43.7%)</span>
-                                </div>
-                                <div class="legend-item" role="listitem">
-                                    <span class="legend-color" style="background-color: #f59e0b;"></span>
-                                    <span>Sarah Williams (36.9%)</span>
-                                </div>
-                                <div class="legend-item" role="listitem">
-                                    <span class="legend-color" style="background-color: #10b981;"></span>
-                                    <span>James Wilson (19.4%)</span>
-                                </div>
+                                <th:block th:each="candidate : ${selectedElection.candidates}">
+                                    <div class="legend-item" role="listitem">
+                                        <span class="legend-color" th:style="'background-color: ' + ${candidate.color} + ';'"></span>
+                                        <span th:text="${candidate.name} + ' (' + ${candidate.percentage} + '%)'">Michael Chen (43.7%)</span>
+                                    </div>
+                                </th:block>
                             </div>
                         </div>
                         <div class="chart-container" role="img" aria-label="Vote distribution chart">
                             <canvas id="resultsChart" width="400" height="200"></canvas>
                             <noscript>
-                                <p>Vote distribution: Michael Chen 43.7%, Sarah Williams 36.9%, James Wilson 19.4%</p>
+                                <p>Vote distribution: 
+                                    <th:block th:each="candidate : ${selectedElection.candidates}">
+                                        <span th:text="${candidate.name} + ' ' + ${candidate.percentage} + '%'">Michael Chen 43.7%</span>
+                                        <span th:unless="${candidateStat.last}">, </span>
+                                    </th:block>
+                                </p>
                             </noscript>
                         </div>
                     </div>
@@ -661,41 +731,17 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <th scope="row">President</th>
+                                <tr th:each="position : ${selectedElection.positions}">
+                                    <th scope="row" th:text="${position.name}">President</th>
                                     <td>
                                         <div class="candidate-info">
-                                            <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Michael Chen photo">
-                                            <span>Michael Chen</span>
+                                            <img th:src="${position.winnerImageUrl}" alt="Winner photo">
+                                            <span th:text="${position.winnerName}">Michael Chen</span>
                                         </div>
                                     </td>
-                                    <td>342</td>
-                                    <td>43.7%</td>
-                                    <td>+53 votes</td>
-                                </tr>
-                                <tr>
-                                    <th scope="row">Vice President</th>
-                                    <td>
-                                        <div class="candidate-info">
-                                            <img src="https://randomuser.me/api/portraits/women/28.jpg" alt="Sarah Williams photo">
-                                            <span>Sarah Williams</span>
-                                        </div>
-                                    </td>
-                                    <td>289</td>
-                                    <td>36.9%</td>
-                                    <td>+134 votes</td>
-                                </tr>
-                                <tr>
-                                    <th scope="row">Treasurer</th>
-                                    <td>
-                                        <div class="candidate-info">
-                                            <img src="https://randomuser.me/api/portraits/women/42.jpg" alt="Lisa Thompson photo">
-                                            <span>Lisa Thompson</span>
-                                        </div>
-                                    </td>
-                                    <td>412</td>
-                                    <td>52.6%</td>
-                                    <td>+287 votes</td>
+                                    <td th:text="${position.winnerVotes}">342</td>
+                                    <td th:text="${position.winnerPercentage} + '%'">43.7%</td>
+                                    <td th:text="'+' + ${position.voteMargin} + ' votes'">+53 votes</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -722,144 +768,152 @@
                 <div class="settings-tab-content active" id="account-tab" role="tabpanel" aria-labelledby="account-tab" data-tab="account">
                     <div class="settings-card">
                         <h4><i class="fas fa-user-shield" aria-hidden="true"></i> Account Settings</h4>
-                        <div class="settings-form">
+                        <form th:action="@{/settings/account}" method="post" class="settings-form">
                             <div class="form-group">
                                 <label for="username">Username</label>
-                                <input type="text" id="username" value="admin123" readonly>
+                                <input type="text" id="username" th:value="${user.username}" readonly>
                             </div>
                             <div class="form-group">
                                 <label for="fullname">Full Name</label>
-                                <input type="text" id="fullname" value="Sarah Johnson">
+                                <input type="text" id="fullname" th:value="${user.firstName + ' ' + user.lastName}">
                             </div>
                             <div class="form-group">
                                 <label for="email">Email</label>
-                                <input type="email" id="email" value="admin@votex.com">
+                                <input type="email" id="email" th:value="${user.email}">
                             </div>
                             <div class="form-group">
                                 <label>Profile Photo</label>
                                 <div class="file-upload">
-                                    <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Current profile" class="profile-preview">
+                                    <img th:src="@{${user.profileImageUrl != null} ? ${user.profileImageUrl} : '/images/default-profile.png'}" alt="Current profile" class="profile-preview">
                                     <div class="upload-actions">
-                                        <button class="btn btn-outline btn-sm" aria-label="Change profile photo">
+                                        <button type="button" class="btn btn-outline btn-sm" aria-label="Change profile photo">
                                             <i class="fas fa-camera" aria-hidden="true"></i> Change
                                         </button>
-                                        <button class="btn btn-outline btn-sm" aria-label="Remove profile photo">
+                                        <button type="button" class="btn btn-outline btn-sm" aria-label="Remove profile photo">
                                             <i class="fas fa-trash" aria-hidden="true"></i> Remove
                                         </button>
                                     </div>
                                 </div>
                             </div>
-                            <button class="btn btn-primary">Update Account</button>
-                        </div>
+                            <button type="submit" class="btn btn-primary">Update Account</button>
+                        </form>
                     </div>
                 </div>
 
                 <div class="settings-tab-content" id="security-tab" role="tabpanel" aria-labelledby="security-tab" data-tab="security">
                     <div class="settings-card">
                         <h4><i class="fas fa-lock" aria-hidden="true"></i> Security</h4>
-                        <div class="settings-form">
+                        <form th:action="@{/settings/security}" method="post" class="settings-form">
                             <div class="form-group">
                                 <label for="currentPassword">Current Password</label>
-                                <input type="password" id="currentPassword" placeholder="Enter current password">
+                                <input type="password" id="currentPassword" placeholder="Enter current password" required>
                             </div>
                             <div class="form-group">
                                 <label for="newPassword">New Password</label>
-                                <input type="password" id="newPassword" placeholder="Enter new password">
+                                <input type="password" id="newPassword" placeholder="Enter new password" required>
                                 <small class="form-text">Password must be at least 8 characters long</small>
                             </div>
                             <div class="form-group">
                                 <label for="confirmPassword">Confirm New Password</label>
-                                <input type="password" id="confirmPassword" placeholder="Confirm new password">
+                                <input type="password" id="confirmPassword" placeholder="Confirm new password" required>
                             </div>
                             <div class="form-group">
                                 <label for="2fa-toggle">Two-Factor Authentication</label>
                                 <div class="toggle-switch">
-                                    <input type="checkbox" id="2fa-toggle" checked>
+                                    <input type="checkbox" id="2fa-toggle" th:checked="${user.twoFactorEnabled}">
                                     <label for="2fa-toggle"></label>
-                                    <span>Enabled</span>
+                                    <span th:text="${user.twoFactorEnabled} ? 'Enabled' : 'Disabled'">Enabled</span>
                                 </div>
                                 <small class="form-text">Add an extra layer of security to your account</small>
                             </div>
-                            <button class="btn btn-primary">Update Security Settings</button>
-                        </div>
+                            <button type="submit" class="btn btn-primary">Update Security Settings</button>
+                        </form>
                     </div>
                 </div>
 
                 <div class="settings-tab-content" id="notifications-tab" role="tabpanel" aria-labelledby="notifications-tab" data-tab="notifications">
                     <div class="settings-card">
                         <h4><i class="fas fa-bell" aria-hidden="true"></i> Notification Preferences</h4>
-                        <div class="settings-options">
+                        <form th:action="@{/settings/notifications}" method="post" class="settings-options">
                             <div class="option-group">
                                 <h5>Email Notifications</h5>
                                 <div class="option-item">
-                                    <input type="checkbox" id="email-election" checked>
+                                    <input type="checkbox" id="email-election" th:checked="${user.notificationPreferences.emailElection}">
                                     <label for="email-election">Election updates</label>
                                 </div>
                                 <div class="option-item">
-                                    <input type="checkbox" id="email-results" checked>
+                                    <input type="checkbox" id="email-results" th:checked="${user.notificationPreferences.emailResults}">
                                     <label for="email-results">Election results</label>
                                 </div>
                                 <div class="option-item">
-                                    <input type="checkbox" id="email-system">
+                                    <input type="checkbox" id="email-system" th:checked="${user.notificationPreferences.emailSystem}">
                                     <label for="email-system">System notifications</label>
                                 </div>
                             </div>
                             <div class="option-group">
                                 <h5>In-App Notifications</h5>
                                 <div class="option-item">
-                                    <input type="checkbox" id="app-new-voter" checked>
+                                    <input type="checkbox" id="app-new-voter" th:checked="${user.notificationPreferences.appNewVoter}">
                                     <label for="app-new-voter">New voter registrations</label>
                                 </div>
                                 <div class="option-item">
-                                    <input type="checkbox" id="app-new-candidate" checked>
+                                    <input type="checkbox" id="app-new-candidate" th:checked="${user.notificationPreferences.appNewCandidate}">
                                     <label for="app-new-candidate">New candidate applications</label>
                                 </div>
                                 <div class="option-item">
-                                    <input type="checkbox" id="app-vote-activity" checked>
+                                    <input type="checkbox" id="app-vote-activity" th:checked="${user.notificationPreferences.appVoteActivity}">
                                     <label for="app-vote-activity">Vote activity</label>
                                 </div>
                             </div>
-                            <button class="btn btn-primary">Save Preferences</button>
-                        </div>
+                            <button type="submit" class="btn btn-primary">Save Preferences</button>
+                        </form>
                     </div>
                 </div>
 
                 <div class="settings-tab-content" id="system-tab" role="tabpanel" aria-labelledby="system-tab" data-tab="system">
                     <div class="settings-card">
                         <h4><i class="fas fa-server" aria-hidden="true"></i> System Settings</h4>
-                        <div class="settings-form">
+                        <form th:action="@{/settings/system}" method="post" class="settings-form">
                             <div class="form-group">
                                 <label for="timezone">Timezone</label>
-                                <select id="timezone">
-                                    <option>(UTC-05:00) Eastern Time (US & Canada)</option>
-                                    <option>(UTC-08:00) Pacific Time (US & Canada)</option>
-                                    <option>(UTC+00:00) London</option>
-                                    <option>(UTC+01:00) Berlin</option>
+                                <select id="timezone" th:value="${systemSettings.timezone}">
+                                    <option th:each="tz : ${timezones}" 
+                                            th:value="${tz.id}" 
+                                            th:text="${tz.displayName}"
+                                            th:selected="${tz.id == systemSettings.timezone}">
+                                        (UTC-05:00) Eastern Time (US & Canada)
+                                    </option>
                                 </select>
                             </div>
                             <div class="form-group">
                                 <label for="dateFormat">Date Format</label>
-                                <select id="dateFormat">
-                                    <option>MM/DD/YYYY</option>
-                                    <option>DD/MM/YYYY</option>
-                                    <option>YYYY-MM-DD</option>
+                                <select id="dateFormat" th:value="${systemSettings.dateFormat}">
+                                    <option th:each="format : ${dateFormats}" 
+                                            th:value="${format}" 
+                                            th:text="${format}"
+                                            th:selected="${format == systemSettings.dateFormat}">
+                                        MM/DD/YYYY
+                                    </option>
                                 </select>
                             </div>
                             <div class="form-group">
                                 <label for="resultsVisibility">Results Visibility</label>
-                                <select id="resultsVisibility">
-                                    <option>Show after election ends</option>
-                                    <option>Show real-time (public)</option>
-                                    <option>Show real-time (admin only)</option>
+                                <select id="resultsVisibility" th:value="${systemSettings.resultsVisibility}">
+                                    <option th:each="visibility : ${visibilityOptions}" 
+                                            th:value="${visibility.key}" 
+                                            th:text="${visibility.value}"
+                                            th:selected="${visibility.key == systemSettings.resultsVisibility}">
+                                        Show after election ends
+                                    </option>
                                 </select>
                             </div>
                             <div class="form-group">
                                 <label for="electionDuration">Default Election Duration</label>
-                                <input type="number" id="electionDuration" value="14" min="1" max="30">
+                                <input type="number" id="electionDuration" th:value="${systemSettings.defaultElectionDuration}" min="1" max="30">
                                 <small class="form-text">Days</small>
                             </div>
-                            <button class="btn btn-primary">Save System Settings</button>
-                        </div>
+                            <button type="submit" class="btn btn-primary">Save System Settings</button>
+                        </form>
                     </div>
                 </div>
             </div>
@@ -876,65 +930,69 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form id="candidateForm" novalidate>
+                <form id="candidateForm" th:action="@{/candidates}" method="post" novalidate>
                     <div class="row g-3">
                         <div class="col-md-6">
                             <label for="firstname" class="form-label">First Name</label>
-                            <input type="text" class="form-control" id="firstname" required>
+                            <input type="text" class="form-control" id="firstname" name="firstName" required>
                             <div class="invalid-feedback">Please provide a first name</div>
                         </div>
                         <div class="col-md-6">
                             <label for="lastname" class="form-label">Last Name</label>
-                            <input type="text" class="form-control" id="lastname" required>
+                            <input type="text" class="form-control" id="lastname" name="lastName" required>
                             <div class="invalid-feedback">Please provide a last name</div>
                         </div>
                         <div class="col-md-6">
                             <label for="birthdate" class="form-label">Birthdate</label>
-                            <input type="date" class="form-control" id="birthdate">
+                            <input type="date" class="form-control" id="birthdate" name="birthDate">
                         </div>
                         <div class="col-md-6">
                             <label for="gender" class="form-label">Gender</label>
-                            <select class="form-select" id="gender">
+                            <select class="form-select" id="gender" name="gender">
                                 <option value="">Select Gender</option>
-                                <option value="Male">Male</option>
-                                <option value="Female">Female</option>
-                                <option value="Other">Other</option>
+                                <option th:each="gender : ${genders}" 
+                                        th:value="${gender}" 
+                                        th:text="${gender}">
+                                    Male
+                                </option>
                             </select>
                         </div>
                         <div class="col-md-6">
                             <label for="party" class="form-label">Political Party</label>
-                            <input type="text" class="form-control" id="party">
+                            <input type="text" class="form-control" id="party" name="party">
                         </div>
                         <div class="col-md-6">
                             <label for="role" class="form-label">Role</label>
-                            <select class="form-select" id="role">
-                                <option value="CANDIDATE">Candidate</option>
-                                <option value="LEADER">Party Leader</option>
-                                <option value="REPRESENTATIVE">Representative</option>
+                            <select class="form-select" id="role" name="role">
+                                <option th:each="role : ${candidateRoles}" 
+                                        th:value="${role.key}" 
+                                        th:text="${role.value}">
+                                    Candidate
+                                </option>
                             </select>
                         </div>
                         <div class="col-md-4">
                             <label for="region" class="form-label">Region</label>
-                            <input type="text" class="form-control" id="region">
+                            <input type="text" class="form-control" id="region" name="region">
                         </div>
                         <div class="col-md-4">
                             <label for="department" class="form-label">Department</label>
-                            <input type="text" class="form-control" id="department">
+                            <input type="text" class="form-control" id="department" name="department">
                         </div>
                         <div class="col-md-4">
                             <label for="arron" class="form-label">Arron</label>
-                            <input type="text" class="form-control" id="arron">
+                            <input type="text" class="form-control" id="arron" name="arron">
                         </div>
                         <div class="col-12">
                             <label for="location" class="form-label">Location</label>
-                            <input type="text" class="form-control" id="location">
+                            <input type="text" class="form-control" id="location" name="location">
                         </div>
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary">Save Candidate</button>
+                <button type="submit" form="candidateForm" class="btn btn-primary">Save Candidate</button>
             </div>
         </div>
     </div>
@@ -1008,43 +1066,46 @@
             <button class="modal-close" aria-label="Close modal">&times;</button>
         </div>
         <div class="modal-body">
-            <form id="electionForm" novalidate>
+            <form id="electionForm" th:action="@{/elections}" method="post" novalidate>
                 <div class="form-group">
                     <label for="electionTitle">Election Title</label>
-                    <input type="text" id="electionTitle" name="electionTitle" placeholder="Enter election title" required>
+                    <input type="text" id="electionTitle" name="title" placeholder="Enter election title" required>
                     <div class="invalid-feedback">Please provide a title for the election.</div>
                 </div>
                 <div class="form-group">
                     <label for="electionDescription">Description</label>
-                    <textarea id="electionDescription" placeholder="Enter election description" rows="3"></textarea>
+                    <textarea id="electionDescription" name="description" placeholder="Enter election description" rows="3"></textarea>
                 </div>
                 <div class="form-row">
                     <div class="form-group">
                         <label for="electionStartDate">Start Date</label>
-                        <input type="datetime-local" id="electionStartDate" required>
+                        <input type="datetime-local" id="electionStartDate" name="startDate" required>
                         <div class="invalid-feedback">Please select a start date.</div>
                     </div>
                     <div class="form-group">
                         <label for="electionEndDate">End Date</label>
-                        <input type="datetime-local" id="electionEndDate" required>
+                        <input type="datetime-local" id="electionEndDate" name="endDate" required>
                         <div class="invalid-feedback">Please select an end date.</div>
                     </div>
                 </div>
                 <div class="form-group">
                     <label for="electionType">Election Type</label>
-                    <select id="electionType">
-                        <option>Single Choice</option>
-                        <option>Multiple Choice</option>
-                        <option>Ranked Choice</option>
+                    <select id="electionType" name="type">
+                        <option th:each="type : ${electionTypes}" 
+                                th:value="${type.key}" 
+                                th:text="${type.value}">
+                            Single Choice
+                        </option>
                     </select>
                 </div>
                 <div class="form-group">
                     <label for="eligibleVoters">Eligible Voters</label>
-                    <select id="eligibleVoters" multiple>
-                        <option>All registered voters</option>
-                        <option>Students</option>
-                        <option>Faculty</option>
-                        <option>HOA Members</option>
+                    <select id="eligibleVoters" name="eligibleGroups" multiple>
+                        <option th:each="group : ${voterGroups}" 
+                                th:value="${group.id}" 
+                                th:text="${group.name}">
+                            All registered voters
+                        </option>
                     </select>
                 </div>
                 <div class="form-group">
@@ -1054,14 +1115,14 @@
                             <i class="fas fa-image" aria-hidden="true"></i>
                             <p>Click to upload banner image</p>
                         </label>
-                        <input type="file" id="bannerUpload" accept="image/*">
+                        <input type="file" id="bannerUpload" name="bannerImage" accept="image/*">
                     </div>
                 </div>
             </form>
         </div>
         <div class="modal-footer">
             <button class="btn btn-outline modal-cancel" data-bs-dismiss="modal">Cancel</button>
-            <button class="btn btn-primary">Create Election</button>
+            <button type="submit" form="electionForm" class="btn btn-primary">Create Election</button>
         </div>
     </div>
 </div>
@@ -1078,7 +1139,9 @@
         </div>
         <div class="modal-footer">
             <button class="btn btn-outline modal-cancel" data-bs-dismiss="modal">Cancel</button>
-            <button class="btn btn-primary" id="confirmLogout">Logout</button>
+            <form th:action="@{/logout}" method="post">
+                <button type="submit" class="btn btn-primary" id="confirmLogout">Logout</button>
+            </form>
         </div>
     </div>
 </div>
@@ -1086,6 +1149,70 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script th:src="@{/js/dash.js}"></script>
 <script src="../static/js/dash.js"></script>
+<script>
+    // Initialize chart if results section is active
+    document.addEventListener('DOMContentLoaded', function() {
+        if(document.getElementById('results-content').classList.contains('active')) {
+            initResultsChart();
+        }
+        
+        // Add event listener for election select change
+        document.getElementById('electionSelect').addEventListener('change', function() {
+            window.location.href = '/results?electionId=' + this.value;
+        });
+    });
+
+    function initResultsChart() {
+        const ctx = document.getElementById('resultsChart').getContext('2d');
+        const chartData = {
+            labels: [
+                <th:block th:each="candidate : ${selectedElection.candidates}">
+                    '<span th:text="${candidate.name}"></span>',
+                </th:block>
+            ],
+            datasets: [{
+                data: [
+                    <th:block th:each="candidate : ${selectedElection.candidates}">
+                        <span th:text="${candidate.votes}"></span>,
+                    </th:block>
+                ],
+                backgroundColor: [
+                    <th:block th:each="candidate : ${selectedElection.candidates}">
+                        '<span th:text="${candidate.color}"></span>',
+                    </th:block>
+                ],
+                borderWidth: 1
+            }]
+        };
+        
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: chartData,
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                }
+            }
+        });
+    }
+    
+    // Voter details modal
+    document.querySelectorAll('.view-voter').forEach(button => {
+        button.addEventListener('click', function() {
+            const voterId = this.getAttribute('data-id');
+            fetch('/voters/' + voterId + '/details')
+                .then(response => response.text())
+                .then(html => {
+                    document.getElementById('voterDetailsContent').innerHTML = html;
+                    new bootstrap.Modal(document.getElementById('voterDetailsModal')).show();
+                });
+        });
+    });
+</script>
 </body>
 </html>

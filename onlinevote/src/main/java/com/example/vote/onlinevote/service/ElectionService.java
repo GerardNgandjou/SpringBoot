@@ -2,6 +2,7 @@ package com.example.vote.onlinevote.service;
 
 import com.example.vote.onlinevote.dto.ElectionDto;
 import com.example.vote.onlinevote.mapper.ElectionMapper;
+import com.example.vote.onlinevote.model.Election;
 import com.example.vote.onlinevote.repository.ElectionRepository;
 import org.springframework.stereotype.Service;
 
@@ -34,5 +35,10 @@ public class ElectionService {
                 .stream()
                 .map(electionMapper::toElectionDto)
                 .collect(Collectors.toList());
+    }
+
+    public Election getElectionById(Long id) {
+        return electionRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Election not found with id: " + id));
     }
 }
