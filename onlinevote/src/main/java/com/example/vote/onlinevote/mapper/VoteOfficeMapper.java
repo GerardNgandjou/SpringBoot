@@ -5,43 +5,51 @@ import com.example.vote.onlinevote.model.VoteOffice;
 import com.example.vote.onlinevote.model.Voter;
 import com.example.vote.onlinevote.repository.VoterRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class VoteOfficeMapper {
 
+    @Autowired
     private VoterRepository voterRepository;
 
-    public VoteOfficeDto toVoteOfficeDto(VoteOffice voteOffice) {  // Convert the VoteOfficeDto to VoteOffice
-        
-        List<Long> votersIds = voteOffice.getVoters()
+    public VoteOfficeDto toVoteOfficeDto(VoteOffice voteOffice) {
+        List<Long> voterIds = voteOffice.getVoters()
                 .stream()
                 .map(Voter::getId)
                 .collect(Collectors.toList());
 
-        int votersCount = votersIds.size();
+        int votersCount = voterIds.size();
 
-        return new VoteOfficeDto(
-                voteOffice.getNameOffice(),
-                voteOffice.getLocationOffice(),
-                voteOffice.getDescriptionOffice(),
-                votersIds,
-                votersCount
-        );
+        VoteOfficeDto dto = new VoteOfficeDto();
+        dto.setNameOffice(voteOffice.getNameOffice());
+        dto.setLocationOffice(voteOffice.getLocationOffice());
+        dto.setDescriptionOffice(voteOffice.getDescriptionOffice());
+        dto.setRegisterVoterIds(voterIds);
+        dto.setCountVoter(votersCount);
+
+        return dto;
     }
 
-    public VoteOffice toVoteOffice(VoteOfficeDto voteOfficeDto) {  // Convert the VoteOffice to VoteOfficeDto
-        
-        List<Voter> voter = voterRepository.findAllById(voteOfficeDto.registerVoterIds());
-        return new VoteOffice(
-                voteOfficeDto.nameOffice(),
-                voteOfficeDto.locationOffice(),
-                voteOfficeDto.descriptionOffice(),
-                voter
-        );
-    }
+    public VoteOffice toVoteOffice(VoteOfficeDto voteOfficeDto) {
+        List<Voter> voters = new ArrayList<>();
 
+        if (voteOfficeDto.getRegisterVoterIds() != null && !voteOfficeDto.getRegisterVoterIds().isEmpty()) {
+            voters = voterRepository.findAllById(voteOfficeDto.getRegisterVoterIds());
+        }
+
+
+        VoteOffice voteOffice = new VoteOffice();
+        voteOffice.setNameOffice(voteOfficeDto.getNameOffice());
+        voteOffice.setLocationOffice(voteOfficeDto.getLocationOffice());
+        voteOffice.setDescriptionOffice(voteOfficeDto.getDescriptionOffice());
+        voteOffice.setVoters(voters);
+
+        return voteOffice;
+    }
 }

@@ -1,6 +1,8 @@
 package com.example.vote.onlinevote.controller;
 
+import com.example.vote.onlinevote.dto.CandidateDto;
 import com.example.vote.onlinevote.dto.ElectionDto;
+import com.example.vote.onlinevote.dto.VoteOfficeDto;
 import com.example.vote.onlinevote.dto.VoterDto;
 import com.example.vote.onlinevote.exception.ResourceNotFoundException;
 import com.example.vote.onlinevote.model.Voter;
@@ -54,6 +56,22 @@ public class RoutController {
             model.addAttribute("election", new ElectionDto());
         }
         return "election"; // This should match your Thymeleaf template name
+    }
+
+    @GetMapping("/candidate/add")
+    public String showCandidateForm(Model model) {
+        if (!model.containsAttribute("candidate")) {
+            model.addAttribute("candidate", new CandidateDto());
+        }
+        return "candidate"; // This should match your Thymeleaf template name
+    }
+
+    @GetMapping("/voteoffice/add")
+    public String showVoteForm(Model model) {
+        if (!model.containsAttribute("voteoffice")) {
+            model.addAttribute("voteoffice", new VoteOfficeDto());
+        }
+        return "voteoffice"; // This should match your Thymeleaf template name
     }
 
     @GetMapping("/dash")

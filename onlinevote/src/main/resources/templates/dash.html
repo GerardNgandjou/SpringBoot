@@ -279,8 +279,8 @@
                     <div class="container">
                         <h1 id="candidates-heading">Candidate Management</h1>
                         <div class="app-actions">
-                            <a th:href="@{/election/add}" class="btn btn-primary" id="createElectionBtn" aria-label="Create new election">
-                                <i class="fas fa-plus" aria-hidden="true"></i> Create New Election
+                            <a th:href="@{/candidate/add}" class="btn btn-primary" id="createCandidateBtn" aria-label="Create new candidate">
+                                <i class="fas fa-plus" aria-hidden="true"></i> Create New Candidate
                             </a>
                             <div class="search-box">
                                 <i class="fas fa-search"></i>
@@ -431,8 +431,8 @@
                 <header>
                     <h1 id="voteoffice-heading">Vote Offices Management</h1>
                     <div class="header-actions">
-                        <a href="#" class="btn btn-primary" id="addOfficeBtn" aria-label="Add new vote office">
-                            <i class="fas fa-plus" aria-hidden="true"></i> Add New Office
+                        <a th:href="@{/voteoffice/add}" class="btn btn-primary" id="createVoteofficeBtn" aria-label="Create new candidate">
+                            <i class="fas fa-plus" aria-hidden="true"></i> Create New Vote Office
                         </a>
                         <button class="btn btn-outline" id="refreshOffices">
                             <i class="fas fa-sync-alt"></i> Refresh

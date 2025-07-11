@@ -2,7 +2,6 @@ package com.example.vote.onlinevote.controller;
 
 import com.example.vote.onlinevote.dto.CandidateDto;
 import com.example.vote.onlinevote.dto.CandidateResponseDto;
-import com.example.vote.onlinevote.model.User;
 import com.example.vote.onlinevote.model.Voter;
 import com.example.vote.onlinevote.service.CandidateService;
 import com.example.vote.onlinevote.service.UserService;
@@ -24,13 +23,6 @@ public class CandidateController {
     public CandidateController(CandidateService candidateService) {
         this.candidateService = candidateService;
         this.userService = null;
-    }
-
-    @GetMapping("/candidate/add")
-    public String showCandidateForm(Model model) {
-        List<User> users = userService.findNonCandidateUsers();
-        model.addAttribute("users", users);
-        return "signin";
     }
 
     // @GetMapping("/candidate/add")

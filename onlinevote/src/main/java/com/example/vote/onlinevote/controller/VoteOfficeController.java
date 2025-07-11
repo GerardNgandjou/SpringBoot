@@ -5,7 +5,6 @@ import com.example.vote.onlinevote.service.VoteOfficeService;
 
 import lombok.Getter;
 
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -30,11 +29,6 @@ public class VoteOfficeController {
         return voteOfficeService.addVoteOffice(voteOfficeDto);
     }
 
-     @GetMapping("/vote_office/add")
-    public String officeForm(Model model) {
-        model.addAttribute("voteOffice", new VoteOfficeDto());
-        return "voteoffice";     // vote_office.html
-    }
 
     @GetMapping("/vote_office/get")
     public List<VoteOfficeDto> showVoteOffices() {

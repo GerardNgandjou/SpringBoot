@@ -4,13 +4,15 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<link rel="stylesheet" href="../static/css/voteoffice.css">
+	<link rel="stylesheet" th:href="@{/css/voteoffice.css}">
 	<title>Office Management</title>
 </head>
 <body>
 <div class="container">
 	<h1>Office Management</h1>
 	<div id="statusMessage" class="status-message"></div>
-	<form id="officeForm" action="/vote_office/add" object="voteoffice" method="post">
+	<form id="officeForm" th:action="@{/vote_office/add}" th:object="${voteoffice}" method="post">
+
 		<div class="form-group">
 			<label for="nameOffice">Office Name</label>
 			<input type="text" id="nameOffice" name="nameOffice" placeholder="Enter office name" required>
@@ -35,5 +37,6 @@
 </div>
 
 <script src="../static/js/voteoffice.js"></script>
+<script th:src="@{/js/voteoffice.js}"></script>
 </body>
 </html>

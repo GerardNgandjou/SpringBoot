@@ -254,68 +254,68 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // ===== CANDIDATES SECTION =====
-// const loadCandidates = async (filters = {}) => {
-//   try {
-//     const query = new URLSearchParams(filters).toString();
-//     const response = await api.get(`/candidate/display`);
-//     const candidates = response.data.data;
-//     const container = document.getElementById('candidateGrid');
+const loadCandidates = async (filters = {}) => {
+  try {
+    const query = new URLSearchParams(filters).toString();
+    const response = await api.get(`/candidate/display`);
+    const candidates = response.data.data;
+    const container = document.getElementById('candidateGrid');
     
-//     if (candidates.length === 0) {
-//       container.innerHTML = `
-//         <div id="noResults" class="text-center py-5">
-//           <i class="fas fa-user-slash fa-3x mb-3 text-muted"></i>
-//           <h3>No candidates found</h3>
-//           <p class="text-muted">Try adjusting your search or filters</p>
-//           <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addCandidateModal">
-//             <i class="fas fa-plus"></i> Add New Candidate
-//           </button>
-//         </div>
-//       `;
-//       return;
-//     }
+    if (candidates.length === 0) {
+      container.innerHTML = `
+        <div id="noResults" class="text-center py-5">
+          <i class="fas fa-user-slash fa-3x mb-3 text-muted"></i>
+          <h3>No candidates found</h3>
+          <p class="text-muted">Try adjusting your search or filters</p>
+          <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addCandidateModal">
+            <i class="fas fa-plus"></i> Add New Candidate
+          </button>
+        </div>
+      `;
+      return;
+    }
     
-//     container.innerHTML = '';
-//     candidates.forEach(candidate => {
-//       container.innerHTML += `
-//         <div class="col">
-//           <div class="candidate-card">
-//             <div class="candidate-header">
-//               <img src="${candidate.photoUrl || '/images/default-candidate.jpg'}" 
-//                    alt="${candidate.firstName} ${candidate.lastName}" 
-//                    class="candidate-photo">
-//             </div>
-//             <div class="candidate-body">
-//               <h3 class="candidate-name">${candidate.firstName} ${candidate.lastName}</h3>
-//               <span class="candidate-party">${candidate.party || 'Independent'}</span>
-//               <div class="candidate-meta">
-//                 <span><i class="fas fa-vote-yea"></i> ${candidate.votes || 0}</span>
-//                 <span><i class="fas fa-map-marker-alt"></i> ${candidate.region}</span>
-//               </div>
-//               <p class="candidate-bio">${candidate.biography || 'No biography provided'}</p>
-//             </div>
-//             <div class="candidate-footer">
-//               <span class="candidate-status ${candidate.status.toLowerCase()}">
-//                 <i class="fas fa-circle"></i> ${candidate.status}
-//               </span>
-//               <div class="candidate-actions">
-//                 <button class="btn btn-sm btn-outline" data-candidate-id="${candidate.id}">
-//                   <i class="fas fa-eye"></i>
-//                 </button>
-//                 <button class="btn btn-sm btn-outline" data-candidate-id="${candidate.id}">
-//                   <i class="fas fa-edit"></i>
-//                 </button>
-//               </div>
-//             </div>
-//           </div>
-//         </div>
-//       `;
-//     });
+    container.innerHTML = '';
+    candidates.forEach(candidate => {
+      container.innerHTML += `
+        <div class="col">
+          <div class="candidate-card">
+            <div class="candidate-header">
+              <img src="${candidate.photoUrl || '/images/default-candidate.jpg'}" 
+                   alt="${candidate.firstName} ${candidate.lastName}" 
+                   class="candidate-photo">
+            </div>
+            <div class="candidate-body">
+              <h3 class="candidate-name">${candidate.firstName} ${candidate.lastName}</h3>
+              <span class="candidate-party">${candidate.party || 'Independent'}</span>
+              <div class="candidate-meta">
+                <span><i class="fas fa-vote-yea"></i> ${candidate.votes || 0}</span>
+                <span><i class="fas fa-map-marker-alt"></i> ${candidate.region}</span>
+              </div>
+              <p class="candidate-bio">${candidate.biography || 'No biography provided'}</p>
+            </div>
+            <div class="candidate-footer">
+              <span class="candidate-status ${candidate.status.toLowerCase()}">
+                <i class="fas fa-circle"></i> ${candidate.status}
+              </span>
+              <div class="candidate-actions">
+                <button class="btn btn-sm btn-outline" data-candidate-id="${candidate.id}">
+                  <i class="fas fa-eye"></i>
+                </button>
+                <button class="btn btn-sm btn-outline" data-candidate-id="${candidate.id}">
+                  <i class="fas fa-edit"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    });
     
-//   } catch (error) {
-//     handleApiError(error);
-//   }
-// };
+  } catch (error) {
+    handleApiError(error);
+  }
+};
 
 // ===== VOTERS SECTION =====
 const loadVoters = async (filters = {}) => {
