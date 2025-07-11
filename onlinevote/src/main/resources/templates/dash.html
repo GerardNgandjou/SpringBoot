@@ -184,11 +184,11 @@
                     <a href="#elections" class="view-all">View All <i class="fas fa-chevron-right"></i></a>
                 </div>
 
-                <div class="filters">
-                    <button class="filter-btn active" data-status="all">All Elections</button>
-                    <button class="filter-btn" data-status="ACTIVE">Active</button>
-                    <button class="filter-btn" data-status="UPCOMING">Upcoming</button>
-                    <button class="filter-btn" data-status="ENDED">Ended</button>
+                <div class="filter-tabs">
+                    <div class="tab active">All Elections <span class="badge">12</span></div>
+                    <div class="tab">Active <span class="badge">3</span></div>
+                    <div class="tab">Upcoming <span class="badge">5</span></div>
+                    <div class="tab">Ended <span class="badge">4</span></div>
                 </div>
 
                 <div class="elections-grid" id="electionsContainer">
@@ -254,7 +254,7 @@
                 <header>
                     <h1 id="elections-heading">Elections Dashboard</h1>
                     <div class="header-actions">
-                        <a th:href="@{/elections/new}" class="btn btn-primary" id="createElectionBtn" aria-label="Create new election">
+                        <a th:href="@{/election/add}" class="btn btn-primary" id="createElectionBtn" aria-label="Create new election">
                             <i class="fas fa-plus" aria-hidden="true"></i> Create New Election
                         </a>
                         <button class="btn btn-outline" id="refreshElections">
@@ -268,52 +268,6 @@
                     <button class="filter-btn" data-status="active" aria-pressed="false">Active</button>
                     <button class="filter-btn" data-status="upcoming" aria-pressed="false">Upcoming</button>
                     <button class="filter-btn" data-status="ended" aria-pressed="false">Ended</button>
-                    <button class="filter-btn" data-status="draft" aria-pressed="false">Drafts</button>
-                </div>
-
-                <div class="elections-grid" id="electionsContainer" aria-live="polite">
-                    <th:block th:if="${elections != null and !elections.empty}">
-                        <th:block th:each="election : ${elections}">
-                            <article class="election-card">
-                                <div class="election-banner" th:style="'background: linear-gradient(135deg, ' + ${election.color1} + ', ' + ${election.color2} + ');'">
-                                    <i th:class="'fas ' + ${election.icon}" aria-hidden="true"></i>
-                                    <span th:class="'election-status ' + ${election.statusClass}" 
-                                          th:text="${election.status} + (${election.daysLeft} != null ? ' • ' + ${election.daysLeft} + ' days left' : '')">
-                                        Active • 3 days left
-                                    </span>
-                                </div>
-                                <div class="election-details">
-                                    <h4 class="election-title" th:text="${election.title}">Student Council Election 2024</h4>
-                                    <div class="election-meta">
-                                        <div class="election-date">
-                                            <i class="far fa-calendar-alt" aria-hidden="true"></i> 
-                                            <span th:text="${#temporals.format(election.startDate, 'MMM d')} + ' - ' + ${#temporals.format(election.endDate, 'MMM d')}">May 15 - May 30</span>
-                                        </div>
-                                        <div><i class="fas fa-users" aria-hidden="true"></i> 
-                                            <span th:text="${election.candidateCount} + ' candidates'">4 candidates</span>
-                                        </div>
-                                    </div>
-                                    <div class="election-actions">
-                                        <a th:href="@{/elections/{id}/results(id=${election.id})}" class="btn btn-outline" aria-label="View election results">
-                                            <i class="fas fa-chart-bar" aria-hidden="true"></i> Results
-                                        </a>
-                                        <a th:href="@{/elections/{id}/manage(id=${election.id})}" class="btn btn-primary" aria-label="Manage election">
-                                            <i class="fas fa-cog" aria-hidden="true"></i> Manage
-                                        </a>
-                                    </div>
-                                </div>
-                            </article>
-                        </th:block>
-                    </th:block>
-                    <th:block th:if="${elections == null or elections.empty}">
-                        <div class="no-results">
-                            <i class="fas fa-calendar-times" aria-hidden="true"></i>
-                            <p>No elections found</p>
-                            <a th:href="@{/elections/new}" class="btn btn-primary">
-                                <i class="fas fa-plus"></i> Create Your First Election
-                            </a>
-                        </div>
-                    </th:block>
                 </div>
             </div>
         </section>
@@ -325,9 +279,9 @@
                     <div class="container">
                         <h1 id="candidates-heading">Candidate Management</h1>
                         <div class="app-actions">
-                            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addCandidateModal" aria-label="Add new candidate">
-                                <i class="fas fa-plus" aria-hidden="true"></i> Add Candidate
-                            </button>
+                            <a th:href="@{/election/add}" class="btn btn-primary" id="createElectionBtn" aria-label="Create new election">
+                                <i class="fas fa-plus" aria-hidden="true"></i> Create New Election
+                            </a>
                             <div class="search-box">
                                 <i class="fas fa-search"></i>
                                 <input type="text" id="candidateSearch" placeholder="Search candidates...">
@@ -807,217 +761,6 @@
     </main>
 </div>
 
-<!-- Add Candidate Modal -->
-<div class="modal fade" id="addCandidateModal" tabindex="-1" role="dialog" aria-labelledby="addCandidateModalTitle" aria-hidden="true">
-    <div class="modal-dialog modal-lg" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="addCandidateModalTitle">Add New Candidate</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form id="candidateForm" action="@{/candidates}" method="post" novalidate enctype="multipart/form-data">
-                    <div class="row g-3">
-                        <div class="col-md-6">
-                            <label for="firstname" class="form-label">First Name</label>
-                            <input type="text" class="form-control" id="firstname" name="firstName" required>
-                            <div class="invalid-feedback">Please provide a first name</div>
-                        </div>
-                        <div class="col-md-6">
-                            <label for="lastname" class="form-label">Last Name</label>
-                            <input type="text" class="form-control" id="lastname" name="lastName" required>
-                            <div class="invalid-feedback">Please provide a last name</div>
-                        </div>
-                        <div class="col-md-6">
-                            <label for="birthdate" class="form-label">Birthdate</label>
-                            <input type="date" class="form-control" id="birthdate" name="birthDate">
-                        </div>
-                        <div class="col-md-6">
-                            <label for="gender" class="form-label">Gender</label>
-                            <select class="form-select" id="gender" name="gender">
-                                <option value="">Select Gender</option>
-                                <option each="gender : ${genders}" 
-                                        value="${gender}" 
-                                        text="${gender}">
-                                    Male
-                                </option>
-                            </select>
-                        </div>
-                        <div class="col-md-6">
-                            <label for="party" class="form-label">Political Party</label>
-                            <input type="text" class="form-control" id="party" name="party">
-                        </div>
-                        <div class="col-md-6">
-                            <label for="election" class="form-label">Election</label>
-                            <select class="form-select" id="election" name="electionId">
-                                <option value="">Select Election</option>
-                                <option each="election : ${activeElections}" 
-                                        value="${election.id}" 
-                                        text="${election.title}">
-                                </option>
-                            </select>
-                        </div>
-                        <div class="col-md-4">
-                            <label for="region" class="form-label">Region</label>
-                            <input type="text" class="form-control" id="region" name="region">
-                        </div>
-                        <div class="col-md-4">
-                            <label for="department" class="form-label">Department</label>
-                            <input type="text" class="form-control" id="department" name="department">
-                        </div>
-                        <div class="col-md-4">
-                            <label for="arron" class="form-label">Arron</label>
-                            <input type="text" class="form-control" id="arron" name="arron">
-                        </div>
-                        <div class="col-12">
-                            <label for="location" class="form-label">Location</label>
-                            <input type="text" class="form-control" id="location" name="location">
-                        </div>
-                        <div class="col-12">
-                            <label for="biography" class="form-label">Biography</label>
-                            <textarea class="form-control" id="biography" name="biography" rows="3"></textarea>
-                        </div>
-                        <div class="col-12">
-                            <label for="candidatePhoto" class="form-label">Candidate Photo</label>
-                            <input type="file" class="form-control" id="candidatePhoto" name="photo" accept="image/*">
-                        </div>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="submit" form="candidateForm" class="btn btn-primary">Save Candidate</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Create Election Modal -->
-<div class="modal fade" id="createElectionModal" tabindex="-1" role="dialog" aria-labelledby="createElectionModalTitle" aria-hidden="true">
-    <div class="modal-dialog modal-lg" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="createElectionModalTitle">Create New Election</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form id="electionForm" action="@{/elections}" method="post" novalidate enctype="multipart/form-data">
-                    <div class="row g-3">
-                        <div class="col-md-12">
-                            <label for="electionTitle" class="form-label">Election Title</label>
-                            <input type="text" class="form-control" id="electionTitle" name="title" required>
-                            <div class="invalid-feedback">Please provide a title for the election</div>
-                        </div>
-                        <div class="col-md-12">
-                            <label for="electionDescription" class="form-label">Description</label>
-                            <textarea class="form-control" id="electionDescription" name="description" rows="3"></textarea>
-                        </div>
-                        <div class="col-md-6">
-                            <label for="electionStartDate" class="form-label">Start Date</label>
-                            <input type="datetime-local" class="form-control" id="electionStartDate" name="startDate" required>
-                            <div class="invalid-feedback">Please select a start date</div>
-                        </div>
-                        <div class="col-md-6">
-                            <label for="electionEndDate" class="form-label">End Date</label>
-                            <input type="datetime-local" class="form-control" id="electionEndDate" name="endDate" required>
-                            <div class="invalid-feedback">Please select an end date</div>
-                        </div>
-                        <div class="col-md-6">
-                            <label for="electionType" class="form-label">Election Type</label>
-                            <select class="form-select" id="electionType" name="type">
-                                <option each="type : ${electionTypes}" 
-                                        value="${type.key}" 
-                                        text="${type.value}">
-                                    Single Choice
-                                </option>
-                            </select>
-                        </div>
-                        <div class="col-md-6">
-                            <label for="eligibleVoters" class="form-label">Eligible Voters</label>
-                            <select class="form-select" id="eligibleVoters" name="eligibleGroups" multiple>
-                                <option each="group : ${voterGroups}" 
-                                        value="${group.id}" 
-                                        text="${group.name}">
-                                    All registered voters
-                                </option>
-                            </select>
-                        </div>
-                        <div class="col-12">
-                            <label for="electionBanner" class="form-label">Election Banner</label>
-                            <input type="file" class="form-control" id="electionBanner" name="bannerImage" accept="image/*">
-                        </div>
-                        <div class="col-12">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="resultsPublic" name="resultsPublic">
-                                <label class="form-check-label" for="resultsPublic">
-                                    Make results public immediately after election ends
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="submit" form="electionForm" class="btn btn-primary">Create Election</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Add Vote Office Modal -->
-<div class="modal fade" id="addOfficeModal" tabindex="-1" role="dialog" aria-labelledby="addOfficeModalTitle" aria-hidden="true">
-    <div class="modal-dialog modal-lg" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="addOfficeModalTitle">Add New Vote Office</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form id="officeForm" action="@{/offices}" method="post" novalidate>
-                    <div class="row g-3">
-                        <div class="col-md-12">
-                            <label for="officeName" class="form-label">Office Name</label>
-                            <input type="text" class="form-control" id="officeName" name="name" required>
-                            <div class="invalid-feedback">Please provide an office name</div>
-                        </div>
-                        <div class="col-md-6">
-                            <label for="officeRegion" class="form-label">Region</label>
-                            <select class="form-select" id="officeRegion" name="region" required>
-                                <option value="">Select Region</option>
-                                <option each="region : ${regions}" value="${region}">[[${region}]]</option>
-                            </select>
-                        </div>
-                        <div class="col-md-6">
-                            <label for="officeDepartment" class="form-label">Department</label>
-                            <input type="text" class="form-control" id="officeDepartment" name="department">
-                        </div>
-                        <div class="col-12">
-                            <label for="officeAddress" class="form-label">Address</label>
-                            <textarea class="form-control" id="officeAddress" name="address" rows="2"></textarea>
-                        </div>
-                        <div class="col-md-6">
-                            <label for="officePhone" class="form-label">Phone Number</label>
-                            <input type="tel" class="form-control" id="officePhone" name="phone">
-                        </div>
-                        <div class="col-md-6">
-                            <label for="officeEmail" class="form-label">Email</label>
-                            <input type="email" class="form-control" id="officeEmail" name="email">
-                        </div>
-                        <div class="col-12">
-                            <label for="officeHours" class="form-label">Operating Hours</label>
-                            <input type="text" class="form-control" id="officeHours" name="hours" placeholder="e.g., Mon-Fri 8:00 AM - 5:00 PM">
-                        </div>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="submit" form="officeForm" class="btn btn-primary">Save Office</button>
-            </div>
-        </div>
-    </div>
-</div>
 
 <!-- Logout Confirmation Modal -->
 <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="logoutModalTitle" aria-hidden="true">

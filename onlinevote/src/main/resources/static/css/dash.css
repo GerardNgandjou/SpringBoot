@@ -773,33 +773,6 @@ button {
   transform: translateX(24px);
 }
 
-/* ===== MODALS ===== */
-.modal-content {
-  border: none;
-  border-radius: var(--border-radius);
-  box-shadow: var(--shadow-lg);
-}
-
-.modal-header {
-  border-bottom: 1px solid var(--gray-light);
-  padding: 1.5rem;
-}
-
-.modal-title {
-  font-weight: 600;
-}
-
-.modal-body {
-  padding: 1.5rem;
-}
-
-.modal-footer {
-  border-top: 1px solid var(--gray-light);
-  padding: 1rem 1.5rem;
-  display: flex;
-  justify-content: flex-end;
-  gap: 0.75rem;
-}
 
 /* ===== RESPONSIVE DESIGN ===== */
 @media (max-width: 1024px) {

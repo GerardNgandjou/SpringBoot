@@ -11,8 +11,8 @@ import java.util.List;
 
 @Service
 public class CandidateMapper {
-    
-    public CandidateResponseDto  candidateToResponseDto(Candidate candidate) {
+
+    public CandidateResponseDto candidateToResponseDto(Candidate candidate) {
         return new CandidateResponseDto(
                 candidate.getFirstname(),
                 candidate.getLastname(),
@@ -27,35 +27,40 @@ public class CandidateMapper {
                 candidate.getRole()
         );
     }
-    
-    public Candidate candidateDtoToCandidate(CandidateDto candidateDto) {
-        var candidate = new Candidate();
-        candidate.setFirstname(candidateDto.firstname());
-        candidate.setLastname(candidateDto.lastname());
-        candidate.setBirthdate(candidateDto.birthdate());
-        candidate.setGender(candidateDto.gender());
-        candidate.setPlaceofbirth(candidateDto.placeofbirth());
-        candidate.setEmail(candidateDto.email());
-        candidate.setLocation(candidateDto.location());
-        candidate.setNumber(candidateDto.number());
-        candidate.setRegion(candidateDto.region());
-        candidate.setDepartment(candidateDto.department());
-        candidate.setArron(candidateDto.arron());
-        candidate.setParty(candidateDto.party());
-        candidate.setCurrentregion(candidateDto.currentregion());
 
-        // Properly convert IDs to Election list
+    public Candidate candidateDtoToCandidate(CandidateDto candidateDto) {
+        Candidate candidate = new Candidate();
+
+        candidate.setFirstname(candidateDto.getFirstname());
+        candidate.setLastname(candidateDto.getLastname());
+        candidate.setBirthdate(candidateDto.getBirthdate());
+        candidate.setGender(candidateDto.getGender());
+        candidate.setPlaceofbirth(candidateDto.getPlaceofbirth());
+        candidate.setEmail(candidateDto.getEmail());
+        candidate.setLocation(candidateDto.getLocation());
+        candidate.setNumber(candidateDto.getNumber());
+        candidate.setRegion(candidateDto.getRegion());
+        candidate.setDepartment(candidateDto.getDepartment());
+        candidate.setArron(candidateDto.getArron());
+        candidate.setParty(candidateDto.getParty());
+        candidate.setCurrentregion(candidateDto.getCurrentregion());
+
+        // Convert Election IDs to Election entities (with only ID set)
         List<Election> elections = new ArrayList<>();
-        for (Long id : candidateDto.registeredElectionIds()) {
-            Election election = new Election();
-            election.setIdElection(id);
-            elections.add(election);
+        if (candidateDto.getRegisteredElectionIds() != null) {
+            for (Long id : candidateDto.getRegisteredElectionIds()) {
+                Election election = new Election();
+                election.setIdElection(id);
+                elections.add(election);
+            }
         }
         candidate.setRegister(elections);
-        candidate.setRole(candidateDto.role());
-        candidate.setDeposit(candidateDto.deposit());
-        candidate.setScore(candidate.getScore());
+
+        candidate.setRole(candidateDto.getRole());
+        candidate.setDeposit(candidateDto.getDeposit());
+        candidate.setScore(candidateDto.getScore());
 
         return candidate;
     }
 }
+

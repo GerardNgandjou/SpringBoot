@@ -2,15 +2,6 @@
 // const API_BASE_URL = 'https://your-api-domain.com/api/v1';
 // const AUTH_TOKEN = localStorage.getItem('authToken');
 
-// Axios instance with auth header
-const api = axios.create({
-  baseURL: API_BASE_URL,
-  headers: {
-    'Authorization': `Bearer ${AUTH_TOKEN}`,
-    'Content-Type': 'application/json'
-  }
-});
-
 // Handle API errors
 const handleApiError = (error) => {
   if (error.response) {
@@ -114,134 +105,223 @@ const loadRecentActivity = async (activities) => {
 };
 
 // ===== ELECTIONS SECTION =====
-const loadElections = async (status = 'all') => {
-  try {
-    const response = await api.get(`/elections?status=${status}`);
-    const elections = response.data.data;
-    const container = document.getElementById('electionsContainer');
-    
-    if (elections.length === 0) {
-      container.innerHTML = `
-        <div class="no-results">
-          <i class="fas fa-calendar-times"></i>
-          <p>No elections found</p>
-          <a href="#elections" class="btn btn-primary" id="createElectionBtn">
-            <i class="fas fa-plus"></i> Create Your First Election
-          </a>
-        </div>
-      `;
-      return;
-    }
-    
-    container.innerHTML = '';
-    elections.forEach(election => {
-      container.innerHTML += `
-        <article class="election-card">
-          <!-- Same structure as in dashboard -->
-        </article>
-      `;
-    });
-    
-  } catch (error) {
-    handleApiError(error);
-  }
-};
 
-const createElection = async (formData) => {
-  try {
-    const response = await api.post('/elections', formData);
-    showToast('Election created successfully!', 'success');
-    loadElections();
-    return response.data.data;
-  } catch (error) {
-    handleApiError(error);
-  }
-};
+document.addEventListener('DOMContentLoaded', function() {
+    // DOM elements
+    const electionsContainer = document.getElementById('electionsContainer');
+    const filterButtons = document.querySelectorAll('.filter-btn');
+
+    // Initialize
+    fetchElections();
+    setupFilterButtons();
+
+    // Fetch elections from backend
+    async function fetchElections() {
+        try {
+            const response = await fetch('/election/show');
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+            const elections = await response.json();
+            window.electionData = elections; // Store for filtering
+            renderElections(elections);
+        } catch (error) {
+            console.error('Fetch error:', error);
+            showErrorMessage();
+        }
+    }
+
+    // Show error message
+    function showErrorMessage() {
+        electionsContainer.innerHTML = `
+            <div class="error-message">
+                <i class="fas fa-exclamation-triangle"></i>
+                <p>Error loading elections. Please try again later.</p>
+            </div>
+        `;
+    }
+
+    // Render elections list
+    function renderElections(elections) {
+        if (!elections || !elections.length) {
+            electionsContainer.innerHTML = `
+                <div class="no-elections">
+                    <i class="fas fa-info-circle"></i>
+                    <p>No elections found matching your criteria.</p>
+                </div>
+            `;
+            return;
+        }
+
+        electionsContainer.innerHTML = elections.map(election => `
+            <div class="election-card">
+                <div class="card-header">
+                    <span class="status-badge ${getStatusClass(election.electionStatus)}">
+                        ${election.electionStatus || 'UNKNOWN'}
+                    </span>
+                    <h3 class="card-title">${election.electionName || 'Unnamed Election'}</h3>
+                </div>
+                <div class="card-body">
+                    <p class="card-description">${election.electionDescription || 'No description available'}</p>
+                    <div class="card-dates">
+                        <div class="date-item">
+                            <i class="fas fa-calendar-alt"></i>
+                            <span>Starts: ${formatDate(election.electionStartDate)}</span>
+                        </div>
+                        <div class="date-item">
+                            <i class="fas fa-calendar-check"></i>
+                            <span>Ends: ${formatDate(election.electionEndDate)}</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <div class="participants">
+                        <i class="fas fa-users"></i>
+                        <span>${election.users?.length || 0} participants</span>
+                    </div>
+                    ${createActionButton(election)}
+                </div>
+            </div>
+        `).join('');
+    }
+
+    // Get status class for styling
+    function getStatusClass(status) {
+        if (!status) return 'status-unknown';
+        switch(status.toUpperCase()) {
+            case 'ACTIVE': return 'status-active';
+            case 'UPCOMING': return 'status-upcoming';
+            case 'SCHEDULED': return 'status-upcoming';
+            case 'ENDED': return 'status-ended';
+            default: return 'status-unknown';
+        }
+    }
+
+    // Format date
+    function formatDate(dateString) {
+        if (!dateString) return 'N/A';
+        try {
+            return new Date(dateString).toLocaleDateString();
+        } catch {
+            return 'Invalid date';
+        }
+    }
+
+    // Create appropriate action button
+    function createActionButton(election) {
+        const status = election.electionStatus?.toUpperCase();
+        const isUpcoming = status === 'UPCOMING' || status === 'SCHEDULED';
+        const id = election.idElection || election.id;
+        
+        return isUpcoming ?
+            `<a href="#" class="action-btn register-btn" data-id="${id}">
+                <i class="fas fa-user-plus"></i> Register
+            </a>` :
+            `<a href="/elections/${id}" class="action-btn view-btn">
+                <i class="fas fa-eye"></i> View
+            </a>`;
+    }
+
+    // Set up filter buttons
+    function setupFilterButtons() {
+        filterButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                // Update active button
+                filterButtons.forEach(btn => btn.classList.remove('active'));
+                this.classList.add('active');
+                
+                // Filter elections
+                const status = this.dataset.status;
+                filterElections(status);
+            });
+        });
+    }
+
+    // Filter elections by status
+    function filterElections(status) {
+        if (!window.electionData) return;
+        
+        const filtered = status === 'all' ? 
+            window.electionData : 
+            window.electionData.filter(election => {
+                const electionStatus = election.electionStatus?.toUpperCase();
+                if (status === 'UPCOMING') {
+                    return electionStatus === 'UPCOMING' || electionStatus === 'SCHEDULED';
+                }
+                return electionStatus === status;
+            });
+        
+        renderElections(filtered);
+    }
+});
 
 // ===== CANDIDATES SECTION =====
-const loadCandidates = async (filters = {}) => {
-  try {
-    const query = new URLSearchParams(filters).toString();
-    const response = await api.get(`/candidates?${query}`);
-    const candidates = response.data.data;
-    const container = document.getElementById('candidateGrid');
+// const loadCandidates = async (filters = {}) => {
+//   try {
+//     const query = new URLSearchParams(filters).toString();
+//     const response = await api.get(`/candidate/display`);
+//     const candidates = response.data.data;
+//     const container = document.getElementById('candidateGrid');
     
-    if (candidates.length === 0) {
-      container.innerHTML = `
-        <div id="noResults" class="text-center py-5">
-          <i class="fas fa-user-slash fa-3x mb-3 text-muted"></i>
-          <h3>No candidates found</h3>
-          <p class="text-muted">Try adjusting your search or filters</p>
-          <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addCandidateModal">
-            <i class="fas fa-plus"></i> Add New Candidate
-          </button>
-        </div>
-      `;
-      return;
-    }
+//     if (candidates.length === 0) {
+//       container.innerHTML = `
+//         <div id="noResults" class="text-center py-5">
+//           <i class="fas fa-user-slash fa-3x mb-3 text-muted"></i>
+//           <h3>No candidates found</h3>
+//           <p class="text-muted">Try adjusting your search or filters</p>
+//           <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addCandidateModal">
+//             <i class="fas fa-plus"></i> Add New Candidate
+//           </button>
+//         </div>
+//       `;
+//       return;
+//     }
     
-    container.innerHTML = '';
-    candidates.forEach(candidate => {
-      container.innerHTML += `
-        <div class="col">
-          <div class="candidate-card">
-            <div class="candidate-header">
-              <img src="${candidate.photoUrl || '/images/default-candidate.jpg'}" 
-                   alt="${candidate.firstName} ${candidate.lastName}" 
-                   class="candidate-photo">
-            </div>
-            <div class="candidate-body">
-              <h3 class="candidate-name">${candidate.firstName} ${candidate.lastName}</h3>
-              <span class="candidate-party">${candidate.party || 'Independent'}</span>
-              <div class="candidate-meta">
-                <span><i class="fas fa-vote-yea"></i> ${candidate.votes || 0}</span>
-                <span><i class="fas fa-map-marker-alt"></i> ${candidate.region}</span>
-              </div>
-              <p class="candidate-bio">${candidate.biography || 'No biography provided'}</p>
-            </div>
-            <div class="candidate-footer">
-              <span class="candidate-status ${candidate.status.toLowerCase()}">
-                <i class="fas fa-circle"></i> ${candidate.status}
-              </span>
-              <div class="candidate-actions">
-                <button class="btn btn-sm btn-outline" data-candidate-id="${candidate.id}">
-                  <i class="fas fa-eye"></i>
-                </button>
-                <button class="btn btn-sm btn-outline" data-candidate-id="${candidate.id}">
-                  <i class="fas fa-edit"></i>
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      `;
-    });
+//     container.innerHTML = '';
+//     candidates.forEach(candidate => {
+//       container.innerHTML += `
+//         <div class="col">
+//           <div class="candidate-card">
+//             <div class="candidate-header">
+//               <img src="${candidate.photoUrl || '/images/default-candidate.jpg'}" 
+//                    alt="${candidate.firstName} ${candidate.lastName}" 
+//                    class="candidate-photo">
+//             </div>
+//             <div class="candidate-body">
+//               <h3 class="candidate-name">${candidate.firstName} ${candidate.lastName}</h3>
+//               <span class="candidate-party">${candidate.party || 'Independent'}</span>
+//               <div class="candidate-meta">
+//                 <span><i class="fas fa-vote-yea"></i> ${candidate.votes || 0}</span>
+//                 <span><i class="fas fa-map-marker-alt"></i> ${candidate.region}</span>
+//               </div>
+//               <p class="candidate-bio">${candidate.biography || 'No biography provided'}</p>
+//             </div>
+//             <div class="candidate-footer">
+//               <span class="candidate-status ${candidate.status.toLowerCase()}">
+//                 <i class="fas fa-circle"></i> ${candidate.status}
+//               </span>
+//               <div class="candidate-actions">
+//                 <button class="btn btn-sm btn-outline" data-candidate-id="${candidate.id}">
+//                   <i class="fas fa-eye"></i>
+//                 </button>
+//                 <button class="btn btn-sm btn-outline" data-candidate-id="${candidate.id}">
+//                   <i class="fas fa-edit"></i>
+//                 </button>
+//               </div>
+//             </div>
+//           </div>
+//         </div>
+//       `;
+//     });
     
-  } catch (error) {
-    handleApiError(error);
-  }
-};
-
-const addCandidate = async (formData) => {
-  try {
-    const response = await api.post('/candidates', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data'
-      }
-    });
-    showToast('Candidate added successfully!', 'success');
-    loadCandidates();
-    return response.data.data;
-  } catch (error) {
-    handleApiError(error);
-  }
-};
+//   } catch (error) {
+//     handleApiError(error);
+//   }
+// };
 
 // ===== VOTERS SECTION =====
 const loadVoters = async (filters = {}) => {
   try {
     const query = new URLSearchParams(filters).toString();
-    const response = await api.get(`/voters?${query}`);
+    const response = await api.get(`/voter/display`);
     const voters = response.data.data;
     const container = document.getElementById('voterGrid');
     
@@ -306,7 +386,7 @@ const loadVoters = async (filters = {}) => {
 const loadVoteOffices = async (filters = {}) => {
   try {
     const query = new URLSearchParams(filters).toString();
-    const response = await api.get(`/vote-offices?${query}`);
+    const response = await api.get(`/vote_office/get`);
     const offices = response.data.data;
     const container = document.getElementById('officesContainer');
     
@@ -378,21 +458,10 @@ const loadVoteOffices = async (filters = {}) => {
   }
 };
 
-const addVoteOffice = async (officeData) => {
-  try {
-    const response = await api.post('/vote-offices', officeData);
-    showToast('Vote office added successfully!', 'success');
-    loadVoteOffices();
-    return response.data.data;
-  } catch (error) {
-    handleApiError(error);
-  }
-};
-
 // ===== RESULTS SECTION =====
 const loadElectionResults = async (electionId) => {
   try {
-    const response = await api.get(`/elections/${electionId}/results`);
+    const response = await api.get(`/election/${electionId}/results`);
     const results = response.data.data;
     
     // Update summary cards
@@ -546,25 +615,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // Similar switch case as above
   });
   
-  // Initialize modals
-  const addCandidateModal = new bootstrap.Modal(document.getElementById('addCandidateModal'));
-  const addOfficeModal = new bootstrap.Modal(document.getElementById('addOfficeModal'));
-  
-  // Form submissions
-  document.getElementById('candidateForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const formData = new FormData(e.target);
-    await addCandidate(formData);
-    addCandidateModal.hide();
-  });
-  
-  document.getElementById('officeForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const formData = new FormData(e.target);
-    const data = Object.fromEntries(formData.entries());
-    await addVoteOffice(data);
-    addOfficeModal.hide();
-  });
   
   // Filter handlers
   document.getElementById('candidateSearch').addEventListener('input', (e) => {
@@ -579,7 +629,7 @@ document.addEventListener('DOMContentLoaded', () => {
 // ===== CANDIDATE DETAILS & EDITING =====
 const viewCandidateDetails = async (candidateId) => {
   try {
-    const response = await api.get(`/candidates/${candidateId}`);
+    const response = await api.get(`/candidate/find/${candidateId}`);
     const candidate = response.data.data;
     
     // Show in modal or dedicated view
@@ -1055,143 +1105,119 @@ function loadSectionData(sectionId) {
   }
 }
 
-// Initialize the form when DOM is loaded
-document.addEventListener('DOMContentLoaded', function() {
-  // Handle "Add Candidate" button click
-  document.getElementById('addCandidateBtn').addEventListener('click', function() {
-    // Reset form and show modal
-    resetCandidateForm();
-    const modal = new bootstrap.Modal(document.getElementById('addCandidateModal'));
-    modal.show();
-  });
+document.querySelectorAll('.nav-link').forEach(link => {
+  link.classList.remove('active');
+});
+document.querySelector(`.nav-link[href="#${sectionId}"]`).classList.add('active');
 
-  // Setup form submission
-  const candidateForm = document.getElementById('candidateForm');
-  candidateForm.addEventListener('submit', handleCandidateSubmit);
+class DashboardNavigator {
+  constructor() {
+    this.initNavigation();
+    this.loadInitialSection();
+  }
+  
+  initNavigation() {
+    // Handle nav link clicks
+    document.querySelectorAll('.nav-link[data-section]').forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        const sectionId = e.target.closest('.nav-link').dataset.section;
+        this.navigateTo(sectionId);
+      });
+    });
+    
+    // Handle browser back/forward
+    window.addEventListener('popstate', () => {
+      this.loadFromUrl();
+    });
+  }
+  
+  loadInitialSection() {
+    this.loadFromUrl() || this.navigateTo('dashboard');
+  }
+  
+  loadFromUrl() {
+    const hash = window.location.hash.substring(1);
+    if (hash) {
+      this.navigateTo(hash, false); // false = don't push to history
+      return true;
+    }
+    return false;
+  }
+  
+  navigateTo(sectionId, updateHistory = true) {
+    // Validate section exists
+    if (!document.getElementById(`${sectionId}-content`)) {
+      console.warn(`Section ${sectionId} not found`);
+      sectionId = 'dashboard'; // fallback
+    }
+    
+    // Update UI
+    this.setActiveNavLink(sectionId);
+    this.setActiveSection(sectionId);
+    
+    // Update URL
+    if (updateHistory) {
+      window.history.pushState(null, null, `#${sectionId}`);
+    }
+    
+    // Load data
+    this.loadSectionData(sectionId);
+  }
+  
+  setActiveNavLink(sectionId) {
+    document.querySelectorAll('.nav-link').forEach(link => {
+      link.classList.remove('active');
+    });
+    const activeLink = document.querySelector(`.nav-link[data-section="${sectionId}"]`);
+    if (activeLink) activeLink.classList.add('active');
+  }
+  
+  setActiveSection(sectionId) {
+    document.querySelectorAll('.content-section').forEach(section => {
+      section.classList.remove('active');
+    });
+    document.getElementById(`${sectionId}-content`).classList.add('active');
+  }
+  
+  loadSectionData(sectionId) {
+    const loader = {
+      dashboard: loadDashboardStats,
+      elections: loadElections,
+      candidates: loadCandidates,
+      voters: loadVoters,
+      voteoffice: loadVoteOffices,
+      results: loadElectionResults,
+      settings: loadSettings
+    }[sectionId];
+    
+    if (loader) loader();
+  }
+}
 
-  // Setup multi-step form navigation
-  setupFormNavigation();
+// Initialize when DOM is ready
+document.addEventListener('DOMContentLoaded', () => {
+  new DashboardNavigator();
 });
 
-// Reset form to initial state
-function resetCandidateForm() {
-  const form = document.getElementById('candidateForm');
-  form.reset();
-  document.querySelectorAll('.form-section').forEach(section => {
-    section.classList.remove('active');
-  });
-  document.querySelector('[data-section="1"]').classList.add('active');
-}
-
-// Handle form navigation between sections
-function setupFormNavigation() {
-  // Next button
-  document.querySelector('.next-section').addEventListener('click', function() {
-    const currentSection = document.querySelector('.form-section.active');
-    const nextSection = document.querySelector(`[data-section="${parseInt(currentSection.dataset.section) + 1}"]`);
-    
-    if (validateSection(currentSection)) {
-      currentSection.classList.remove('active');
-      nextSection.classList.add('active');
-    }
-  });
-
-  // Previous button
-  document.querySelector('.prev-section').addEventListener('click', function() {
-    const currentSection = document.querySelector('.form-section.active');
-    const prevSection = document.querySelector(`[data-section="${parseInt(currentSection.dataset.section) - 1}"]`);
-    
-    currentSection.classList.remove('active');
-    prevSection.classList.add('active');
-  });
-}
-
-// Validate form section before proceeding
-function validateSection(section) {
-  let isValid = true;
-  const inputs = section.querySelectorAll('input[required], select[required]');
-  
-  inputs.forEach(input => {
-    if (!input.value.trim()) {
-      input.classList.add('invalid');
-      isValid = false;
-    } else {
-      input.classList.remove('invalid');
-    }
-  });
-
-  return isValid;
-}
-
-// Handle form submission
-async function handleCandidateSubmit(e) {
-  e.preventDefault();
-  
-  const form = e.target;
-  const submitButton = form.querySelector('#submitButton');
-  const formData = new FormData(form);
-  
-  // Validate elections selection if candidate
-  if (formData.get('role') === 'CANDIDATE') {
-    const selectedElections = form.querySelectorAll('input[name="elections"]:checked');
-    if (selectedElections.length === 0) {
-      document.getElementById('electionsError').style.display = 'block';
-      return;
-    }
-    document.getElementById('electionsError').style.display = 'none';
-  }
-
-  // Add loading state
-  submitButton.disabled = true;
-  submitButton.querySelector('.btn-text').textContent = 'Processing...';
-  submitButton.querySelector('.loading-spinner').style.display = 'inline-block';
-
-  try {
-    const response = await fetch('/api/candidates', {
-      method: 'POST',
-      body: formData,
-      headers: {
-        // CSRF token if needed
-        // 'X-CSRF-TOKEN': document.querySelector('meta[name="_csrf"]').content
-      }
+document.querySelectorAll('.filter-tabs .tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    // Remove active class from all tabs
+    document.querySelectorAll('.filter-tabs .tab').forEach(t => {
+      t.classList.remove('active');
     });
-
-    if (!response.ok) {
-      throw new Error(await response.text());
-    }
-
-    const data = await response.json();
-    showSuccessMessage('Candidate added successfully!');
     
-    // Close modal and refresh candidates list
-    bootstrap.Modal.getInstance(document.getElementById('addCandidateModal')).hide();
-    loadCandidates();
+    // Add active class to clicked tab
+    tab.classList.add('active');
     
-  } catch (error) {
-    console.error('Error submitting candidate:', error);
-    showErrorMessage(error.message || 'Failed to add candidate');
-  } finally {
-    // Reset button state
-    submitButton.disabled = false;
-    submitButton.querySelector('.btn-text').textContent = 'Complete Registration';
-    submitButton.querySelector('.loading-spinner').style.display = 'none';
-  }
-}
+    // Here you would add code to filter the elections
+    // based on which tab was clicked
+    const filterType = tab.textContent.trim().split(' ')[0].toLowerCase();
+    filterElections(filterType);
+  });
+});
 
-// Helper functions for notifications
-function showSuccessMessage(message) {
-  const toast = document.createElement('div');
-  toast.className = 'toast success';
-  toast.textContent = message;
-  document.body.appendChild(toast);
-  setTimeout(() => toast.remove(), 3000);
+function filterElections(filterType) {
+  // Your filtering logic here
+  console.log(`Filtering by: ${filterType}`);
 }
-
-function showErrorMessage(message) {
-  const toast = document.createElement('div');
-  toast.className = 'toast error';
-  toast.textContent = message;
-  document.body.appendChild(toast);
-  setTimeout(() => toast.remove(), 3000);
-}
-

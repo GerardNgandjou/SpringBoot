@@ -94,9 +94,10 @@ document.addEventListener('DOMContentLoaded', function() {
             const formData = {
                 electionName: nameField.value.trim(),
                 electionDescription: document.getElementById('electionDescription').value.trim(),
-                electionStatus: statusField.value,
                 electionStartDate: startDateField.value,
-                electionEndDate: endDateField.value
+                electionEndDate: endDateField.value,
+                electionStatus: statusField.value.toUpperCase(),
+                registeredVoterIds: [] // Assuming you will handle this in the backend
             };
 
             try {

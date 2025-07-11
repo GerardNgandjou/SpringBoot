@@ -4,6 +4,7 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<link rel="stylesheet" href="../static/css/election.css">
+	<link rel="stylesheet" th:href="@{/css/election.css}">
 	<title>Election Management</title>
 </head>
 <body>
@@ -26,11 +27,10 @@
 			<label for="electionStatus">Election Status</label>
 			<select id="electionStatus" name="electionStatus" required>
 				<option value="">Select status</option>
-<!--				<option value="Pending">Pending</option>-->
 				<option value="Active">ACTIVE</option>
-				<option value="upcoming">UPCOMING</option>
-				<option value="ended">ENDED</option>
-				<option value="scheduled">SCHEDULED</option>
+				<option value="UPCOMING">UPCOMING</option>
+				<option value="ENDED">ENDED</option>
+				<option value="SCHEDULED">SCHEDULED</option>
 			</select>
 			<div class="error" id="statusError">Please select a status</div>
 		</div>
@@ -56,5 +56,6 @@
 </div>
 
 <script src="../static/js/election.js"></script>
+<script th:src="@{/js/election.js}"></script>
 </body>
 </html>
