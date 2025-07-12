@@ -50,6 +50,12 @@ public class RoutController {
         return "voter"; // This should match your Thymeleaf template name
     }
 
+    @GetMapping("/success")
+    public String showSuccessPage(Model model) {
+        model.addAttribute("message", "You have successfully registered to vote.");
+        return "success";
+    }
+
     @GetMapping("/election/add")
     public String showElectionForm(Model model) {
         if (!model.containsAttribute("election")) {
@@ -102,15 +108,13 @@ public class RoutController {
         return "disp_voter"; // This should match your Thymeleaf template name
     }
 
-    @GetMapping("/disp_cand")
-    public String displayCandidates(Model model) {
-        // model.addAttribute("candidates", candidateService.findAllCandidates());
-        return "disp_cand"; // This should match your Thymeleaf template name
+    @GetMapping("/displ_cand")
+    public String displayCandidates() {
+        return "displ_cand"; // This should match your Thymeleaf template name
     }
 
     @GetMapping("/vote_office_display")
-    public String displayVoteOffices(Model model) {
-        // model.addAttribute("voteOffices", voteOfficeService.showVoteOffices());
+    public String displayVoteOffices() {
         return "vote_office_display"; // This should match your Thymeleaf template name
     }
 

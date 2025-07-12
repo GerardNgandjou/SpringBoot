@@ -36,7 +36,7 @@
                 </a>
             </li>
             <li class="nav-item" role="none">
-                <a th:href="@{/disp_cand}" class="nav-link" role="menuitem" data-section="candidates">
+                <a th:href="@{/displ_cand}" class="nav-link" role="menuitem" data-section="candidates">
                     <i class="fas fa-users" aria-hidden="true"></i>
                     <span>Candidates</span>
                 </a>
@@ -48,7 +48,7 @@
                 </a>
             </li>
             <li class="nav-item" role="none">
-                <a th:href="@{/disp_vote_office}" class="nav-link" role="menuitem" data-section="voteoffice">
+                <a th:href="@{/vote_office_display}" class="nav-link" role="menuitem" data-section="voteoffice">
                     <i class="fa-solid fa-building" aria-hidden="true"></i>
                     <span>Vote Office</span>
                 </a>
@@ -175,45 +175,6 @@
                 </article>
             </div>
 
-            <!-- Active Elections Section -->
-            <section aria-labelledby="active-elections-heading">
-                <div class="section-header">
-                    <h3 id="active-elections-heading">
-                        <i class="fas fa-vote-yea"></i> Active Elections
-                    </h3>
-                    <a href="#elections" class="view-all">View All <i class="fas fa-chevron-right"></i></a>
-                </div>
-
-                <div class="filter-tabs">
-                    <div class="tab active">All Elections <span class="badge">12</span></div>
-                    <div class="tab">Active <span class="badge">3</span></div>
-                    <div class="tab">Upcoming <span class="badge">5</span></div>
-                    <div class="tab">Ended <span class="badge">4</span></div>
-                </div>
-
-                <div class="elections-grid" id="electionsContainer">
-                    <!-- Elections will be loaded here dynamically -->
-                    <div class="skeleton-loader">
-                        <div class="skeleton-banner"></div>
-                        <div class="skeleton-content">
-                            <div class="skeleton-title"></div>
-                            <div class="skeleton-meta"></div>
-                            <div class="skeleton-meta"></div>
-                            <div class="skeleton-actions"></div>
-                        </div>
-                    </div>
-                    <div class="skeleton-loader">
-                        <div class="skeleton-banner"></div>
-                        <div class="skeleton-content">
-                            <div class="skeleton-title"></div>
-                            <div class="skeleton-meta"></div>
-                            <div class="skeleton-meta"></div>
-                            <div class="skeleton-actions"></div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
             <!-- Recent Activity Section -->
             <section aria-labelledby="recent-activity-heading">
                 <div class="section-header">
@@ -271,197 +232,6 @@
                 </div>
             </div>
         </section>
-
-        <!-- Candidates Management Section -->
-        <!-- <section id="candidates-content" class="content-section" aria-labelledby="candidates-heading">
-            <div class="app-container">
-                <header class="app-header">
-                    <div class="container">
-                        <h1 id="candidates-heading">Candidate Management</h1>
-                        <div class="app-actions">
-                            <a th:href="@{/candidate/add}" class="btn btn-primary" id="createCandidateBtn" aria-label="Create new candidate">
-                                <i class="fas fa-plus" aria-hidden="true"></i> Create New Candidate
-                            </a>
-                            <div class="search-box">
-                                <i class="fas fa-search"></i>
-                                <input type="text" id="candidateSearch" placeholder="Search candidates...">
-                            </div>
-                        </div>
-                    </div>
-                </header>
-
-                <div class="container my-4">
-                    <div class="filters">
-                        <select id="candidatePartyFilter" class="form-select">
-                            <option value="">All Parties</option>
-                            <option th:each="party : ${parties}" th:value="${party}">[[${party}]]</option>
-                        </select>
-                        <select id="candidateStatusFilter" class="form-select">
-                            <option value="">All Statuses</option>
-                            <option value="ACTIVE">Active</option>
-                            <option value="WITHDRAWN">Withdrawn</option>
-                            <option value="PENDING">Pending</option>
-                        </select>
-                        <select id="candidateElectionFilter" class="form-select">
-                            <option value="">All Elections</option>
-                            <option th:each="election : ${activeElections}" 
-                                    th:value="${election.id}" 
-                                    th:text="${election.title}">
-                            </option>
-                        </select>
-                    </div>
-                </div>
-
-                <main class="container my-5"> -->
-                    <!-- Loading Indicator -->
-                    <!-- <div id="loadingIndicator" class="text-center py-5">
-                        <div class="spinner-border text-primary" role="status">
-                            <span class="visually-hidden">Loading...</span>
-                        </div>
-                        <p class="mt-3">Loading candidates...</p>
-                    </div> -->
-
-                    <!-- Candidate Grid -->
-                    <!-- <div id="candidateGrid" class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4"> -->
-                        <!-- Candidates will be inserted here by JavaScript -->
-                    <!-- </div> -->
-
-                    <!-- No Results Message -->
-                    <!-- <div id="noResults" class="text-center py-5 d-none">
-                        <i class="fas fa-user-slash fa-3x mb-3 text-muted"></i>
-                        <h3>No candidates found</h3>
-                        <p class="text-muted">Try adjusting your search or filters</p>
-                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addCandidateModal">
-                            <i class="fas fa-plus"></i> Add New Candidate
-                        </button>
-                    </div> -->
-
-                    <!-- Pagination -->
-                    <!-- <nav id="pagination" class="mt-5 d-flex justify-content-center d-none"> -->
-                        <!-- <ul class="pagination">
-                            <li class="page-item disabled">
-                                <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Previous</a>
-                            </li>
-                            <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                            <li class="page-item"><a class="page-link" href="#">2</a></li>
-                            <li class="page-item"><a class="page-link" href="#">3</a></li>
-                            <li class="page-item">
-                                <a class="page-link" href="#">Next</a>
-                            </li>
-                        </ul>
-                    </nav>
-                </main>
-            </div>
-        </section> -->
-
-        <!-- Voters Management Section -->
-        <!-- <section id="voters-content" class="content-section" aria-labelledby="voters-heading">
-            <header class="voter-header">
-                <div class="container py-5">
-                    <h1 class="display-4 text-white mb-4">Voter Registry</h1>
-                    <p class="lead text-white mb-5">Manage and view registered voters in the system</p>
-                    
-                    <div class="row g-3">
-                        <div class="col-md-6">
-                            <div class="search-box">
-                                <i class="fas fa-search"></i>
-                                <input type="text" id="searchInput" class="form-control" placeholder="Search voters...">
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <select id="regionFilter" class="form-select">
-                                <option value="">All Regions</option>
-                                <option th:each="region : ${regions}" th:value="${region}">[[${region}]]</option>
-                            </select>
-                        </div>
-                        <div class="col-md-3">
-                            <select id="roleFilter" class="form-select">
-                                <option value="">All Roles</option>
-                                <option value="ADMIN">Admin</option>
-                                <option value="OFFICIAL">Election Official</option>
-                                <option value="VOTER">Voter</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-            </header> -->
-
-            <!-- Main Content -->
-            <!-- <main class="container my-5"> -->
-                <!-- Loading Indicator
-                <div id="loadingIndicator" class="text-center py-5">
-                    <div class="spinner-border text-primary" role="status">
-                        <span class="visually-hidden">Loading...</span>
-                    </div>
-                    <p class="mt-3">Loading voters...</p>
-                </div> -->
-
-                <!-- Voter Grid -->
-                <!-- <div id="voterGrid" class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4"> -->
-                    <!-- Voters will be inserted here by JavaScript -->
-                </div>
-
-                <!-- No Results Message -->
-                <!-- <div id="noResults" class="text-center py-5 d-none">
-                    <i class="fas fa-user-slash fa-3x mb-3 text-muted"></i>
-                    <h3>No voters found</h3>
-                    <p class="text-muted">Try adjusting your search or filters</p>
-                </div> -->
-
-                <!-- Pagination -->
-                <!-- <nav id="pagination" class="mt-5 d-flex justify-content-center d-none">
-                    <ul class="pagination">
-                        <li class="page-item disabled">
-                            <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Previous</a>
-                        </li>
-                        <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                        <li class="page-item"><a class="page-link" href="#">2</a></li>
-                        <li class="page-item"><a class="page-link" href="#">3</a></li>
-                        <li class="page-item">
-                            <a class="page-link" href="#">Next</a>
-                        </li>
-                    </ul>
-                </nav>
-            </main>
-        </section> --> -->
-
-        <!-- Vote Office section -->
-        <!-- <section id="voteoffice-content" class="content-section" aria-labelledby="voteoffice-heading">
-            <div class="container">
-                <header>
-                    <h1 id="voteoffice-heading">Vote Offices Management</h1>
-                    <div class="header-actions">
-                        <a th:href="@{/voteoffice/add}" class="btn btn-primary" id="createVoteofficeBtn" aria-label="Create new candidate">
-                            <i class="fas fa-plus" aria-hidden="true"></i> Create New Vote Office
-                        </a>
-                        <button class="btn btn-outline" id="refreshOffices">
-                            <i class="fas fa-sync-alt"></i> Refresh
-                        </button>
-                    </div>
-                </header>
-                
-               <div class="container">
-                    <div class="controls">
-                        <div class="search-bar">
-                            <i class="fas fa-search"></i>
-                            <input type="text" id="officeSearchInput" placeholder="Search offices...">
-                        </div>
-                        <select id="officeRegionFilter" class="form-select">
-                            <option value="">All Regions</option>
-                            <option th:each="region : ${regions}" th:value="${region}">[[${region}]]</option>
-                        </select>
-                    </div>
-                    
-                    <div class="offices-grid" id="officesContainer"> -->
-                        <!-- Offices will be loaded here dynamically -->
-                    <!-- </div> -->
-                    
-                    <!-- <div class="pagination" id="pagination"> -->
-                        <!-- Pagination will be loaded here dynamically -->
-                    <!-- </div> -->
-               <!-- </div>
-            </div>
-        </section> -->
 
         <!-- Results Section -->
         <section id="results-content" class="content-section" aria-labelledby="results-heading">

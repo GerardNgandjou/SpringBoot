@@ -1,249 +1,184 @@
-// ===== CONFIGURATION =====
-const DEFAULT_ERROR_MSG = 'An error occurred. Please try again.';
-const API_ROUTES = {
-    elections: '/election/show',
-    candidates: '/disp_cand',
-    voters: '/disp_voter',
-    voteoffice: '/disp_vote_office',
-    results: '/election/results'
-};
+document.addEventListener('DOMContentLoaded', function() {
+    // DOM elements
+    const sidebarToggle = document.querySelector('.sidebar-toggle');
+    const sidebar = document.querySelector('.sidebar');
+    const logoutBtn = document.getElementById('logout-btn');
+    const contentSections = document.querySelectorAll('.content-section');
+    const navLinks = document.querySelectorAll('.nav-link');
+    const electionsContainer = document.getElementById('electionsContainer');
+    const filterButtons = document.querySelectorAll('.filter-btn');
+    const exportPdfBtn = document.getElementById('exportPdf');
+    const exportCsvBtn = document.getElementById('exportCsv');
+    const printResultsBtn = document.getElementById('printResults');
+    const refreshElectionsBtn = document.getElementById('refreshElections');
 
-// ===== UTILITY FUNCTIONS =====
-function showToast(message, type = 'success') {
-    const toast = document.createElement('div');
-    toast.className = `toast toast-${type}`;
-    toast.setAttribute('role', 'alert');
-    toast.innerHTML = `
-        <div class="toast-message">${message}</div>
-        <button class="toast-close" aria-label="Close">&times;</button>
-    `;
+    // Initialize
+    setupSidebar();
+    setupNavigation();
+    setupLogout();
+    setupResultsExport();
     
-    document.body.appendChild(toast);
-    setTimeout(() => toast.classList.add('show'), 100);
-    setTimeout(() => {
-        toast.classList.remove('show');
-        setTimeout(() => toast.remove(), 300);
-    }, 5000);
-    
-    toast.querySelector('.toast-close').addEventListener('click', () => {
-        toast.classList.remove('show');
-        setTimeout(() => toast.remove(), 300);
-    });
-}
-
-function showLoading(containerId) {
-    const container = document.getElementById(containerId);
-    if (container) {
-        container.innerHTML = `
-            <div class="loading-spinner" aria-live="polite">
-                <div class="spinner-border" role="status">
-                    <span class="visually-hidden">Loading...</span>
-                </div>
-            </div>
-        `;
-    }
-}
-
-function showErrorMessage(containerId, message = DEFAULT_ERROR_MSG) {
-    const container = document.getElementById(containerId);
-    if (container) {
-        container.innerHTML = `
-            <div class="error-message" role="alert">
-                <i class="fas fa-exclamation-triangle"></i>
-                <p>${message}</p>
-                <button class="btn btn-retry" onclick="retryLastFetch('${containerId}')">
-                    <i class="fas fa-sync-alt"></i> Retry
-                </button>
-            </div>
-        `;
-    }
-}
-
-// ===== CORE FUNCTIONALITY =====
-class ElectionDashboard {
-    constructor() {
-        this.currentSection = 'dashboard';
-        this.currentElectionId = null;
-        this.init();
+    // Only initialize elections if on elections page
+    if (electionsContainer) {
+        fetchElections();
+        setupFilterButtons();
     }
 
-    init() {
-        this.setupNavigation();
-        this.setupEventListeners();
-        this.loadInitialSection();
+    // Sidebar functionality
+    function setupSidebar() {
+        if (!sidebarToggle) return;
+        
+        sidebarToggle.addEventListener('click', function() {
+            sidebar.classList.toggle('collapsed');
+            this.setAttribute('aria-expanded', sidebar.classList.contains('collapsed') ? 'true' : 'false');
+        });
     }
 
-    setupNavigation() {
-        // Handle both hash-based and Thymeleaf navigation
-        document.querySelectorAll('.nav-link').forEach(link => {
-            link.addEventListener('click', (e) => {
-                if (link.hasAttribute('th:href')) {
-                    // Thymeleaf links will handle their own navigation
+    // Navigation between sections
+    function setupNavigation() {
+        navLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                // Handle external links (Voters, Candidates, Vote Office)
+                const href = this.getAttribute('th:href') || this.getAttribute('href');
+                if (href && (href.startsWith('/') || href.startsWith('#'))) {
+                    // For hash links (internal navigation)
+                    if (href.startsWith('#')) {
+                        e.preventDefault();
+                        const sectionId = href.substring(1);
+                        showSection(sectionId);
+                        
+                        // Update active nav item
+                        navLinks.forEach(nav => nav.classList.remove('active'));
+                        this.classList.add('active');
+                    }
+                    // For regular links (/disp_voter, /disp_cand, etc.), let them work normally
                     return;
                 }
                 
                 e.preventDefault();
-                const section = link.getAttribute('href').substring(1);
-                this.navigateToSection(section);
+                
+                // Update active nav item
+                navLinks.forEach(nav => nav.classList.remove('active'));
+                this.classList.add('active');
+                
+                // Show corresponding section
+                const sectionId = this.getAttribute('data-section') || this.getAttribute('href').substring(1);
+                showSection(sectionId);
             });
         });
 
-        window.addEventListener('hashchange', () => {
-            const section = window.location.hash.substring(1);
-            if (section) this.navigateToSection(section);
-        });
+        // Show dashboard by default if no hash in URL
+        if (!window.location.hash) {
+            showSection('dashboard');
+            document.querySelector('.nav-link[data-section="dashboard"]').classList.add('active');
+        }
     }
 
-    setupEventListeners() {
-        // Filter inputs
-        document.querySelectorAll('.filter-input').forEach(input => {
-            input.addEventListener('input', () => this.applyFilters());
-        });
-
-        // Dynamic element event delegation
-        document.addEventListener('click', (e) => {
-            // Handle election registration
-            if (e.target.closest('.register-election')) {
-                const electionId = e.target.closest('.register-election').dataset.electionId;
-                this.registerForElection(electionId);
+    // Show specific content section and hide others
+    function showSection(sectionId) {
+        // Update URL hash
+        window.location.hash = sectionId;
+        
+        contentSections.forEach(section => {
+            if (section.id === `${sectionId}-content`) {
+                section.classList.add('active');
+                section.setAttribute('aria-hidden', 'false');
+            } else {
+                section.classList.remove('active');
+                section.setAttribute('aria-hidden', 'true');
             }
-            
-            // Handle candidate actions
-            if (e.target.closest('.view-candidate')) {
-                const candidateId = e.target.closest('.view-candidate').dataset.candidateId;
-                this.viewCandidateDetails(candidateId);
-            }
-        });
-    }
-
-    navigateToSection(section) {
-        // Update active nav link
-        document.querySelectorAll('.nav-link').forEach(link => {
-            link.classList.remove('active');
-            link.removeAttribute('aria-current');
         });
         
-        const activeLink = document.querySelector(`.nav-link[href="#${section}"], .nav-link[data-section="${section}"]`);
-        if (activeLink) {
-            activeLink.classList.add('active');
-            activeLink.setAttribute('aria-current', 'page');
+        // Special handling for certain sections
+        if (sectionId === 'elections' && electionsContainer) {
+            fetchElections(); // Refresh elections when navigating to this section
         }
+    }
 
-        // Hide all sections
-        document.querySelectorAll('.content-section').forEach(sec => {
-            sec.classList.remove('active');
-        });
-        
-        // Show target section
-        const targetSection = document.getElementById(`${section}-content`);
-        if (targetSection) {
-            targetSection.classList.add('active');
-            this.currentSection = section;
+    // Handle initial page load with hash
+    function handleInitialHash() {
+        if (window.location.hash) {
+            const sectionId = window.location.hash.substring(1);
+            const correspondingLink = document.querySelector(`.nav-link[href="#${sectionId}"], .nav-link[data-section="${sectionId}"]`);
             
-            // Load data if not already loaded
-            if (!targetSection.dataset.loaded) {
-                this.loadSectionData(section);
-                targetSection.dataset.loaded = 'true';
+            if (correspondingLink) {
+                navLinks.forEach(nav => nav.classList.remove('active'));
+                correspondingLink.classList.add('active');
+                showSection(sectionId);
             }
         }
     }
+    handleInitialHash();
 
-    loadSectionData(section) {
-        switch(section) {
-            case 'dashboard':
-                this.loadDashboardStats();
-                break;
-            case 'elections':
-                this.fetchElections();
-                break;
-            case 'candidates':
-                this.fetchCandidates();
-                break;
-            case 'voteoffice':
-                this.fetchVoteOffices();
-                break;
-            case 'results':
-                if (this.currentElectionId) {
-                    this.loadElectionResults(this.currentElectionId);
-                }
-                break;
+    // Logout confirmation
+    function setupLogout() {
+        if (!logoutBtn) return;
+        
+        logoutBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            const logoutModal = new bootstrap.Modal(document.getElementById('logoutModal'));
+            logoutModal.show();
+        });
+    }
+
+    // Results export buttons
+    function setupResultsExport() {
+        if (exportPdfBtn) {
+            exportPdfBtn.addEventListener('click', function() {
+                console.log('Exporting to PDF...');
+                // Actual PDF export implementation would go here
+            });
+        }
+
+        if (exportCsvBtn) {
+            exportCsvBtn.addEventListener('click', function() {
+                console.log('Exporting to CSV...');
+                // Actual CSV export implementation would go here
+            });
+        }
+
+        if (printResultsBtn) {
+            printResultsBtn.addEventListener('click', function() {
+                window.print();
+            });
         }
     }
 
-    loadInitialSection() {
-        const hash = window.location.hash.substring(1);
-        const initialSection = hash || 'dashboard';
-        this.navigateToSection(initialSection);
-    }
-
-    // ===== DATA FETCHING METHODS =====
-    async fetchElections(filters = {}) {
+    // Fetch elections from backend
+    async function fetchElections() {
         try {
-            showLoading('electionsContainer');
-            const response = await fetch(API_ROUTES.elections);
+            electionsContainer.innerHTML = '<div class="loading-spinner"><i class="fas fa-spinner fa-spin"></i> Loading elections...</div>';
             
+            const response = await fetch('/election/show');
             if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
             
             const elections = await response.json();
-            this.renderElections(elections);
+            window.electionData = elections; // Store for filtering
+            renderElections(elections);
         } catch (error) {
-            console.error('Fetch elections error:', error);
-            showErrorMessage('electionsContainer');
+            console.error('Fetch error:', error);
+            showErrorMessage();
         }
     }
 
-    async fetchCandidates(filters = {}) {
-        try {
-            showLoading('candidateGrid');
-            const response = await fetch(API_ROUTES.candidates);
-            
-            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-            
-            const candidates = await response.json();
-            this.renderCandidates(candidates);
-        } catch (error) {
-            console.error('Fetch candidates error:', error);
-            showErrorMessage('candidateGrid', 'Failed to load candidates');
-        }
+    // Show error message
+    function showErrorMessage() {
+        electionsContainer.innerHTML = `
+            <div class="error-message">
+                <i class="fas fa-exclamation-triangle"></i>
+                <p>Error loading elections. Please try again later.</p>
+                <button class="btn btn-retry" id="retryElections">Retry</button>
+            </div>
+        `;
+        
+        document.getElementById('retryElections').addEventListener('click', fetchElections);
     }
 
-    async fetchVoteOffices(filters = {}) {
-        try {
-            showLoading('voteOfficeContainer');
-            const response = await fetch(API_ROUTES.voteoffice);
-            
-            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-            
-            const offices = await response.json();
-            this.renderVoteOffices(offices);
-        } catch (error) {
-            console.error('Fetch vote offices error:', error);
-            showErrorMessage('voteOfficeContainer', 'Failed to load vote offices');
-        }
-    }
-
-    async loadElectionResults(electionId) {
-        try {
-            showLoading('resultsContainer');
-            this.currentElectionId = electionId;
-            const response = await fetch(`${API_ROUTES.results}/${electionId}`);
-            
-            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-            
-            const results = await response.json();
-            this.renderElectionResults(results);
-        } catch (error) {
-            console.error('Fetch results error:', error);
-            showErrorMessage('resultsContainer', 'Failed to load election results');
-        }
-    }
-
-    // ===== RENDER METHODS =====
-    renderElections(elections) {
-        const container = document.getElementById('electionsContainer');
+    // Render elections list
+    function renderElections(elections) {
         if (!elections || !elections.length) {
-            container.innerHTML = `
-                <div class="no-data">
+            electionsContainer.innerHTML = `
+                <div class="no-elections">
                     <i class="fas fa-info-circle"></i>
                     <p>No elections found matching your criteria.</p>
                 </div>
@@ -251,10 +186,10 @@ class ElectionDashboard {
             return;
         }
 
-        container.innerHTML = elections.map(election => `
+        electionsContainer.innerHTML = elections.map(election => `
             <div class="election-card">
                 <div class="card-header">
-                    <span class="status-badge ${this.getStatusClass(election.electionStatus)}">
+                    <span class="status-badge ${getStatusClass(election.electionStatus)}">
                         ${election.electionStatus || 'UNKNOWN'}
                     </span>
                     <h3 class="card-title">${election.electionName || 'Unnamed Election'}</h3>
@@ -264,11 +199,11 @@ class ElectionDashboard {
                     <div class="card-dates">
                         <div class="date-item">
                             <i class="fas fa-calendar-alt"></i>
-                            <span>Starts: ${this.formatDate(election.electionStartDate)}</span>
+                            <span>Starts: ${formatDate(election.electionStartDate)}</span>
                         </div>
                         <div class="date-item">
                             <i class="fas fa-calendar-check"></i>
-                            <span>Ends: ${this.formatDate(election.electionEndDate)}</span>
+                            <span>Ends: ${formatDate(election.electionEndDate)}</span>
                         </div>
                     </div>
                 </div>
@@ -277,247 +212,151 @@ class ElectionDashboard {
                         <i class="fas fa-users"></i>
                         <span>${election.users?.length || 0} participants</span>
                     </div>
-                    ${this.createActionButton(election)}
+                    ${createActionButton(election)}
                 </div>
             </div>
         `).join('');
+
+        // Add event listeners to action buttons
+        document.querySelectorAll('.register-btn').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                const electionId = this.dataset.id;
+                registerForElection(electionId);
+            });
+        });
     }
 
-    renderCandidates(candidates) {
-        const container = document.getElementById('candidateGrid');
-        if (!candidates || !candidates.length) {
-            container.innerHTML = `
-                <div class="no-data">
-                    <i class="fas fa-user-slash fa-3x mb-3"></i>
-                    <h3>No candidates found</h3>
-                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addCandidateModal">
-                        <i class="fas fa-plus"></i> Add Candidate
-                    </button>
-                </div>
-            `;
-            return;
-        }
-
-        container.innerHTML = candidates.map(candidate => `
-            <div class="col">
-                <div class="candidate-card">
-                    <div class="candidate-header">
-                        <img src="${candidate.photoUrl || '/images/default-candidate.jpg'}" 
-                             alt="${candidate.firstName} ${candidate.lastName}" 
-                             class="candidate-photo">
-                    </div>
-                    <div class="candidate-body">
-                        <h3 class="candidate-name">${candidate.firstName} ${candidate.lastName}</h3>
-                        <span class="candidate-party">${candidate.party || 'Independent'}</span>
-                        <div class="candidate-meta">
-                            <span><i class="fas fa-vote-yea"></i> ${candidate.votes || 0}</span>
-                            <span><i class="fas fa-map-marker-alt"></i> ${candidate.region}</span>
-                        </div>
-                        <p class="candidate-bio">${candidate.biography || 'No biography provided'}</p>
-                    </div>
-                    <div class="candidate-footer">
-                        <span class="candidate-status ${candidate.status.toLowerCase()}">
-                            <i class="fas fa-circle"></i> ${candidate.status}
-                        </span>
-                        <div class="candidate-actions">
-                            <button class="btn btn-sm btn-outline view-candidate" data-candidate-id="${candidate.id}">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        `).join('');
-    }
-
-    renderVoteOffices(offices) {
-        const container = document.getElementById('voteOfficeContainer');
-        if (!offices || !offices.length) {
-            container.innerHTML = `
-                <div class="empty-state">
-                    <i class="fas fa-building fa-3x mb-3"></i>
-                    <h3>No vote offices found</h3>
-                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addOfficeModal">
-                        <i class="fas fa-plus"></i> Add Office
-                    </button>
-                </div>
-            `;
-            return;
-        }
-
-        container.innerHTML = offices.map(office => `
-            <div class="office-card">
-                <div class="office-card-header">
-                    <h3>${office.name}</h3>
-                    <span class="office-region">${office.region}</span>
-                </div>
-                <div class="office-card-body">
-                    <div class="office-info-item">
-                        <i class="fas fa-map-marker-alt"></i>
-                        <div>
-                            <h4>Address</h4>
-                            <p>${office.address}</p>
-                        </div>
-                    </div>
-                    <div class="office-info-item">
-                        <i class="fas fa-phone"></i>
-                        <div>
-                            <h4>Phone</h4>
-                            <p>${office.phone || 'Not provided'}</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="office-card-footer">
-                    <button class="btn btn-sm btn-primary view-office" data-office-id="${office.id}">
-                        <i class="fas fa-map-marked-alt"></i> View Map
-                    </button>
-                </div>
-            </div>
-        `).join('');
-    }
-
-    renderElectionResults(results) {
-        const container = document.getElementById('resultsContainer');
-        if (!results) {
-            showErrorMessage('resultsContainer');
-            return;
-        }
-
-        // Update summary cards
-        document.querySelector('.summary-value').textContent = results.totalVotes.toLocaleString();
-        document.querySelector('.summary-meta').textContent = `${results.participationRate}% participation`;
-        
-        // Render chart
-        this.renderResultsChart(results.chartData);
-    }
-
-    // ===== HELPER METHODS =====
-    getStatusClass(status) {
+    // Get status class for styling
+    function getStatusClass(status) {
         if (!status) return 'status-unknown';
         switch(status.toUpperCase()) {
             case 'ACTIVE': return 'status-active';
             case 'UPCOMING': return 'status-upcoming';
             case 'SCHEDULED': return 'status-upcoming';
             case 'ENDED': return 'status-ended';
+            case 'CANCELLED': return 'status-cancelled';
             default: return 'status-unknown';
         }
     }
 
-    formatDate(dateString) {
+    // Format date
+    function formatDate(dateString) {
         if (!dateString) return 'N/A';
         try {
-            return new Date(dateString).toLocaleDateString();
+            const options = { year: 'numeric', month: 'short', day: 'numeric' };
+            return new Date(dateString).toLocaleDateString(undefined, options);
         } catch {
             return 'Invalid date';
         }
     }
 
-    createActionButton(election) {
+    // Create appropriate action button
+    function createActionButton(election) {
         const status = election.electionStatus?.toUpperCase();
         const isUpcoming = status === 'UPCOMING' || status === 'SCHEDULED';
+        const isActive = status === 'ACTIVE';
         const id = election.idElection || election.id;
         
-        return isUpcoming ?
-            `<button class="btn btn-outline register-election" data-election-id="${id}">
+        if (isUpcoming) {
+            return `<a href="#" class="action-btn register-btn" data-id="${id}">
                 <i class="fas fa-user-plus"></i> Register
-            </button>` :
-            `<a href="#results" class="btn btn-primary" onclick="dashboard.loadElectionResults('${id}')">
+            </a>`;
+        } else if (isActive) {
+            return `<a href="/elections/vote/${id}" class="action-btn vote-btn">
+                <i class="fas fa-vote-yea"></i> Vote Now
+            </a>`;
+        } else {
+            return `<a href="/elections/${id}" class="action-btn view-btn">
                 <i class="fas fa-eye"></i> View Results
             </a>`;
+        }
     }
 
-    renderResultsChart(chartData) {
-        const ctx = document.getElementById('resultsChart').getContext('2d');
-        
-        if (window.resultsChart) {
-            window.resultsChart.destroy();
-        }
-        
-        window.resultsChart = new Chart(ctx, {
-            type: 'doughnut',
-            data: {
-                labels: chartData.labels,
-                datasets: [{
-                    data: chartData.data,
-                    backgroundColor: chartData.colors,
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        position: 'right',
-                    }
-                },
-                cutout: '70%'
-            }
+    // Set up filter buttons
+    function setupFilterButtons() {
+        filterButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                // Update active button
+                filterButtons.forEach(btn => btn.classList.remove('active'));
+                this.classList.add('active');
+                
+                // Filter elections
+                const status = this.dataset.status;
+                filterElections(status);
+            });
         });
     }
 
-    // ===== ACTION METHODS =====
-    async registerForElection(electionId) {
+    // Filter elections by status
+    function filterElections(status) {
+        if (!window.electionData) return;
+        
+        const filtered = status === 'all' ? 
+            window.electionData : 
+            window.electionData.filter(election => {
+                const electionStatus = election.electionStatus?.toUpperCase();
+                if (status === 'UPCOMING') {
+                    return electionStatus === 'UPCOMING' || electionStatus === 'SCHEDULED';
+                }
+                return electionStatus === status;
+            });
+        
+        renderElections(filtered);
+    }
+
+    // Register for an election
+    async function registerForElection(electionId) {
         try {
-            const response = await fetch(`/election/${electionId}/register`, {
+            const response = await fetch(`/election/register/${electionId}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+                    // Include CSRF token if needed
+                    // 'X-CSRF-TOKEN': document.querySelector('meta[name="_csrf"]').content
                 }
             });
             
-            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || `Registration failed: ${response.status}`);
+            }
             
-            showToast('Registration successful!', 'success');
-            this.fetchElections();
+            const result = await response.json();
+            showToast(`Successfully registered for election: ${result.electionName}`);
+            fetchElections(); // Refresh the list
         } catch (error) {
             console.error('Registration error:', error);
-            showToast('Failed to register for election', 'error');
+            showToast(error.message || 'Failed to register for election. Please try again.', 'error');
         }
     }
 
-    async viewCandidateDetails(candidateId) {
-        try {
-            const response = await fetch(`/candidate/${candidateId}`);
-            
-            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-            
-            const candidate = await response.json();
-            this.showCandidateModal(candidate);
-        } catch (error) {
-            console.error('Fetch candidate error:', error);
-            showToast('Failed to load candidate details', 'error');
-        }
+    // Show toast notification
+    function showToast(message, type = 'success') {
+        const toast = document.createElement('div');
+        toast.className = `toast-notification toast-${type}`;
+        toast.innerHTML = `
+            <div class="toast-message">${message}</div>
+            <button class="toast-close">&times;</button>
+        `;
+        
+        document.body.appendChild(toast);
+        
+        // Auto-remove after 5 seconds
+        setTimeout(() => {
+            toast.classList.add('fade-out');
+            setTimeout(() => toast.remove(), 300);
+        }, 5000);
+        
+        // Manual close
+        toast.querySelector('.toast-close').addEventListener('click', () => {
+            toast.classList.add('fade-out');
+            setTimeout(() => toast.remove(), 300);
+        });
     }
 
-    showCandidateModal(candidate) {
-        // Implementation would show a modal with candidate details
-        console.log('Showing candidate:', candidate);
+    // Refresh elections button
+    if (refreshElectionsBtn) {
+        refreshElectionsBtn.addEventListener('click', fetchElections);
     }
-
-    applyFilters() {
-        const filters = {
-            search: document.getElementById('searchInput')?.value,
-            status: document.getElementById('statusFilter')?.value,
-            region: document.getElementById('regionFilter')?.value
-        };
-
-        switch(this.currentSection) {
-            case 'elections':
-                this.fetchElections(filters);
-                break;
-            case 'candidates':
-                this.fetchCandidates(filters);
-                break;
-            case 'voteoffice':
-                this.fetchVoteOffices(filters);
-                break;
-        }
-    }
-}
-
-// Initialize the dashboard when DOM is ready
-document.addEventListener('DOMContentLoaded', () => {
-    window.dashboard = new ElectionDashboard();
 });

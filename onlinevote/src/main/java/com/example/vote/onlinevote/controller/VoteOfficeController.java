@@ -6,6 +6,7 @@ import com.example.vote.onlinevote.service.VoteOfficeService;
 import lombok.Getter;
 
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -34,4 +35,10 @@ public class VoteOfficeController {
     public List<VoteOfficeDto> showVoteOffices() {
         return voteOfficeService.showVoteOffices();
     }
+
+    @GetMapping("/vote_office/{id}")
+    public VoteOfficeDto getVoteOffice(@PathVariable Long id) {
+        return voteOfficeService.getVoteOfficeById(id);
+    }
+    
 }

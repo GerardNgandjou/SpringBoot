@@ -33,4 +33,10 @@ public class VoteOfficeService {
                 ;
     }
 
+    public VoteOfficeDto getVoteOfficeById(Long id) {
+        return voteOfficeRepository.findById(id)
+                .map(voteOfficeMapper::toVoteOfficeDto)
+                .orElseThrow(() -> new IllegalArgumentException("Vote office not found with id: " + id));
+    }
+
 }
