@@ -96,6 +96,24 @@ public class RoutController {
         return "display_election"; // This should match your Thymeleaf template name
     }
 
+    @GetMapping("/disp_voter")
+    public String displayVoters(Model model) {
+        model.addAttribute("voters", voterService.showAllVoters());
+        return "disp_voter"; // This should match your Thymeleaf template name
+    }
+
+    @GetMapping("/disp_cand")
+    public String displayCandidates(Model model) {
+        // model.addAttribute("candidates", candidateService.findAllCandidates());
+        return "disp_cand"; // This should match your Thymeleaf template name
+    }
+
+    @GetMapping("/vote_office_display")
+    public String displayVoteOffices(Model model) {
+        // model.addAttribute("voteOffices", voteOfficeService.showVoteOffices());
+        return "vote_office_display"; // This should match your Thymeleaf template name
+    }
+
     @PostMapping("/voters/{id}/send-verification")
     @ResponseBody
     public ResponseEntity<?> sendVerificationEmail(@PathVariable Long id) {

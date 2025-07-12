@@ -1,7 +1,9 @@
 package com.example.vote.onlinevote.model;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
@@ -14,6 +16,8 @@ import java.util.List;
 @Inheritance(strategy = InheritanceType.JOINED)
 @DiscriminatorColumn(name = "user_type")
 @Table(name = "user_app")
+@AllArgsConstructor
+@NoArgsConstructor
 public class User {
 
     @Id
@@ -45,36 +49,6 @@ public class User {
 
     @Enumerated(EnumType.STRING)
     private Role role;
-
-    public User() {
-    }
-
-    public User(
-            String firstname, 
-            String lastname, 
-            LocalDate birthdate, 
-            String gender, 
-            String email, 
-            Integer phoneNumber, 
-            String region, 
-            String department, 
-            String arron, 
-            String politicalParty, 
-            String currentregion,
-            List<Election> register) {
-        this.firstname = firstname;
-        this.lastname = lastname;
-        this.birthdate = birthdate;
-        this.gender = gender;
-        this.email = email;
-        this.number = phoneNumber;
-        this.region = region;
-        this.department = department;
-        this.arron = arron;
-        this.party = politicalParty;
-        this.currentregion = currentregion;
-        this.register = register;
-    }
 
     public enum Role {
         VOTER, CANDIDATE

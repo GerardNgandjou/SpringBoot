@@ -2,7 +2,9 @@ package com.example.vote.onlinevote.model;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.List;
@@ -10,6 +12,8 @@ import java.util.List;
 @Getter
 @Setter
 @Entity
+@NoArgsConstructor
+@AllArgsConstructor
 public class VoteOffice {
 
     @Id
@@ -23,15 +27,6 @@ public class VoteOffice {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "office")
     @JsonManagedReference(value = "office-voter")  // Changed to match the back reference
     private List<Voter> voters;
-
-    public VoteOffice() {}
-
-    public VoteOffice(String nameOffice, String locationOffice, String descriptionOffice, List<Voter> voters) {
-        this.nameOffice = nameOffice;
-        this.locationOffice = locationOffice;
-        this.descriptionOffice = descriptionOffice;
-        this.voters = voters;
-    }
 
 }
 

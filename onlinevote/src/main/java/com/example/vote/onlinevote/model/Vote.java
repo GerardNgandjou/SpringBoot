@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -27,7 +27,11 @@ public class Vote {
     @JoinColumn(name = "candidate_id")
     private Candidate candidate;
 
-    private String voteContent;
-    private Timestamp voteTime;
+    @ManyToOne
+    @JoinColumn(name = "election_id")
+    private Election election;
+
+    // private String voteContent;
+    private LocalDateTime voteTime;
     
 }

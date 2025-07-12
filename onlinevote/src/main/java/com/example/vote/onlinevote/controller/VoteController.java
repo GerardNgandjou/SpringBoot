@@ -1,52 +1,53 @@
-// package com.example.vote.onlinevote.controller;
+package com.example.vote.onlinevote.controller;
 
-// import org.springframework.beans.factory.annotation.Autowired;
-// import org.springframework.http.HttpStatus;
-// import org.springframework.http.ResponseEntity;
-// import org.springframework.security.core.annotation.AuthenticationPrincipal;
-// import org.springframework.security.core.userdetails.UserDetails;
-// import org.springframework.web.bind.annotation.PostMapping;
-// import org.springframework.web.bind.annotation.RequestBody;
-// import org.springframework.web.bind.annotation.RequestMapping;
-// import org.springframework.web.bind.annotation.RestController;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
-// import com.example.vote.onlinevote.dto.VoteRequestDTO;
-// import com.example.vote.onlinevote.dto.VoteResponseDTO;
-// import com.example.vote.onlinevote.exception.DuplicateVoteException;
-// import com.example.vote.onlinevote.exception.ElectionEndedException;
-// import com.example.vote.onlinevote.exception.ElectionNotStartedException;
-// import com.example.vote.onlinevote.exception.ForbiddenException;
-// import com.example.vote.onlinevote.exception.InvalidCandidateException;
-// import com.example.vote.onlinevote.exception.ResourceNotFoundException;
-// import com.example.vote.onlinevote.exception.UnauthorizedException;
-// import com.example.vote.onlinevote.sevirce.VoteService;
+import com.example.vote.onlinevote.model.Candidate;
+import com.example.vote.onlinevote.model.Election;
+import com.example.vote.onlinevote.model.Voter;
+import com.example.vote.onlinevote.repository.CandidateRepository;
+import com.example.vote.onlinevote.repository.ElectionRepository;
+import com.example.vote.onlinevote.repository.VoterRepository;
+import com.example.vote.onlinevote.service.VoteService;
 
 
-// @RestController
-// @RequestMapping("/api/votes")
-// public class VoteController {
-    
-//     private final VoteService voteService;
+@Controller
+@RequestMapping("/vote")
+public class VoteController {
 
-//     @Autowired
-//     public VoteController(VoteService voteService) {
-//         this.voteService = voteService;
-//     }
+    @Autowired
+    private VoteService voteService;
 
-//     @PostMapping
-//     public ResponseEntity<?> castVote(@RequestBody VoteRequestDTO voteRequest,
-//                                     @AuthenticationPrincipal UserDetails userDetails) {
-//         try {
-//             VoteResponseDTO response = voteService.castVote(voteRequest, userDetails.getUsername());
-//             return ResponseEntity.ok(response);
-//         } catch (UnauthorizedException e) {
-//             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
-//         } catch (ForbiddenException e) {
-//             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
-//         } catch (ResourceNotFoundException e) {
-//             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-//         } catch (DuplicateVoteException | ElectionNotStartedException | ElectionEndedException | InvalidCandidateException e) {
-//             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-//         }
-//     }
-// }
+    @Autowired
+    private VoterRepository voterRepository;
+
+    @Autowired
+    private CandidateRepository candidateRepository;
+
+    @Autowired
+    private ElectionRepository electionRepository;
+
+    @PostMapping
+    public String castVote(@RequestParam Long voterId,
+                           @RequestParam Long candidateId,
+                           @RequestParam Long electionId,
+                           Model model) {
+        Voter voter = voterRepository.findById(voterId).orElseThrow();
+        Candidate candidate = candidateRepository.findById(candidateId).orElseThrow();
+        Election election = electionRepository.findById(electionId).orElseThrow();
+
+        try {
+            voteService.castVote(voter, candidate, election);
+            model.addAttribute("message", "Vote cast successfully!");
+        } catch (IllegalStateException ex) {
+            model.addAttribute("error", ex.getMessage());
+        }
+
+        return "vote-result"; // create vote-result.html
+    }
+}

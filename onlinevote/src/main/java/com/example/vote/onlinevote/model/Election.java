@@ -1,7 +1,9 @@
 package com.example.vote.onlinevote.model;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
@@ -11,6 +13,8 @@ import java.util.List;
 @Entity
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class Election {
 
     @Id
@@ -33,21 +37,4 @@ public class Election {
         ACTIVE, UPCOMING, ENDED, SCHEDULED  // Add SCHEDULED to match existing data
     }
 
-    public Election() {}
-
-    public Election(
-                String electionName,
-                String electionDescription,
-                StatusElec electionStatus,
-                LocalDate electionStartDate,
-                LocalDate electionEndDate,
-                List<User> users
-    ) {
-        this.electionName = electionName;
-        this.electionDescription = electionDescription;
-        this.electionStatus = electionStatus;
-        this.electionStartDate = electionStartDate;
-        this.electionEndDate = electionEndDate;
-        this.users = users;
-    }
 }
