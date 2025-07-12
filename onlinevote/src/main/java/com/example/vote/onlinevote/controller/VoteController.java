@@ -1,12 +1,14 @@
 package com.example.vote.onlinevote.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
+import com.example.vote.onlinevote.dto.VoteRequestDto;
 import com.example.vote.onlinevote.model.Candidate;
 import com.example.vote.onlinevote.model.Election;
 import com.example.vote.onlinevote.model.Voter;
@@ -16,8 +18,8 @@ import com.example.vote.onlinevote.repository.VoterRepository;
 import com.example.vote.onlinevote.service.VoteService;
 
 
-@Controller
-@RequestMapping("/vote")
+@RestController
+@RequestMapping("/api/vote")
 public class VoteController {
 
     @Autowired
@@ -33,21 +35,26 @@ public class VoteController {
     private ElectionRepository electionRepository;
 
     @PostMapping
-    public String castVote(@RequestParam Long voterId,
-                           @RequestParam Long candidateId,
-                           @RequestParam Long electionId,
-                           Model model) {
-        Voter voter = voterRepository.findById(voterId).orElseThrow();
-        Candidate candidate = candidateRepository.findById(candidateId).orElseThrow();
-        Election election = electionRepository.findById(electionId).orElseThrow();
+    public ResponseEntity<?> castVote(@RequestBody VoteRequestDto voteRequest) {
+        // Validate incoming IDs
+        if (voteRequest.getVoterId() == null || voteRequest.getCandidateId() == null || voteRequest.getElectionId() == null) {
+            return ResponseEntity.badRequest().body("voterId, candidateId, and electionId are required.");
+        }
+
+        // Load entities from database
+        Voter voter = voterRepository.findById(voteRequest.getVoterId())
+                .orElseThrow(() -> new RuntimeException("Voter not found"));
+        Candidate candidate = candidateRepository.findById(voteRequest.getCandidateId())
+                .orElseThrow(() -> new RuntimeException("Candidate not found"));
+        Election election = electionRepository.findById(voteRequest.getElectionId())
+                .orElseThrow(() -> new RuntimeException("Election not found"));
 
         try {
             voteService.castVote(voter, candidate, election);
-            model.addAttribute("message", "Vote cast successfully!");
+            return ResponseEntity.ok("Vote cast successfully!");
         } catch (IllegalStateException ex) {
-            model.addAttribute("error", ex.getMessage());
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
         }
-
-        return "vote-result"; // create vote-result.html
     }
 }
+
