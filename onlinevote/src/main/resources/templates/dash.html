@@ -30,7 +30,7 @@
                 </a>
             </li>
             <li class="nav-item" role="none">
-                <a href="#elections" class="nav-link" role="menuitem" data-section="elections">
+                <a th:href="@{/display_election}" class="nav-link" role="menuitem" data-section="elections">
                     <i class="fas fa-vote-yea" aria-hidden="true"></i>
                     <span>Elections</span>
                 </a>
@@ -83,21 +83,8 @@
                 <label for="main-search" class="sr-only">Search elections, candidates</label>
                 <i class="fas fa-search" aria-hidden="true"></i>
                 <input type="search" id="main-search" placeholder="Search elections, candidates..." aria-label="Search">
+                
             </div>
-            <!-- <div class="user-profile">
-                <div class="profile-dropdown">
-                    <button class="profile-btn" aria-expanded="false" aria-label="User profile menu">
-                        <img th:src="@{/images/profile.png'}" alt="User profile">
-                        <span th:text="${user.firstName} + ' ' + ${user.lastName}">Admin User</span>
-                        <i class="fas fa-chevron-down"></i>
-                    </button>
-                    <ul class="dropdown-menu" role="menu">
-                        <li><a href="#settings" role="menuitem"><i class="fas fa-user-cog"></i> Profile Settings</a></li>
-                        <li><a href="#" role="menuitem"><i class="fas fa-question-circle"></i> Help</a></li>
-                        <li><a href="#" id="logout-btn" role="menuitem"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
-                    </ul>
-                </div>
-            </div> -->
         </header>
 
         <!-- Dashboard Content (shown by default) -->
@@ -120,7 +107,7 @@
                             <i class="fas fa-user-friends" aria-hidden="true"></i>
                         </div>
                     </div>
-                    <a href="#voters" class="card-link">View all voters</a>
+                    <a th:href="@{/disp_voter}" class="card-link">View all voters</a>
                 </article>
                 
                 <article class="card">
@@ -137,7 +124,7 @@
                             <i class="fas fa-vote-yea" aria-hidden="true"></i>
                         </div>
                     </div>
-                    <a href="#elections" class="card-link">Manage elections</a>
+                    <a th:href="@{/display_election}" class="card-link">Manage elections</a>
                 </article>
                 
                 <article class="card">
@@ -154,7 +141,7 @@
                             <i class="fas fa-users" aria-hidden="true"></i>
                         </div>
                     </div>
-                    <a href="#candidates" class="card-link">View candidates</a>
+                    <a th:href="@{/display_candidates}" class="card-link">View candidates</a>
                 </article>
                 
                 <article class="card">

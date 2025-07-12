@@ -91,11 +91,6 @@ public class RoutController {
         return "auth"; // combined login/register page
     }
 
-    // @GetMapping("/voter/add")
-    // public String showRegisterPage() {
-    //     return "registration";
-    // }
-
     @GetMapping("/display_election")
     public String displayElections() {
         // You can add any model attributes if needed
