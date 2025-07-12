@@ -56,5 +56,11 @@ public class VoteController {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
         }
     }
+
+    // @GetMapping("/{electionId}")
+    // public ResponseEntity<?> getResults(@PathVariable Long electionId) {
+    //     List<VoteRepository.CandidateVoteCount> results = voteService.getResultsByElection(electionId);
+    //     return ResponseEntity.ok(results);
+    // }
 }
 

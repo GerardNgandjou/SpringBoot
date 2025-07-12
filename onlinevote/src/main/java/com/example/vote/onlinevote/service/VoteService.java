@@ -34,4 +34,14 @@ public class VoteService {
 
         voteRepository.save(vote);
     }
+
+    // public List<VoteRepository.CandidateVoteCount> countVotesByElection(Long electionId) {
+    //     return voteRepository.countVotesByElection(electionId);
+    // }
+
+    // public List<VoteRepository.CandidateVoteCount> getResultsByElection(Long electionId) {
+    //     return voteRepository.countVotesByElection(electionId);
+    // }
+
+    
 }
