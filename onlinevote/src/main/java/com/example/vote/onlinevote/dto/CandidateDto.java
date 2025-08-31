@@ -35,7 +35,6 @@ public class CandidateDto {
     private String arron;
     private String party;
     private String currentregion;
-    private String pollingstation;
     private List<Long> registeredElectionIds;
     private User.Role role;
     private Float deposit;

@@ -1,25 +1,34 @@
-// package com.example.vote.onlinevote.service;
+package com.example.vote.onlinevote.service;
 
-// import org.springframework.beans.factory.annotation.Autowired;
-// import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-// import org.springframework.stereotype.Service;
-// import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.stereotype.Service;
 
-// import com.example.vote.onlinevote.model.Login;
-// import com.example.vote.onlinevote.repository.LoginRepository;
+import com.example.vote.onlinevote.model.User;
+import com.example.vote.onlinevote.repository.LoginRepository;
 
-// @Service
-// public class LoginService {
+@Service
 
-//     @Autowired
-//     private LoginRepository loginRepository;
+public class LoginService {
 
-//     // @Autowired
-//     private BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder(12); // No 'new', no manual instantiation
+    private final LoginRepository loginRepository;
+    private final User user;
 
-//     public Login saveLogin(@RequestBody Login login) {
-//         String hashedPassword = passwordEncoder.encode(login.getPassword());
-//         login.setPassword(hashedPassword);
-//         return loginRepository.save(login);
-//     }
-// }
+    public LoginService(LoginRepository loginRepository) {
+        this.loginRepository = loginRepository;
+        this.user = new User(); // Assuming user is initialized here, replace with actual user retrieval logic
+    }
+
+    public String checkUserEmailInformation(String email) {
+
+        String mail = user.getEmail();
+
+        if (mail == null || mail.isEmpty()) {
+            throw new IllegalArgumentException("Email cannot be null or empty");
+        }
+
+        if (!email.equals(mail)) {
+            throw new IllegalArgumentException("Email does not match the user's email");
+        }
+        return loginRepository.checkUserEmailInformation(email);
+    }
+
+}
