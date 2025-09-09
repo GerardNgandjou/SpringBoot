@@ -8,6 +8,7 @@ public class ATMBank {
     private ArrayList<BankAccount> currentAccounts = new ArrayList<BankAccount>();
     private int firstChoice;
     private int secondChoice;
+    // private MessageDigest md;
 
     Scanner scanner = new Scanner(System.in);
 
@@ -18,7 +19,7 @@ public class ATMBank {
             System.out.println("Welcome to the ATM Bank!");
             System.out.println("1. Add Account");
             System.out.println("2. Doing a financial transaction");
-            System.out.println("3. Display all th accounts");
+            System.out.println("3. Display all the accounts");
             System.out.println("4. Exit");
 
             firstChoice = scanner.nextInt();
@@ -39,26 +40,6 @@ public class ATMBank {
                     String accPwd = scanner.nextLine();
 
                     performTransaction(accNum, accName, accPwd);
-
-                    if (performTransaction(accNum, accName, accPwd)) {
-                        System.out.println("Choose operation type (1. to withdraw or 2. to add)");
-                        secondChoice = scanner.nextInt();
-
-                        switch (secondChoice) {
-                            case 1:
-                                    withdraw();
-                                break;
-
-                            case 2:
-                                addMoney();
-                                break;
-                        
-                            default:
-                                break;
-                        }
-                    } else {
-                        System.out.println("Transaction failed .");
-                    }
 
                     break;
 
@@ -82,7 +63,6 @@ public class ATMBank {
                     System.out.println("Invalid choice. Please try again.");
             }
         } while (firstChoice != 4);
-
     }
 
     private Boolean performTransaction(Long accNum, String accName, String accPwd) {
@@ -110,17 +90,14 @@ public class ATMBank {
                         default:
                             break;
                     }
-
                 } else {
                     System.out.println("Account not found or incorrect credentials.");
-            }
+                }
             }
         } else {
             System.out.println("No current accounts available now. Account not found or incorrect credentials.");
         }
-
         return true;
-
     }
 
     public void addAccount() {
@@ -132,10 +109,19 @@ public class ATMBank {
         System.out.println("Enter account name:");
         String accountName = scanner.nextLine();
 
-        System.out.println("Enter initial balance:");
-        Double accountBalance = scanner.nextDouble();
-        scanner.nextLine();  // Consume newline
+        Double accountBalance;
+        do {
+            System.out.println("Enter account balance (must be non-negative):");
+            accountBalance = scanner.nextDouble();
+            scanner.nextLine();  // Consume newline
 
+            // if (accountBalance < 0) {
+            //     System.out.println("Account balance must be non-negative. Please try again.");
+            // } else {
+            //     break;
+            // }        
+        } while (accountBalance < 0);
+        
         System.out.println("Enter account password:");
         String accountPassword = scanner.nextLine();
 
@@ -167,16 +153,21 @@ public class ATMBank {
 
         for (BankAccount ba : currentAccounts) {
 
-            System.out.println("Please enter the amount to withdraw: ");
-            double amountToWithdraw = scanner.nextDouble();
-            scanner.nextLine();  // Consume newline
-
-            if (ba.getAccountBalance() >= amountToWithdraw) {
-                ba.setAccountBalance(ba.getAccountBalance() - amountToWithdraw);
-                System.out.println("Withdrawal successful. New balance: " + ba.getAccountBalance());
-
+            if (ba.getAccountStatus().equalsIgnoreCase("inactive")) {
+                System.out.println("Cannot withdraw from an inactive account. Activate it and try again later.");
+                return;
             } else {
-                System.out.println("Insufficient funds.");
+                System.out.println("Please enter the amount to withdraw (the current is " + ba.getAccountCurrency() +"): ");
+                double amountToWithdraw = scanner.nextDouble();
+                scanner.nextLine();  // Consume newline
+
+                if (ba.getAccountBalance() >= amountToWithdraw) {
+                    ba.setAccountBalance(ba.getAccountBalance() - amountToWithdraw);
+                    System.out.println("Withdrawal successful. New balance: " + ba.getAccountBalance());
+
+                } else {
+                    System.out.println("Insufficient funds.");
+                }
             }
         }
     }
@@ -184,12 +175,16 @@ public class ATMBank {
     public void addMoney() {
 
         for (BankAccount ba : currentAccounts) {
+            if (ba.getAccountStatus().equalsIgnoreCase("inactive")) {
+                System.out.println("Cannot add money to an inactive account. Activate it and try again later.");
+                return;
+            } else {
+                System.out.println("Please enter the amount to add (the current is " + ba.getAccountCurrency() +"): ");
+                double amountToAdd = scanner.nextDouble();
+                scanner.nextLine();  // Consume newline
 
-            System.out.println("Please enter the amount to add: ");
-            double amountToAdd = scanner.nextDouble();
-            scanner.nextLine();  // Consume newline
-
-            ba.setAccountBalance(ba.getAccountBalance() + amountToAdd);
+                ba.setAccountBalance(ba.getAccountBalance() + amountToAdd);
+            }
         }
     }
 

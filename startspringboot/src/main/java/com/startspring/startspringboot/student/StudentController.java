@@ -51,12 +51,12 @@ public class StudentController {
         studentService.deleteStudentById(studentId);
     }
 
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<?> handleMethodArgumentNotValidException(
-            MethodArgumentNotValidException esp
-    ) {
+    // @ExceptionHandler(MethodArgumentNotValidException.class)
+    // public ResponseEntity<?> handleMethodArgumentNotValidException(
+    //         MethodArgumentNotValidException esp
+    // ) {
         
-    }
+    // }
 
 
 

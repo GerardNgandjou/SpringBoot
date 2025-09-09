@@ -84,24 +84,24 @@ public class StudentManagementSystem {
     public void addNewStudent() {
 
         System.out.println("Enter the student matricule:");
-                    int studentMatricule = scan.nextInt();
-                     scan.nextLine(); // Use this line only with the number
+        int studentMatricule = scan.nextInt();
+        scan.nextLine(); // Use this line only with the number
 
-                    System.out.println("Enter the student name:");
-                    String studentName = scan.nextLine();
+        System.out.println("Enter the student name:");
+        String studentName = scan.nextLine();
 
-                    System.out.println("Enter the student surname:");
-                    String studentSurname = scan.nextLine();
+        System.out.println("Enter the student surname:");
+        String studentSurname = scan.nextLine();
 
-                    System.out.println("Enter the student email:");
-                    String studentEmail = scan.nextLine();
+        System.out.println("Enter the student email:");
+        String studentEmail = scan.nextLine();
 
-                    System.out.println("Enter the student phone number:");
-                    int studentPhoneNumber = scan.nextInt();
-                     scan.nextLine();
+        System.out.println("Enter the student phone number:");
+        int studentPhoneNumber = scan.nextInt();
+        scan.nextLine();
                     
-                    Students students = new Students(studentMatricule, studentName, studentSurname, studentEmail, studentPhoneNumber);
-                    studentsList.add(students);
+        Students students = new Students(studentMatricule, studentName, studentSurname, studentEmail, studentPhoneNumber);
+        studentsList.add(students);
 
                     // ✅ Use try-with-resources for automatic resource management
                     try (
