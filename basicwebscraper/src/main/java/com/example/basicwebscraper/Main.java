@@ -34,5 +34,7 @@ public class Main {
             e.printStackTrace();
         }
 
+        sacnner.close();
+
     }
 }
