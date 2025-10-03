@@ -42,5 +42,4 @@ public class Customer {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "customer")
     @JsonManagedReference(value = "customer_like")
     private List<Like> likes = new ArrayList<>();
-
 }

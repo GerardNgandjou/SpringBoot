@@ -26,7 +26,7 @@ public class Like {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private boolean isLike = false;
+    private boolean liked = false;
 
     // Many likes can be on one post
     @ManyToOne
@@ -43,7 +43,6 @@ public class Like {
     // Many likes can be made by one customer
     @ManyToOne
     @JoinColumn(name = "customer_id")
-    @JsonBackReference(value = "cutomer_like")
+    @JsonBackReference(value = "customer_like")
     private Customer customer;
-
 }

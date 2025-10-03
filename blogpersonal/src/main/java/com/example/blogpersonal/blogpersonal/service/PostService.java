@@ -1,5 +1,8 @@
 package com.example.blogpersonal.blogpersonal.service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +22,21 @@ public class PostService {
     public Post savedPost (Post post) {
         var pos = postRepository.save(post);
         return pos;
+    }
+
+    public List<Post> findAllPost() {
+        return postRepository.findAll()
+                .stream()
+                .collect(Collectors.toList());
+    }
+
+    public Post findAllById(Long id) {
+        return postRepository.findById(id)
+                    .orElse(null);
+    }
+
+    public void deletePostById(Long id) {
+        postRepository.deleteById(id);
     }
 
 }

@@ -8,6 +8,6 @@ import com.example.blogpersonal.blogpersonal.model.Customer;
 
 public interface CustomerRepository extends JpaRepository<Customer, Long> {
     List<Customer> findAllByEmail (String email);
-    List<Customer> findAllByName (String name);
+    List<Customer> findCustomerByName (String name);
 
 }
