@@ -3,6 +3,7 @@ package com.example.demo.service
 import com.example.demo.model.Product
 import com.example.demo.repository.ProductRepository
 import com.example.demo.repository.CategoryRepository
+import com.example.demo.repository.OrderItemRepository
 import com.example.demo.dto.ProductDto
 import com.example.demo.mapper.ProductMapper
 import org.springframework.stereotype.Service
@@ -13,7 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired
 @Transactional
 class ProductService @Autowired constructor(
     private val productRepository: ProductRepository,
-    private val categoryRepository: CategoryRepository
+    private val categoryRepository: CategoryRepository,
+    private val orderItemRepository: OrderItemRepository
 ) {
 
     fun getAllProducts(): List<ProductDto> =
@@ -61,14 +63,15 @@ class ProductService @Autowired constructor(
         return productRepository.save(product)
     }
 
-
-
     fun deleteProduct(id: Long) {
-        if (!productRepository.existsById(id)) {
-            throw NoSuchElementException("Product not found")
-        }
+
+        // Étape 1 : supprimer d'abord les références dans order_item
+        orderItemRepository.deleteByProductId(id)
+
+        // Étape 2 : supprimer le produit
         productRepository.deleteById(id)
     }
+
 
     fun searchByName(name: String): List<ProductDto> =
         productRepository.findByNameContainingIgnoreCase(name)

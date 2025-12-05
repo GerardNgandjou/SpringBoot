@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.PatchMapping
 import org.springframework.beans.factory.annotation.Autowired
 
 
-
 @RestController
 @RequestMapping("/api/categories")
 class CategoryController @Autowired constructor(

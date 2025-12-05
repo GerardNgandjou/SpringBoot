@@ -18,7 +18,7 @@ import com.example.demo.service.OrderItemService
 import com.example.demo.model.OrderItem
 import com.example.demo.model.Product
 import com.example.demo.dto.OrderItemDto
-import com.example.demo.mapper.toDto
+import com.example.demo.mapper.OrderItemMapper
 
 @RestController
 @RequestMapping("/api/order-items")
@@ -36,8 +36,8 @@ class OrderItemController @Autowired constructor(
 
     @PostMapping("/add/item")
     fun createOrderItem(@RequestBody dto: OrderItemDto): OrderItemDto {
-        val orderItem = orderItemService.createOrderItem(dto)
-        return orderItem.toDto()  // <-- convert entity to DTO here
+        val orderItem = orderItemService.createOrderItem(dto)  // Entity
+        return OrderItemMapper.toDto(orderItem)                // Convert Entity -> DTO
     }
 
     @PutMapping("/{id}")

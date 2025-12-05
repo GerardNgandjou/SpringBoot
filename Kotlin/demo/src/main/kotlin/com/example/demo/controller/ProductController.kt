@@ -17,7 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import com.example.demo.service.ProductService
 import com.example.demo.model.Product
 import com.example.demo.dto.ProductDto
-import com.example.demo.mapper.toDto
+import com.example.demo.mapper.ProductMapper
 
 @RestController
 @RequestMapping("/api/products")
@@ -52,7 +52,7 @@ class ProductController @Autowired constructor(
     @PostMapping("/add/product")
     fun createProduct(@RequestBody dto: ProductDto): ResponseEntity<ProductDto> {
         val product = productService.createProduct(dto)
-        return ResponseEntity.ok(product.toDto()) // Convert before returning
+        return ResponseEntity.status(HttpStatus.CREATED).body(ProductMapper.toDto(product)) // Convert before returning
     }
 
     // ----------------------------
@@ -65,7 +65,7 @@ class ProductController @Autowired constructor(
         @RequestBody dto: ProductDto
     ): ResponseEntity<ProductDto> {
         val updatedProduct = productService.updateProduct(id, dto)
-        return ResponseEntity.ok(updatedProduct.toDto()) // Convert here too
+        return ResponseEntity.ok(ProductMapper.toDto(updatedProduct)) // Convert here too
     }
 
 

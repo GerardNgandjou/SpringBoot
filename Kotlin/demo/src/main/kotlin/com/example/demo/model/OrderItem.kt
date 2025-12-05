@@ -5,6 +5,7 @@ import lombok.NoArgsConstructor
 import lombok.AllArgsConstructor
 import lombok.Setter
 import lombok.Getter
+import org.hibernate.annotations.OnDelete
 
 /**
  * Represents an item in an order (links product with order and quantity).
@@ -25,10 +26,12 @@ data class OrderItem(
     var price: Double = 0.0,
 
     @ManyToOne
+    @OnDelete(action = org.hibernate.annotations.OnDeleteAction.CASCADE)
     @JoinColumn(name = "product_id")
     var product: Product = Product(),
 
     @ManyToOne
+    @OnDelete(action = org.hibernate.annotations.OnDeleteAction.CASCADE)
     @JoinColumn(name = "order_id")
     var order: Order = Order()
 

@@ -21,21 +21,15 @@ class OrderItemService @Autowired constructor(
     private val orderRepository: OrderRepository
 ) {
 
-    fun createOrderItem(dto: OrderItemDto): OrderItemDto {
+    fun createOrderItem(dto: OrderItemDto): OrderItem {
         val product = productRepository.findById(dto.productId)
             .orElseThrow { NoSuchElementException("Product not found") }
 
         val order = orderRepository.findById(dto.orderId)
             .orElseThrow { NoSuchElementException("Order not found") }
 
-        // DTO -> Entity
         val item = OrderItemMapper.toEntity(dto, product, order)
-
-        // Save to DB
-        val savedItem = orderItemRepository.save(item)
-
-        // Entity -> DTO
-        return OrderItemMapper.toDto(savedItem)
+        return orderItemRepository.save(item)
     }
 
     fun getAllOrderItems(): List<OrderItemDto> =
