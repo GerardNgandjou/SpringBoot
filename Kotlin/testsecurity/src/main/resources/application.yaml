@@ -1,0 +1,28 @@
+spring:
+  application:
+    name: testsecurity
+# src/main/resources/application.yml
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/authentification  # PostgreSQL connection URL
+    username: postgres                             # Your PostgreSQL username
+    password: root                             # Your PostgreSQL password
+    driver-class-name: org.postgresql.Driver
+  
+  jpa:
+    hibernate:
+      ddl-auto: update                             # Automatically update schema
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+    show-sql: true                                 # Show SQL in logs for debugging
+
+# JWT Configuration
+jwt:
+  secret: "toto-is-so-intelligent-and-secure-key"  # Change this to a secure secret
+  expiration: 86400000  # 24 hours in milliseconds
+  issuer: "auth-service"
+
+# Server Configuration
+server:
+  port: 8080
