@@ -1,0 +1,12 @@
+spring:
+  application:
+    name: login1
+  security:
+    user:
+      name: admin
+      password: admin123
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/auth
+    username: postgres
+    password: root
