@@ -6,8 +6,10 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.security.web.csrf.CsrfToken
 import jakarta.servlet.http.HttpServletRequest
+import org.springframework.web.bind.annotation.RequestMapping
 
 @RestController
+@RequestMapping("/auth")
 class StudentController {
 
     val allStudents = ArrayList<Student>().apply {

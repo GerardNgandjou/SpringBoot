@@ -33,8 +33,8 @@ class SecurityConfig(
         return http
             .csrf { it.disable() }
             .authorizeHttpRequests {
-                // it.anyRequest().authenticated()
-                it.anyRequest().permitAll()
+                it.anyRequest().authenticated()
+                // it.anyRequest().permitAll()
             }
             .formLogin{}
             .httpBasic{}
