@@ -8,19 +8,24 @@ import com.example.login1.model.UserPrincipal
 import com.example.login1.repository.UserRepository
 
 @Service
-class MyUserDetailsService (
-    private val userRepository : UserRepository
+class MyUserDetailsService(
+    // Repository used to fetch users from the database
+    private val userRepository: UserRepository
 ) : UserDetailsService {
- 
-    override fun loadUserByUsername(username: String): UserDetails { 
 
-        val users = userRepository.findByName(username)
+    // This method is called by Spring Security during authentication
+    override fun loadUserByUsername(username: String): UserDetails {
 
-        if(users == null) {
-            println("User not found")
+        // Find user by username from the database
+        val user = userRepository.findByName(username)
+
+        // If user does not exist, throw Spring Security exception
+        if (user == null) {
+            println("User not found: $username")
             throw UsernameNotFoundException("User not found")
         }
 
-        return UserPrincipal(users);
+        // Convert your User entity into a UserDetails implementation
+        return UserPrincipal(user)
     }
 }

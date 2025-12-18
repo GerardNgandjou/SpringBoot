@@ -15,51 +15,76 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
-
 @Configuration
 @EnableWebSecurity
 class SecurityConfig(
+    // Custom UserDetailsService used for authentication
     private val userDetailsService: UserDetailsService,
-    private val jwtFilter : JwtFilter
+
+    // JWT filter executed before username/password authentication
+    private val jwtFilter: JwtFilter
 ) {
 
-     @Bean
-     fun passwordEncoder(): PasswordEncoder =
-         BCryptPasswordEncoder(12)
+    // Password encoder used to hash and verify passwords
+    @Bean
+    fun passwordEncoder(): PasswordEncoder =
+        BCryptPasswordEncoder(12)
 
+    // ⚠️ Only for testing — DO NOT use in production
 //    @Bean
 //    fun passwordEncoder() = NoOpPasswordEncoder.getInstance()
 
+    // Authentication provider that uses UserDetailsService + PasswordEncoder
     @Bean
     fun authenticationProvider(): AuthenticationProvider {
         val provider = DaoAuthenticationProvider()
         provider.setUserDetailsService(userDetailsService)
         provider.setPasswordEncoder(passwordEncoder())
         return provider
-    } 
+    }
 
+    // Main Spring Security filter chain configuration
     @Bean
     fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
         return http
+            // Disable CSRF because we use JWT (stateless authentication)
             .csrf { it.disable() }
+
+            // Register the custom authentication provider
             .authenticationProvider(authenticationProvider())
+
+            // Authorization rules
             .authorizeHttpRequests {
+                // Public endpoints (no authentication required)
                 it.requestMatchers("/auth/register", "/auth/login")
                     .permitAll()
+
+                // All other endpoints require authentication
                 it.anyRequest()
                     .authenticated()
             }
-            .httpBasic { } // REST authentication
+
+            // Enable HTTP Basic (useful for testing / tools like Postman)
+            .httpBasic { }
+
+            // Make the application stateless (no HTTP session)
             .sessionManagement {
                 it.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             }
+
+            // Add JWT filter before Spring Security's authentication filter
             .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter::class.java)
+
+            // Build the security configuration
             .build()
     }
 
+    // Expose AuthenticationManager as a Spring Bean
     @Bean
-    fun authManager (config : AuthenticationConfiguration) : AuthenticationManager {
-        return config.authenticationManager;
+    fun authManager(
+        config: AuthenticationConfiguration
+    ): AuthenticationManager {
+        return config.authenticationManager
     }
 
 

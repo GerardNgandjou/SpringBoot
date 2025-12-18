@@ -12,40 +12,55 @@ import java.util.*
 import javax.crypto.KeyGenerator
 import javax.crypto.SecretKey
 
-
 @Service
 class JWTService {
 
-    private var secretKey: String? = ""
+    // Secret key used to sign JWTs (Base64-encoded)
+    private var secretKey: String
 
     init {
         try {
+            // Generate a secure HMAC-SHA256 key
             val keyGen = KeyGenerator.getInstance("HmacSHA256")
             val sk = keyGen.generateKey()
+
+            // Encode the key to Base64 so it can be stored as a String
             secretKey = Base64.getEncoder().encodeToString(sk.encoded)
+
         } catch (e: NoSuchAlgorithmException) {
-            throw RuntimeException(e)
+            throw RuntimeException("Failed to generate JWT secret key", e)
         }
     }
 
-    fun generateToken(username: String?): String {
-        val claims: MutableMap<String?, Any?> = HashMap<String?, Any?>()
+    // Generate a JWT token for a given username
+    fun generateToken(username: String): String {
+
+        // Optional extra claims (can be roles, permissions, etc.)
+        val claims: MutableMap<String, Any> = HashMap()
 
         return Jwts.builder()
             .claims()
-            .add(claims)
-            .subject(username)
-            .issuedAt(Date(System.currentTimeMillis()))
-            .expiration(Date(System.currentTimeMillis() + 60 * 60 * 30))
+            .add(claims)              // Add custom claims
+            .subject(username)        // Set the username as the subject
+            .issuedAt(Date(System.currentTimeMillis())) // Token creation time
+
+            // Token expiration (30 hours)
+            .expiration(
+//                Date(System.currentTimeMillis() + 1000 * 60 * 60 * 30)
+                Date(System.currentTimeMillis() + 60 * 60 * 30)
+            )
+
             .and()
-            .signWith(getKey())
-            .compact()
+            .signWith(getKey())       // Sign the token using the secret key
+            .compact()                // Build the JWT
     }
 
+    // Decode the Base64 secret key and return a SecretKey for signing
     private fun getKey(): SecretKey {
         val keyBytes = Decoders.BASE64.decode(secretKey)
         return Keys.hmacShaKeyFor(keyBytes)
     }
+
 
     fun extractUserName(token: String): String {
         return extractClaim(token) { it.subject }
